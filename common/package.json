@@ -1,0 +1,22 @@
+{
+  "name": "common",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "rehype-document": "^3.0.0",
+    "rehype-format": "^2.3.1",
+    "rehype-highlight": "^2.2.1",
+    "rehype-stringify": "^5.0.0",
+    "remark-parse": "^6.0.3",
+    "remark-rehype": "^4.0.0",
+    "remark-retext": "^3.1.2",
+    "remark-toc": "^5.1.1",
+    "retext-english": "^3.0.2",
+    "retext-indefinite-article": "^1.1.5",
+    "to-vfile": "^5.0.2",
+    "unified": "^7.1.0",
+    "unified-stream": "^1.0.4",
+    "vfile-reporter": "^5.1.1"
+  }
+}

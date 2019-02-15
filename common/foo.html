@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../node_modules/highlight.js/styles/darcula.css">
+</head>
+<body>
+<h1>Introduction to Promises</h1>
+<h2>Promise States</h2>
+<p>Always in one of three mutually exclusive states</p>
+<ol>
+<li><em>Pending</em> - result not yet ready</li>
+<li><em>Fulﬁlled</em>  - result available</li>
+<li><em>Rejected</em> - something went wrong</li>
+</ol>
+<p>When everything is "done," promise is <em>Settled</em></p>
+<p>Once settled, promise <em>never</em> changes state.</p>
+<h2>Creating a Promise</h2>
+<pre><code class="hljs language-js"><span class="hljs-keyword">const</span> vow = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">resolve, reject</span>) </span>{
+  <span class="hljs-comment">// Do something asynchronous</span>
+  <span class="hljs-keyword">if</span> (<span class="hljs-comment">/* It worked */</span>) {
+      resolve(value);
+  } <span class="hljs-keyword">else</span> { 
+      reject(reason); 
+  } 
+});
+</code></pre>
+<ul>
+<li>Function passed to <code>Promise</code> constructor called <em>executor</em></li>
+<li>If operation works, executor sends value via <code>resolve</code></li>
+<li>If an error, executor sends reason via <code>reject</code></li>
+</ul>
+<h2>Consuming a Promise</h2>
+<pre><code class="hljs language-js">vow
+  .then(<span class="hljs-function"><span class="hljs-params">value</span> =></span> { <span class="hljs-comment">/* fulfillment */</span> }) 
+  .catch(<span class="hljs-function"><span class="hljs-params">error</span> =></span> { <span class="hljs-comment">/* rejection */</span> });
+</code></pre>
+<p>Notiﬁed of fulﬁllment or rejection via <em>reactions</em></p>
+<ul>
+<li>Callbacks registered with <code>then</code> and <code>catch</code></li>
+</ul>
+<p>Once settled, promise doesn’t change </p>
+<p>Never a race condition; if reaction registered:</p>
+<ul>
+<li>Before promise settles, notiﬁed when settlement happens </li>
+<li>After promise settles, receive (cached) value immediately</li>
+</ul>
+</body>
+</html>
