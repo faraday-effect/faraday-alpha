@@ -24,7 +24,7 @@
       </div>
       <div class="col-5">
         <div class="text-h6 text-center">Preview</div>
-        <div v-html="renderMarkdown"></div>
+        <Preview v-bind:content="renderedMarkdown" />
       </div>
     </div>
   </q-page>
@@ -43,9 +43,11 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/mode/markdown/markdown.js";
 import "codemirror/theme/solarized.css";
 import "highlight.js/styles/solarized-light.css";
+import Preview from "./Preview";
 
 export default {
   name: "PageIndex",
+  components: { Preview },
   data() {
     return {
       text: "# Fred\n* Lives in Peru.\n* Married to Zelda.",
@@ -66,7 +68,7 @@ export default {
     this.editor.on("change", cm => (this.text = cm.getValue()));
   },
   computed: {
-    renderMarkdown() {
+    renderedMarkdown() {
       var processor = unified()
         .use(markdown)
         .use(remark2rehype)
