@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page>
     <div class="row q-col-gutter-sm">
       <div class="col-2">
         <div class="text-h6 text-center">Topic</div>
@@ -18,10 +18,12 @@
           </q-item>
         </q-list>
       </div>
+
       <div class="col-5">
         <div class="text-h6 text-center">Tool</div>
         <textarea ref="codemirror" />
       </div>
+
       <div class="col-5">
         <div class="text-h6 text-center">Preview</div>
         <Preview v-bind:content="renderedMarkdown" />
@@ -60,9 +62,9 @@ export default {
   },
   mounted() {
     this.editor = CodeMirror.fromTextArea(this.$refs.codemirror, {
-      lineNumbers: true,
+      mode: "markdown",
       theme: "solarized",
-      mode: "markdown"
+      lineNumbers: true
     });
     this.editor.setValue(this.text);
     this.editor.on("change", cm => (this.text = cm.getValue()));
@@ -81,3 +83,10 @@ export default {
   }
 };
 </script>
+
+<style>
+.CodeMirror {
+  /* Full screen, less tool bar and heading. */
+  height: calc(100vh - 50px - 32px);
+}
+</style>

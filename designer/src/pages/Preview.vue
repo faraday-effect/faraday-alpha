@@ -11,6 +11,9 @@ export default {
 
 <style scoped lang="stylus">
 div
+  height calc(100vh - 50px - 32px)  // Full screen less toolbar and heading.
+  overflow auto
+  padding 0.5em
   background whitesmoke
 
 div >>> h1
