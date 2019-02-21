@@ -33,7 +33,13 @@ module.exports = function(ctx) {
         "QList",
         "QItem",
         "QItemSection",
-        "QItemLabel"
+        "QItemLabel",
+        "QRadio",
+        "QCard",
+        "QCardSection",
+        "QCardActions",
+        "QSeparator",
+        "QOptionGroup"
       ],
 
       directives: ["Ripple"],
