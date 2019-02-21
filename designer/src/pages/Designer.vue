@@ -1,33 +1,31 @@
 <template>
-  <q-page>
-    <div class="row q-col-gutter-sm">
-      <div class="col-2">
-        <div class="text-h6 text-center">Topic</div>
-        <q-list separator>
-          <q-item
-            clickable
-            padding
-            v-ripple
-            v-for="topic in topics"
-            v-bind:key="topic.id"
-          >
-            <q-item-section avatar>
-              <q-icon v-bind:name="`fas fa-${topic.icon}`"></q-icon>
-            </q-item-section>
-            <q-item-section>{{ topic.name }}</q-item-section>
-          </q-item>
-        </q-list>
-      </div>
+  <q-page class="row q-col-gutter-sm">
+    <div class="col-2">
+      <div class="text-h6 text-center">Topic</div>
+      <q-list separator>
+        <q-item
+          clickable
+          padding
+          v-ripple
+          v-for="topic in topics"
+          v-bind:key="topic.id"
+        >
+          <q-item-section avatar>
+            <q-icon v-bind:name="`fas fa-${topic.icon}`"></q-icon>
+          </q-item-section>
+          <q-item-section>{{ topic.name }}</q-item-section>
+        </q-item>
+      </q-list>
+    </div>
 
-      <div class="col-5">
-        <div class="text-h6 text-center">Tool</div>
-        <textarea ref="codemirror" />
-      </div>
+    <div class="col-5">
+      <div class="text-h6 text-center">Markdown Editor</div>
+      <textarea ref="codemirror" />
+    </div>
 
-      <div class="col-5">
-        <div class="text-h6 text-center">Preview</div>
-        <Preview v-bind:content="renderedMarkdown" />
-      </div>
+    <div class="col-5">
+      <div class="text-h6 text-center">Preview</div>
+      <Preview v-bind:content="renderedMarkdown" />
     </div>
   </q-page>
 </template>
