@@ -39,7 +39,8 @@ module.exports = function(ctx) {
         "QCardSection",
         "QCardActions",
         "QSeparator",
-        "QOptionGroup"
+        "QOptionGroup",
+        "QSelect"
       ],
 
       directives: ["Ripple"],

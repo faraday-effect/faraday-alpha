@@ -5,7 +5,7 @@ const routes = [
     children: [
       { path: "", component: () => import("pages/Index") },
       { path: "design", component: () => import("pages/Designer") },
-      { path: "tf", component: () => import("pages/TrueFalse") }
+      { path: "quiz", component: () => import("pages/Quiz") }
     ]
   }
 ];
