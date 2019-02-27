@@ -1,13 +1,31 @@
 <template>
-  <q-page padding>
-    <h6>A Quiz</h6>
-    <component
-      v-for="(question, idx) in questions"
-      v-bind:is="componentForQuestionType(question.type)"
-      v-bind:key="idx"
-      v-bind:questionNumber="idx"
-      v-bind:details="question"
-    />
+  <q-page padding class="row q-col-gutter-sm">
+    <div class="col-4">
+      <div class="text-h6 text-center">Designer</div>
+      <q-list bordered separator>
+        <q-item
+          clickable
+          v-ripple
+          v-for="option in menuOptions"
+          v-bind:key="option.key"
+        >
+          <q-item-section avatar>
+            <Keys v-bind:content="option.key" />
+          </q-item-section>
+          <q-item-section>{{ option.label }}</q-item-section>
+        </q-item>
+      </q-list>
+    </div>
+    <div class="col">
+      <div class="text-h6 text-center">A Quiz</div>
+      <component
+        v-for="(question, idx) in questions"
+        v-bind:is="componentForQuestionType(question.type)"
+        v-bind:key="idx"
+        v-bind:questionNumber="idx"
+        v-bind:details="question"
+      />
+    </div>
   </q-page>
 </template>
 
@@ -17,6 +35,8 @@ import MultipleChoiceQuestion from "components/MultipleChoice";
 import FillTheBlankQuestion from "components/FillTheBlank";
 import MatchingQuestion from "components/Matching";
 import MultipleDropdowns from "components/MultipleDropdowns";
+import Keys from "components/Keys";
+import Mousetrap from "mousetrap";
 
 const questionTypeMap = {
   "true-false": "TrueFalseQuestion",
@@ -29,15 +49,40 @@ const questionTypeMap = {
 export default {
   name: "QuizPage",
   components: {
+    Keys,
     TrueFalseQuestion,
     MultipleChoiceQuestion,
     FillTheBlankQuestion,
     MatchingQuestion,
     MultipleDropdowns
   },
+  mounted() {
+    Mousetrap.bind(["N", "n"], () => console.log("New Quiz"));
+    Mousetrap.bind(["L", "l"], () => console.log("List Quizzes"));
+    Mousetrap.bind(["E", "e"], () => console.log("Edit Quiz"));
+    Mousetrap.bind(["D", "d"], () => console.log("Delete Quiz"));
+  },
   data() {
     return {
       answer: null,
+      menuOptions: [
+        {
+          key: "N",
+          label: "New Quiz"
+        },
+        {
+          key: "L",
+          label: "List Quizzes"
+        },
+        {
+          key: "E",
+          label: "Edit Quiz"
+        },
+        {
+          key: "D",
+          label: "Delete Quiz"
+        }
+      ],
       questions: [
         {
           type: "true-false",

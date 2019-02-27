@@ -13,15 +13,18 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "codemirror": "^5.43.0",
+    "mousetrap": "^1.6.2",
     "quasar": "^1.0.0-beta.0",
     "rehype-format": "^2.3.1",
     "rehype-highlight": "^2.2.1",
     "rehype-stringify": "^5.0.0",
     "remark-parse": "^6.0.3",
     "remark-rehype": "^4.0.0",
-    "unified": "^7.1.0"
+    "unified": "^7.1.0",
+    "vuelidate": "^0.7.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
     "@quasar/app": "^1.0.0-beta.0",
     "@vue/eslint-config-prettier": "^4.0.0",
     "babel-eslint": "^10.0.1",
