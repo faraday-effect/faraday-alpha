@@ -7,5 +7,8 @@
     "boom": "^7.3.0",
     "hapi": "^18.0.0",
     "pg": "^7.8.0"
+  },
+  "scripts": {
+    "serve": "json-server quiz-data.json"
   }
 }

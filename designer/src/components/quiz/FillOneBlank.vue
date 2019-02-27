@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "FillTheBlankQuestion",
+  name: "FillOneBlank",
   props: ["details"],
   data() {
     return {

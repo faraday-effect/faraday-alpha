@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: "MatchingQuestion",
+  name: "Matching",
   props: ["details"],
   data() {
     return {

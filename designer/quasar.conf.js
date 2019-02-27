@@ -2,7 +2,7 @@
 
 module.exports = function(ctx) {
   return {
-    boot: ["vuelidate"],
+    boot: ["vuelidate", "axios"],
 
     css: ["app.styl"],
 
@@ -75,7 +75,15 @@ module.exports = function(ctx) {
     devServer: {
       // https: true,
       // port: 8080,
-      open: true // opens browser window automatically
+      open: true, // open browser window automatically
+
+      // Set up a proxy to local API server.
+      proxy: {
+        "/api": {
+          target: "http://localhost:3000",
+          pathRewrite: { "^/api": "" }
+        }
+      }
     },
 
     // animations: 'all' --- includes all animations

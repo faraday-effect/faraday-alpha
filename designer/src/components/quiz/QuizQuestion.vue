@@ -18,5 +18,3 @@ export default {
   props: ["questionNumber", "title", "text", "details"]
 };
 </script>
-
-<style scoped></style>

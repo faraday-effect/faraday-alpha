@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "MultipleChoiceQuestion",
+  name: "MultipleChoice",
   props: ["details"],
   data() {
     return {

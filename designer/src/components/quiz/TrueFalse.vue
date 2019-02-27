@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "TrueFalseQuestion",
+  name: "TrueFalse",
   created() {
     this.choices = [
       { label: "True", value: true },

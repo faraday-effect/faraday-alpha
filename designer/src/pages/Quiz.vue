@@ -20,7 +20,7 @@
 
     <!-- Quiz content -->
     <div class="col">
-      <div class="text-h6 text-center">A Quiz</div>
+      <div class="text-h6 text-center">{{ title }}</div>
       <quiz-question
         v-for="(question, idx) in questions"
         v-bind:questionNumber="idx"
@@ -41,14 +41,14 @@
 </template>
 
 <script>
-import TrueFalseQuestion from "components/TrueFalse";
-import MultipleChoiceQuestion from "components/MultipleChoice";
-import FillTheBlankQuestion from "components/FillTheBlank";
-import MatchingQuestion from "components/Matching";
-import MultipleDropdowns from "components/MultipleDropdowns";
+import TrueFalseQuestion from "components/quiz/TrueFalse";
+import MultipleChoiceQuestion from "components/quiz/MultipleChoice";
+import FillTheBlankQuestion from "components/quiz/FillOneBlank";
+import MatchingQuestion from "components/quiz/Matching";
+import MultipleDropdowns from "components/quiz/MultipleDropdowns";
 import Keys from "components/Keys";
 import Mousetrap from "mousetrap";
-import QuizQuestion from "components/QuizQuestion";
+import QuizQuestion from "components/quiz/QuizQuestion";
 
 const questionTypeMap = {
   "true-false": "TrueFalseQuestion",
@@ -74,6 +74,11 @@ export default {
     Mousetrap.bind(["L", "l"], () => console.log("List Quizzes"));
     Mousetrap.bind(["E", "e"], () => console.log("Edit Quiz"));
     Mousetrap.bind(["D", "d"], () => console.log("Delete Quiz"));
+
+    this.$axios.get("/api/quizzes/1").then(resp => {
+      this.title = resp.data.title;
+      this.questions = resp.data.questions;
+    });
   },
   data() {
     return {
@@ -96,54 +101,8 @@ export default {
           label: "Delete Quiz"
         }
       ],
-      questions: [
-        {
-          type: "true-false",
-          title: "Pyramid Identity",
-          text: "The Pyramid of Doom is the same thing as Callback Hell."
-        },
-        {
-          type: "multiple-dropdowns",
-          title: "Complete the Sentence",
-          text: "Choose the proper terms.",
-          details: {
-            template: "We've been discussing the [pyramid] of [dooom].",
-            choices: {
-              pyramid: ["Pyramid", "Sphere", "Tringle"],
-              doom: ["Doom", "Influence", "Love"]
-            }
-          }
-        },
-        {
-          type: "matching",
-          title: "Match-O-Matic",
-          text: "Choose the best match for each term",
-          details: {
-            pairs: [
-              ["Pyramid", "Doom"],
-              ["Sphere", "Influence"],
-              ["Love", "Triangle"]
-            ]
-          }
-        },
-        {
-          type: "fill-the-blank",
-          title: "The Problem with Doom",
-          text: "What's so bad about Doom?"
-        },
-        {
-          type: "multiple-choice",
-          title: "Our Topic",
-          text: "What have we been studying of late?",
-          details: {
-            choices: [
-              { label: "Pyramid of Doom", value: 1 },
-              { label: "Circle of Life", value: 2 },
-              { label: "Love Triangle", value: 3 }
-            ]
-          }
-        }
-      ]
+      title: "A Quiz",
+      questions: []
     };
   },
   methods: {
