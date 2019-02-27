@@ -1,24 +1,21 @@
 <template>
-  <quiz-question>
-    <div class="q-pa-lg">
-      <q-option-group v-model="answer" v-bind:options="choices" />
-    </div>
-  </quiz-question>
+  <div class="q-pa-lg">
+    <q-option-group v-model="response" v-bind:options="choices" />
+  </div>
 </template>
 
 <script>
-import QuizQuestion from "./QuizQuestion";
-
 export default {
   name: "TrueFalseQuestion",
-  components: { QuizQuestion },
+  created() {
+    this.choices = [
+      { label: "True", value: true },
+      { label: "False", value: false }
+    ];
+  },
   data() {
     return {
-      answer: null,
-      choices: [
-        { label: "True", value: true },
-        { label: "False", value: false }
-      ]
+      response: null
     };
   }
 };

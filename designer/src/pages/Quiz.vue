@@ -1,5 +1,6 @@
 <template>
   <q-page padding class="row q-col-gutter-sm">
+    <!-- Keyboard shortcuts -->
     <div class="col-4">
       <div class="text-h6 text-center">Designer</div>
       <q-list bordered separator>
@@ -16,15 +17,25 @@
         </q-item>
       </q-list>
     </div>
+
+    <!-- Quiz content -->
     <div class="col">
       <div class="text-h6 text-center">A Quiz</div>
-      <component
+      <quiz-question
         v-for="(question, idx) in questions"
-        v-bind:is="componentForQuestionType(question.type)"
-        v-bind:key="idx"
         v-bind:questionNumber="idx"
-        v-bind:details="question"
-      />
+        v-bind:key="idx"
+        v-bind:title="question.title"
+        v-bind:text="question.text"
+        v-bind:details="question.details"
+      >
+        <template v-slot="{ details }">
+          <component
+            v-bind:is="componentForQuestionType(question.type)"
+            v-bind:details="details"
+          />
+        </template>
+      </quiz-question>
     </div>
   </q-page>
 </template>
@@ -37,6 +48,7 @@ import MatchingQuestion from "components/Matching";
 import MultipleDropdowns from "components/MultipleDropdowns";
 import Keys from "components/Keys";
 import Mousetrap from "mousetrap";
+import QuizQuestion from "components/QuizQuestion";
 
 const questionTypeMap = {
   "true-false": "TrueFalseQuestion",
@@ -54,7 +66,8 @@ export default {
     MultipleChoiceQuestion,
     FillTheBlankQuestion,
     MatchingQuestion,
-    MultipleDropdowns
+    MultipleDropdowns,
+    QuizQuestion
   },
   mounted() {
     Mousetrap.bind(["N", "n"], () => console.log("New Quiz"));
@@ -64,7 +77,7 @@ export default {
   },
   data() {
     return {
-      answer: null,
+      response: null,
       menuOptions: [
         {
           key: "N",
@@ -93,21 +106,25 @@ export default {
           type: "multiple-dropdowns",
           title: "Complete the Sentence",
           text: "Choose the proper terms.",
-          template: "We've been discussing the [pyramid] of [dooom].",
-          choices: {
-            pyramid: ["Pyramid", "Sphere", "Tringle"],
-            doom: ["Doom", "Influence", "Love"]
+          details: {
+            template: "We've been discussing the [pyramid] of [dooom].",
+            choices: {
+              pyramid: ["Pyramid", "Sphere", "Tringle"],
+              doom: ["Doom", "Influence", "Love"]
+            }
           }
         },
         {
           type: "matching",
           title: "Match-O-Matic",
           text: "Choose the best match for each term",
-          pairs: [
-            ["Pyramid", "Doom"],
-            ["Sphere", "Influence"],
-            ["Love", "Triangle"]
-          ]
+          details: {
+            pairs: [
+              ["Pyramid", "Doom"],
+              ["Sphere", "Influence"],
+              ["Love", "Triangle"]
+            ]
+          }
         },
         {
           type: "fill-the-blank",
@@ -118,11 +135,13 @@ export default {
           type: "multiple-choice",
           title: "Our Topic",
           text: "What have we been studying of late?",
-          choices: [
-            { label: "Pyramid of Doom", value: 1 },
-            { label: "Circle of Life", value: 2 },
-            { label: "Love Triangle", value: 3 }
-          ]
+          details: {
+            choices: [
+              { label: "Pyramid of Doom", value: 1 },
+              { label: "Circle of Life", value: 2 },
+              { label: "Love Triangle", value: 3 }
+            ]
+          }
         }
       ]
     };

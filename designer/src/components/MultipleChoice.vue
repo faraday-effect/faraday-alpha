@@ -1,25 +1,16 @@
 <template>
-  <q-card bordered style="margin: 2em 0">
-    <q-card-section>
-      <p class="text-overline">Question {{ questionNumber + 1 }}</p>
-      <p class="text-h6">{{ details.title }}</p>
-      <p>{{ details.text }}</p>
-    </q-card-section>
-
-    <q-separator />
-    <div class="q-pa-lg">
-      <q-option-group v-model="answer" v-bind:options="details.choices" />
-    </div>
-  </q-card>
+  <div class="q-pa-lg">
+    <q-option-group v-model="response" v-bind:options="details.choices" />
+  </div>
 </template>
 
 <script>
 export default {
   name: "MultipleChoiceQuestion",
-  props: ["questionNumber", "details"],
+  props: ["details"],
   data() {
     return {
-      answer: null
+      response: null
     };
   }
 };
