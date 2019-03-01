@@ -7,7 +7,9 @@ module.exports = {
   },
 
   env: {
-    browser: true
+    browser: true,
+    jest: true,
+    node: true
   },
 
   // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention

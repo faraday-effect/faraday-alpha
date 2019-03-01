@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-lg">
-    <p>{{ details.template }}</p>
-    <p>{{ parseTemplate(details.template) }}</p>
+    <!--<p>{{ details.template }}</p>-->
+    <!--<p>{{ parseTemplate(details.template) }}</p>-->
   </div>
 </template>
 
@@ -16,12 +16,13 @@ export default {
   },
   methods: {
     parseTemplate(template) {
+      template = template.trim();
+
+      if (template.length === 0) {
+        return [];
+      }
+
       const words = template.trim().split(/\s+/);
-      // for (let word of words) {
-      //   if (word.match(/\[\w-]+\]/)) {
-      //
-      //   }
-      // }
       return words;
     }
   }
