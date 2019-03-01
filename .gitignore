@@ -3,3 +3,7 @@ node_modules
 
 .idea
 .vscode
+
+foo-*
+foo.*
+foo[0-9]*
