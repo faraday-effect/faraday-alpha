@@ -8,9 +8,10 @@
       <div class="col-2">
         {{ pair[0] }}
       </div>
-      <div class="col-2">
+      <div class="col-2 q-py-xs">
         <q-select
-          label="Your Answer"
+          outlined
+          dense
           v-model="response[idx]"
           v-bind:options="choices()"
         />

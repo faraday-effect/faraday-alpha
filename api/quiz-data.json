@@ -19,7 +19,7 @@
             "template": "We've been discussing the [pyramid] of [dooom].",
             "choices": {
               "pyramid": ["Pyramid", "Sphere", "Tringle"],
-              "doom": ["Doom", "Influence", "Love"]
+              "dooom": ["Doom", "Influence", "Love"]
             }
           }
         },
