@@ -1,5 +1,4 @@
 const { ApolloServer } = require("apollo-server-hapi");
-const typeDefs = require("./schema");
 
 const Hapi = require("hapi");
 
@@ -11,10 +10,17 @@ const Hapi = require("hapi");
 //   }
 // });
 
-console.log("DEFS", JSON.stringify(typeDefs, null, 4));
+const psqlDataSource = require("./psql-data-source.js");
+const models = require("./models.js");
 
 async function start() {
-  const apollo = new ApolloServer({ typeDefs });
+  const apollo = new ApolloServer({
+    typeDefs: require("./schema"),
+    resolvers: require("./resolvers"),
+    dataSources: () => ({
+      psql: new psqlDataSource(models)
+    })
+  });
 
   const hapi = Hapi.server({
     port: 4000,

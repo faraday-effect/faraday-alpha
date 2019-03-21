@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  faraday-db:
+    image: postgres:11
+    container_name: faraday-db
+    environment:
+      POSTGRES_USER: faraday
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: faraday
+    ports:
+      - "5432:5432"
