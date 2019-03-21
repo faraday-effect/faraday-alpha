@@ -1,17 +1,13 @@
-const courses = [
-  {
-    code: "COS 243",
-    name: "Multitier Web Application Development"
-  },
-  {
-    code: "COS 343",
-    name: "Advanced Database Concepts"
-  }
-];
+// Resolver signature: foo(parent, args, context, info)
 
 module.exports = {
   Query: {
-    courseCount: () => courses.length,
-    courses: (_, __, { dataSources }) => dataSources.psql.allCourses()
+    courseCount: (_, __, { dataSources }) => dataSources.faradayAPI.countCourses(),
+    courses: (_, __, { dataSources }) => dataSources.faradayAPI.allCourses()
+  },
+  Mutation: {
+    addCourse: (_, args, { dataSources }) => {
+      return dataSources.faradayAPI.addCourse(args);
+    }
   }
 };
