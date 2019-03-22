@@ -3,16 +3,13 @@ const { ApolloServer } = require("apollo-server-hapi");
 const Hapi = require("hapi");
 
 const FaradayAPI = require("./datasources/faraday/api");
-const buildFaradayModels = require("./datasources/faraday/models");
-
-const faradayModels = buildFaradayModels();
 
 async function start() {
   const apollo = new ApolloServer({
     typeDefs: require("./graphql-schema"),
     resolvers: require("./resolvers"),
     dataSources: () => ({
-      faradayAPI: new FaradayAPI(faradayModels)
+      faradayAPI: new FaradayAPI()
     })
   });
 

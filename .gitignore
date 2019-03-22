@@ -4,6 +4,8 @@ node_modules
 .idea
 .vscode
 
+.env
+
 foo-*
 foo.*
 foo[0-9]*

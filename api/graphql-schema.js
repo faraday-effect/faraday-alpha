@@ -1,17 +1,28 @@
 const { gql } = require("apollo-server-hapi");
 
 const typeDefs = gql`
+  type User {
+    id: ID!
+    username: String!
+  }
+
   type Course {
     id: ID!
-    code: String!
-    name: String!
+    number: String!
+    title: String!
   }
+
   type Query {
     courseCount: Int!
     courses: [Course!]!
+    me: User
+    allUsers: [User!]!
   }
+
   type Mutation {
-    addCourse(code: String!, name: String!): Course
+    addCourse(number: String!, title: String!): Course
+    signUp(username: String!, password: String!): String
+    login(username: String!, password: String!): String
   }
 `;
 
