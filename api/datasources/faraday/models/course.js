@@ -1,15 +1,9 @@
-"use strict";
-module.exports = (sequelize, DataTypes) => {
-  const Course = sequelize.define(
-    "Course",
-    {
-      number: DataTypes.STRING,
-      title: DataTypes.STRING
-    },
-    {}
-  );
-  Course.associate = function(models) {
-    // associations can be defined here
-  };
-  return Course;
-};
+const { Model } = require("objection");
+
+class Course extends Model {
+  static getTableName() {
+    return "courses";
+  }
+}
+
+module.exports = Course;

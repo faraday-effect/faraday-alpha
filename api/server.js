@@ -6,7 +6,7 @@ const FaradayAPI = require("./datasources/faraday/api");
 
 async function start() {
   const apollo = new ApolloServer({
-    typeDefs: require("./graphql-schema"),
+    typeDefs: require("./schema"),
     resolvers: require("./resolvers"),
     dataSources: () => ({
       faradayAPI: new FaradayAPI()

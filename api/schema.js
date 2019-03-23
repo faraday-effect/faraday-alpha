@@ -4,6 +4,12 @@ const typeDefs = gql`
   type User {
     id: ID!
     username: String!
+    firstName: String!
+    lastName: String!
+    email: String
+    campusId: String
+    officePhone: String
+    mobilePhone: String
   }
 
   type Course {

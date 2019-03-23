@@ -5,38 +5,45 @@ const bcrypt = require("bcrypt");
 const jsonwebtoken = require("jsonwebtoken");
 require("dotenv").config();
 
-class FaradayAPI extends DataSource {
-  constructor() {
-    super();
-    this.db = require("./models");
-    this.context = null;
-  }
+const Knex = require("knex");
+const knexfile = require("./knexfile");
+const knex = Knex(knexfile["development"]);
 
+const { Model } = require("objection");
+Model.knex(knex);
+
+const Course = require("./models/Course");
+const User = require("./models/User");
+
+class FaradayAPI extends DataSource {
   initialize(config) {
     this.context = config.context;
   }
 
   allCourses() {
-    return this.db.Course.findAll();
+    return Course.query();
   }
 
   countCourses() {
-    return this.db.Course.count();
+    return knex("courses")
+      .count()
+      .first()
+      .then(result => result.count);
   }
 
   addCourse(args) {
-    return this.db.Course.create(args);
+    return Course.query().insert(args);
   }
 
   me(args, user) {
     if (!user) {
       throw new Error("Not logged in");
     }
-    return this.db.User.findByPk(user.id);
+    return User.findById(user.id);
   }
 
   async signUp(username, email, password) {
-    const user = await this.db.User.create({
+    const user = await User.query().insert({
       username,
       email,
       password: await bcrypt.hash(password, 10)
@@ -50,7 +57,7 @@ class FaradayAPI extends DataSource {
   }
 
   async login(email, password) {
-    const user = await this.db.User.findOne({ where: { email } });
+    const user = await User.query().where({ email });
 
     if (!user) {
       throw new Error("Invalid user");
@@ -70,7 +77,7 @@ class FaradayAPI extends DataSource {
   }
 
   allUsers() {
-    return this.db.User.findAll();
+    return User.query();
   }
 }
 
