@@ -7,6 +7,10 @@ module.exports = gql`
     me: User
   }
 
+  extend type Mutation {
+    signUp(email: String!, password: String): Token!
+  }
+
   type User {
     id: ID!
     email: String!
@@ -15,5 +19,9 @@ module.exports = gql`
     campusId: String
     officePhone: String
     mobilePhone: String
+  }
+
+  type Token {
+    token: String!
   }
 `;
