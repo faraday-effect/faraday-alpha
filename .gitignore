@@ -6,6 +6,8 @@ node_modules
 
 .env
 
+coverage/
+
 foo-*
 foo.*
 foo[0-9]*
