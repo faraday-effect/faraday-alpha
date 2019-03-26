@@ -19,10 +19,14 @@
   },
   "scripts": {
     "json-server": "json-server quiz-data.json",
-    "serve": "nodemon src/index.js",
-    "test": "jest"
+    "serve": "node src/index.js",
+    "watch": "nodemon src/index.js",
+    "test": "jest",
+    "one-true-test": "concurrently --kill-others --success=first \"node src/index.js\" jest"
   },
   "devDependencies": {
+    "concurrently": "^4.1.0",
+    "graphql-request": "^1.8.2",
     "jest": "^24.5.0"
   }
 }

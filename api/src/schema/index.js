@@ -13,8 +13,18 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [
-  linkSchema,
-  userSchema,
-  courseSchema
-];
+const pingPongSchema = gql`
+  extend type Query {
+    ping: Pong!
+  }
+  
+  type Pong {
+      arch: String!
+      cpus: [String!]!
+      platform: String!
+      release: String!
+      hostname: String!
+  }
+`;
+
+module.exports = [linkSchema, pingPongSchema, userSchema, courseSchema];
