@@ -2,6 +2,12 @@
 
 const jwt = require("jsonwebtoken");
 
+/**
+ * Create a JSON Web Token for a user
+ * @param user - credentials to encode
+ * @param expiresIn - duration of JWT
+ * @returns {String) containing JWT
+ */
 async function createToken(user, expiresIn = "1d") {
   const { id, email, username } = user;
   return await jwt.sign({ id, email, username }, process.env.JWT_SECRET, {

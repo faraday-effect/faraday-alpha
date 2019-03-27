@@ -1,6 +1,6 @@
 // N.B., it's fine to return a promise from a data source function.
 
-const { AuthenticationError } = require("apollo-server-express");
+const { AuthenticationError } = require("apollo-server-express/dist/index");
 const { DataSource } = require("apollo-datasource");
 
 class FaradayAPI extends DataSource {
@@ -15,6 +15,12 @@ class FaradayAPI extends DataSource {
 
   // --- User
 
+  /**
+   * Create a new user.
+   * @param email - email address
+   * @param password - plain text password
+   * @returns {*} new user with ID and encrypted password.
+   */
   createUser(email, password) {
     return this.models.User.query().insert({ email, password });
   }

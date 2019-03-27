@@ -1,0 +1,11 @@
+extend type Query {
+  ping: Pong!
+}
+
+type Pong {
+  arch: String!
+  cpus: [String!]!
+  platform: String!
+  release: String!
+  hostname: String!
+}

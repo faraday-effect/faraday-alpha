@@ -22,10 +22,14 @@
     "watch": "nodemon src/index.js",
     "test": "jest",
     "one-true-test": "concurrently --kill-others --success=first \"node src/index.js\" jest",
-    "watch-test": "concurrently --kill-others --success=first \"nodemon src/index.js\" jest --watch"
+    "watch-test": "concurrently --kill-others --success=first \"nodemon src/index.js\" jest --watch",
+    "docs": "esdoc"
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
+    "documentation": "^9.3.1",
+    "esdoc": "^1.1.0",
+    "esdoc-standard-plugin": "^1.0.0",
     "graphql-request": "^1.8.2",
     "jest": "^24.5.0",
     "knex-db-manager": "^0.5.0",

@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
 
 const { ApolloServer, AuthenticationError } = require("apollo-server-express");
-const FaradayAPI = require("../datasources/faraday/api");
+const FaradayAPI = require("./datasources/faraday/api");
 
 async function getMe(req) {
   const header = req.get("Authorization");
@@ -23,7 +23,7 @@ async function getMe(req) {
 }
 
 const index = new ApolloServer({
-  typeDefs: require("./schema"),
+  typeDefs: require("./schemata"),
   resolvers: require("./resolvers"),
   dataSources: () => ({
     faradayAPI: new FaradayAPI()

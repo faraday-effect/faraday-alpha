@@ -1,5 +1,5 @@
 const { GraphQLClient } = require("graphql-request");
-const { knex, resetDatabase } = require("../../datasources/faraday/manage-db");
+const { knex, resetDatabase } = require("../datasources/faraday/manage-db");
 
 const endpoint = "http://localhost:4000/graphql";
 const client = new GraphQLClient(endpoint);
@@ -10,11 +10,16 @@ describe("Users", () => {
   });
 
   test("create a user", async () => {
-    const data = await client.request(`mutation {
-      signUp(email: "fred@ziffle.com", password: "password") {
-        token
-      }
-    }`);
+    const query = `
+      mutation createUser($email: String!, $password: String!) {
+        signUp(email: $email, password: $password) {
+          token
+        }
+      }`;
+    const data = await client.request(query, {
+      email: "fred@ziffle.com",
+      password: "password"
+    });
     expect(data.signUp.token).toMatch(/^[^.]+\.[^.]+\.[^.]+$/);
 
     return knex("users").then(users => {
