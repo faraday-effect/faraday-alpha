@@ -2062,6 +2062,14 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
+casual@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/casual/-/casual-1.6.0.tgz#30dff7d3202a60ec5da9e36296a58dac62f14ae4"
+  integrity sha512-UmOIqc09KMrGIOKbLsb8GfPHDW8E+hdI1AjmJ8BYhQazTj8BHX3y6zEXj5lT7v7T4ZBkO180HXXF8ZACf3qANA==
+  dependencies:
+    mersenne-twister "^1.0.1"
+    moment "^2.15.2"
+
 ccount@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/ccount/-/ccount-1.0.3.tgz#f1cec43f332e2ea5a569fd46f9f5bde4e6102aff"
@@ -3069,6 +3077,11 @@ esdoc-lint-plugin@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/esdoc-lint-plugin/-/esdoc-lint-plugin-1.0.2.tgz#4962930c6dc5b25d80cf6eff1b0f3c24609077f7"
   integrity sha512-24AYqD2WbZI9We02I7/6dzAa7yUliRTFUaJCZAcYJMQicJT5gUrNFVaI8XmWEN/mhF3szIn1uZBNWeLul4CmNw==
+
+esdoc-node@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/esdoc-node/-/esdoc-node-1.0.4.tgz#97fec78a9bbed26f15349c03c9b9e2f8a6baafe5"
+  integrity sha512-th9rhOdO3oFiv9YJWv8+RT2fzILxhvlvT9w0bZJVU9y6glXyA1zAiGrFAAI96HC8ArGOnlXDz6jbTBBAWa3UXg==
 
 esdoc-publish-html-plugin@^1.0.0:
   version "1.1.2"
@@ -5462,6 +5475,11 @@ merge-stream@^1.0.1:
   dependencies:
     readable-stream "^2.0.1"
 
+mersenne-twister@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mersenne-twister/-/mersenne-twister-1.1.0.tgz#f916618ee43d7179efcf641bec4531eb9670978a"
+  integrity sha1-+RZhjuQ9cXnvz2Qb7EUx65Zwl4o=
+
 methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
@@ -5584,6 +5602,11 @@ module-deps-sortable@5.0.0:
     subarg "^1.0.0"
     through2 "^2.0.0"
     xtend "^4.0.0"
+
+moment@^2.15.2:
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
+  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
 morgan@^1.9.1:
   version "1.9.1"

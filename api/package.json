@@ -26,9 +26,11 @@
     "docs": "esdoc"
   },
   "devDependencies": {
+    "casual": "^1.6.0",
     "concurrently": "^4.1.0",
     "documentation": "^9.3.1",
     "esdoc": "^1.1.0",
+    "esdoc-node": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
     "graphql-request": "^1.8.2",
     "jest": "^24.5.0",
