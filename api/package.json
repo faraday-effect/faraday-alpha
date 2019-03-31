@@ -9,6 +9,7 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.16.3",
     "morgan": "^1.9.1",
@@ -26,15 +27,20 @@
     "docs": "esdoc"
   },
   "devDependencies": {
+    "apollo-cache-inmemory": "^1.5.1",
+    "apollo-client": "^2.5.1",
+    "apollo-link": "^1.2.11",
+    "apollo-link-error": "^1.1.10",
+    "apollo-link-http": "^1.5.14",
     "casual": "^1.6.0",
     "concurrently": "^4.1.0",
     "documentation": "^9.3.1",
     "esdoc": "^1.1.0",
     "esdoc-node": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
-    "graphql-request": "^1.8.2",
     "jest": "^24.5.0",
     "knex-db-manager": "^0.5.0",
+    "node-fetch": "^2.3.0",
     "pg-escape": "^0.2.0"
   }
 }

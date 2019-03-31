@@ -6,7 +6,7 @@ const SALT_ROUNDS = 12;
 const { Model } = require("objection");
 
 class User extends Model {
-  static getTableName() {
+  static get tableName() {
     return "users";
   }
 
