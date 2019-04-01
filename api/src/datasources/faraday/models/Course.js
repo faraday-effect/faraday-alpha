@@ -1,7 +1,7 @@
 const { Model } = require("objection");
 
 class Course extends Model {
-  static getTableName() {
+  static get tableName() {
     return "courses";
   }
 }

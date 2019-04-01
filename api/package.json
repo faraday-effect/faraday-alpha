@@ -21,9 +21,8 @@
     "json-server": "json-server quiz-data.json",
     "serve": "node src/index.js",
     "watch": "nodemon src/index.js",
-    "test": "jest",
+    "test": "jest --watch",
     "one-true-test": "concurrently --kill-others --success=first \"node src/index.js\" jest",
-    "watch-test": "concurrently --kill-others --success=first \"nodemon src/index.js\" jest --watch",
     "docs": "esdoc"
   },
   "devDependencies": {

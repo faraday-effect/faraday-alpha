@@ -17,7 +17,10 @@ const dbManager = require("knex-db-manager").databaseManagerFactory(config);
 
 async function resetDatabase() {
   await dbManager.truncateDb();
+}
+
+async function seedDatabase() {
   await dbManager.populateDb(path.join(__dirname, "seeds", "*.js"));
 }
 
-module.exports = { knex, resetDatabase };
+module.exports = { knex, resetDatabase, seedDatabase };

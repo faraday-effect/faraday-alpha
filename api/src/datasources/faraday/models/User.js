@@ -14,8 +14,8 @@ class User extends Model {
     this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
   }
 
-  async validatePassword(password) {
-    return await bcrypt.compare(password, this.password);
+  validatePassword(password) {
+    return bcrypt.compare(password, this.password);
   }
 
   async $beforeInsert() {
