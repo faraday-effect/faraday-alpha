@@ -1,6 +1,9 @@
 // N.B., it's fine to return a promise from a data source function.
 
-const { AuthenticationError, UserInputError } = require("apollo-server-express");
+const {
+  AuthenticationError,
+  UserInputError
+} = require("apollo-server-express");
 const { DataSource } = require("apollo-datasource");
 
 class FaradayAPI extends DataSource {
@@ -21,7 +24,7 @@ class FaradayAPI extends DataSource {
    * @param password - plain text password
    * @returns {*} new user with ID and encrypted password.
    */
-  async createUser(email, password) {
+  async createUser({ email, password, firstName, lastName }) {
     if (!email) {
       throw new UserInputError("Email address can't be empty");
     }
@@ -32,8 +35,8 @@ class FaradayAPI extends DataSource {
 
     // TODO - Replace this lame regex with the `isemail` package or equivalent;
     //        wasn't able to install it when I wrote this code (network error).
-    if (!/^[\w.-]+@[\w-]+\.[\w]{2,}$/.test(email)){
-      throw new UserInputError(("Email address is invalid"));
+    if (!/^[\w.-]+@[\w-]+\.[\w]{2,}$/.test(email)) {
+      throw new UserInputError("Email address is invalid");
     }
 
     const checkUser = await this.models.User.query().findOne({ email });
@@ -42,7 +45,12 @@ class FaradayAPI extends DataSource {
       throw new AuthenticationError("Email already in use");
     }
 
-    return this.models.User.query().insert({ email, password });
+    return this.models.User.query().insert({
+      email,
+      password,
+      firstName,
+      lastName
+    });
   }
 
   userById(id) {

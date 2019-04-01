@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 12;
 
@@ -17,6 +18,24 @@ class User extends Model {
   async validatePassword(password) {
     const valid = await bcrypt.compare(password, this.password);
     return valid;
+  }
+
+  /**
+   * Create a JSON Web Token for a user
+   * @param expiresIn - duration of JWT
+   * @returns {String) containing JWT
+   */
+  async createToken(expiresIn = "1d") {
+    return await jwt.sign(
+      {
+        id: this.id,
+        email: this.email
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn
+      }
+    );
   }
 
   async $beforeInsert() {

@@ -22,6 +22,7 @@
     "serve": "node src/index.js",
     "watch": "nodemon src/index.js",
     "test": "jest --watch",
+    "test:cov": "jest --coverage",
     "one-true-test": "concurrently --kill-others --success=first \"node src/index.js\" jest",
     "docs": "esdoc"
   },
