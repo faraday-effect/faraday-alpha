@@ -25,11 +25,11 @@ function makeFakeUser() {
 }
 
 describe("A user", () => {
-  const client = require("../helpers/graphql-client");
+  const client = require("../helpers/test-client");
   const jwtPattern = /^[^.]+\.[^.]+\.[^.]+$/;
 
   const SIGN_IN_MUTATION = gql`
-    mutation($email: String!, $password: String!) {
+    mutation signInTestUser($email: String!, $password: String!) {
       signIn(email: $email, password: $password) {
         user {
           id
@@ -58,12 +58,11 @@ describe("A user", () => {
   });
 
   test("can't sign up with empty email", async () => {
-    expect.assertions(1);
     const fakeUser = makeFakeUser();
     fakeUser.email = "";
 
-    return signUpHelper(client, fakeUser).catch(error =>
-      expect(error.message).toMatch(/Email address can't be empty/)
+    return signUpHelper(client, fakeUser).then(result =>
+      expect(result.errors[0].message).toMatch(/Email address can't be empty/)
     );
   });
 
@@ -72,8 +71,8 @@ describe("A user", () => {
     const fakeUser = makeFakeUser();
     fakeUser.password = "";
 
-    return signUpHelper(client, fakeUser).catch(error =>
-      expect(error.message).toMatch(/Password can't be empty/)
+    return signUpHelper(client, fakeUser).then(result =>
+      expect(result.errors[0].message).toMatch(/Password can't be empty/)
     );
   });
 
@@ -82,8 +81,8 @@ describe("A user", () => {
     const fakeUser = makeFakeUser();
     fakeUser.email = "not.an.email.com";
 
-    return signUpHelper(client, fakeUser).catch(error =>
-      expect(error.message).toMatch(/Email address is invalid/)
+    return signUpHelper(client, fakeUser).then(result =>
+      expect(result.errors[0].message).toMatch(/Email address is invalid/)
     );
   });
 
@@ -96,8 +95,8 @@ describe("A user", () => {
     expect(data.signUp.token).toMatch(jwtPattern);
 
     // Sign up again with the same email.
-    return signUpHelper(client, fakeUser).catch(error => {
-      expect(error.message).toMatch(/Email already in use/);
+    return signUpHelper(client, fakeUser).then(result => {
+      expect(result.errors[0].message).toMatch(/Email already in use/);
     });
   });
 
@@ -121,8 +120,8 @@ describe("A user", () => {
         mutation: SIGN_IN_MUTATION,
         variables: { email: fakeUser.email, password: fakeUser.password }
       })
-      .catch(error => {
-        expect(error.message).toMatch(/Invalid credentials/);
+      .then(result => {
+        expect(result.errors[0].message).toMatch(/Invalid credentials/);
       });
   });
 
@@ -142,9 +141,8 @@ describe("A user", () => {
             .join("")
         }
       })
-      .then(val => console.debug("THEN", val))
-      .catch(error => {
-        expect(error.message).toMatch(/Invalid credentials/);
+      .then(result => {
+        expect(result.errors[0].message).toMatch(/Invalid credentials/);
       });
   });
 });

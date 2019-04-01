@@ -1597,6 +1597,13 @@ apollo-server-plugin-base@0.3.7:
   resolved "https://registry.yarnpkg.com/apollo-server-plugin-base/-/apollo-server-plugin-base-0.3.7.tgz#bfa4932fc9481bb36221545578d311db464af5a6"
   integrity sha512-hW1jaLKf9qNOxMTwRq2CSqz3eqXsZuEiCc8/mmEtOciiVBq1GMtxFf19oIYM9HQuPvQU2RWpns1VrYN59L3vbg==
 
+apollo-server-testing@^2.4.8:
+  version "2.4.8"
+  resolved "https://registry.yarnpkg.com/apollo-server-testing/-/apollo-server-testing-2.4.8.tgz#eb929a431e059723c298919688355434d53e3ea8"
+  integrity sha512-AmNn5pDn9FJ9AJbmc7gwsUFaUt4uf44IFHaCfZow/jkAeY2JZnIozt8LYC8Koidy+Lfb+i/HsjkgbBodElbGMQ==
+  dependencies:
+    apollo-server-core "2.4.8"
+
 apollo-tracing@0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/apollo-tracing/-/apollo-tracing-0.5.2.tgz#cc49936fb435fa98d19c841514cfe05237c85b33"

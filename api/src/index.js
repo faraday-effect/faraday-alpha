@@ -22,7 +22,7 @@ async function getMe(req) {
   return null;
 }
 
-const index = new ApolloServer({
+const server = new ApolloServer({
   typeDefs: require("./schemata"),
   resolvers: require("./resolvers"),
   dataSources: () => ({
@@ -39,13 +39,13 @@ const app = express();
 // Log requests.
 app.use(morgan("dev"));
 
-index.applyMiddleware({ app, path: "/graphql" });
+server.applyMiddleware({ app, path: "/graphql" });
 
 const host = "localhost";
 const port = 4000;
 
 app.listen({ host, port }, () =>
   console.log(
-    `🚀 Server listening on http://${host}:${port}${index.graphqlPath}`
+    `🚀 Server listening on http://${host}:${port}${server.graphqlPath}`
   )
 );
