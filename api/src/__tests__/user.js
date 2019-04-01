@@ -25,7 +25,7 @@ function makeFakeUser() {
 }
 
 describe("A user", () => {
-  const client = require("../helpers/test-client");
+  const client = require("../helpers/test-client-in-proc");
   const jwtPattern = /^[^.]+\.[^.]+\.[^.]+$/;
 
   const SIGN_IN_MUTATION = gql`

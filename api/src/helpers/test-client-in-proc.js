@@ -1,3 +1,10 @@
+/**
+ * In-process test client.
+ *
+ * Wraps server directly. Allows for coverage testing.
+ * Plug compatible with HTTP test client.
+ */
+
 const { createTestClient } = require("apollo-server-testing");
 const { ApolloServer } = require("apollo-server-express");
 

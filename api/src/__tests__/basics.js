@@ -1,7 +1,7 @@
 const gql = require("graphql-tag");
 
 describe("Basics", () => {
-  const client = require("../helpers/test-client");
+  const client = require("../helpers/test-client-in-proc");
 
   test("sanity check", () => {
     expect(true).toBe(true);
