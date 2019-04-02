@@ -48,8 +48,8 @@ describe("A user", () => {
 
   test("can sign up with valid credentials", async () => {
     const fakeUser = makeFakeUser();
-    const { data } = await signUpHelper(client, fakeUser);
-    expect(data.signUp.token).toMatch(jwtPattern);
+    const result = await signUpHelper(client, fakeUser);
+    expect(result.data.signUp.token).toMatch(jwtPattern);
 
     return knex("users").then(users => {
       expect(users).toHaveLength(1);
