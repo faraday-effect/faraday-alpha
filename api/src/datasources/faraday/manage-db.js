@@ -23,4 +23,18 @@ async function seedDatabase() {
   await dbManager.populateDb(path.join(__dirname, "seeds", "*.js"));
 }
 
-module.exports = { knex, resetDatabase, seedDatabase };
+async function dropDatabase() {
+  await dbManager.dropDb();
+}
+
+async function createDatabase() {
+  await dbManager.createDb();
+}
+
+module.exports = {
+  knex,
+  createDatabase,
+  dropDatabase,
+  resetDatabase,
+  seedDatabase
+};

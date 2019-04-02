@@ -1,4 +1,20 @@
 exports.up = async function(knex) {
+  await knex.schema.createTable("prefixes", table => {
+    table.increments();
+    table
+      .string("name")
+      .unique()
+      .notNullable();
+  });
+
+  await knex.schema.createTable("departments", table => {
+    table.increments();
+    table
+      .string("name")
+      .unique()
+      .notNullable();
+  });
+
   await knex.schema.createTable("users", table => {
     table.increments();
     table.string("email").notNullable();
@@ -17,6 +33,7 @@ exports.up = async function(knex) {
 };
 
 exports.down = async function(knex) {
-  await knex.schema.dropTable("users");
-  await knex.schema.dropTable("courses");
+  for (let tableName of ["users", "courses", "prefixes", "departments"]) {
+    await knex.schema.dropTable(tableName);
+  }
 };

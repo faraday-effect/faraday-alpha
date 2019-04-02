@@ -40,8 +40,12 @@
     "esdoc-node": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
     "jest": "^24.5.0",
+    "js-yaml": "^3.13.0",
     "knex-db-manager": "^0.5.0",
+    "knex-migrate": "^1.7.2",
+    "lodash": "^4.17.11",
     "node-fetch": "^2.3.0",
-    "pg-escape": "^0.2.0"
+    "pg-escape": "^0.2.0",
+    "toposort": "^2.0.2"
   }
 }

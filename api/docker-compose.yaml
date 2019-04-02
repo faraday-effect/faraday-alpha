@@ -5,8 +5,8 @@ services:
     image: postgres:11
     container_name: faraday-db
     environment:
-      POSTGRES_USER: faraday
-      POSTGRES_PASSWORD: password
       POSTGRES_DB: faraday
+      POSTGRES_USER: faraday
+      # POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"

@@ -1,0 +1,56 @@
+- name: users
+  columns:
+    - name: email
+      type: medium-string
+      options:
+        - not-null
+        - unique
+    - name: password
+      type: medium-string
+      options:
+        - not-null
+    - name: firstName
+      type: long-string
+      options:
+        - not-null
+    - name: lastName
+      type: long-string
+      options:
+        - not-null
+    - name: officePhone
+      type: medium-string
+    - name: mobilePhone
+      type: medium-string
+
+- name: courses
+  columns:
+    - name: number
+      type: medium-string
+      options:
+        - not-null
+    - name: title
+      type: long-string
+      options:
+        - not-null
+    - name: prefix_id
+      relation:
+        type: one-to-many
+        to: prefixes
+    - name: department_id
+      relation:
+        type: one-to-many
+        to: departments
+
+- name: departments
+  columns:
+    - name: name
+      type: long-string
+      options:
+        - not-null
+
+- name: prefixes
+  columns:
+    - name: name
+      type: medium-string
+      options:
+        - not-null
