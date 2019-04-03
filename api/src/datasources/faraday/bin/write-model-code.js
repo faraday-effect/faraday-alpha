@@ -1,7 +1,10 @@
+#!/usr/bin/env node
+
 const yaml = require("js-yaml");
 const fs = require("fs");
 const toposort = require("toposort");
 const _ = require("lodash");
+const prettier = require("prettier");
 
 function knexColumnType({ name, type }) {
   if (name.endsWith("_id")) {
@@ -12,7 +15,7 @@ function knexColumnType({ name, type }) {
   return type;
 }
 
-function knexColumnOptions({ options }) {
+function knexColumnOptions({ options, relation }) {
   let rtn = [];
 
   if (options) {
@@ -21,6 +24,14 @@ function knexColumnOptions({ options }) {
     }
     if (options.includes("unique")) {
       rtn.push("unique()");
+    }
+  }
+
+  if (relation) {
+    if (relation.type === "many-to-one") {
+      rtn.push(`references("${relation.to}.id")`);
+    } else {
+      throw new Error("Invalid relation type '${relation}'");
     }
   }
 
@@ -52,6 +63,10 @@ function findRelationships(table) {
   return refersTo;
 }
 
+function prettyOutput(code) {
+  console.log(prettier.format(code, { parser: "babel" }));
+}
+
 function convert(doc) {
   let tableInfo = {};
 
@@ -63,21 +78,25 @@ function convert(doc) {
     };
   }
 
+  const allTables = _.keys(tableInfo);
   const refersTo = _.flatten(_.map(tableInfo, info => info.relationships));
-  console.log(refersTo);
-  console.log(toposort(refersTo));
+  const dropOrder = toposort.array(allTables, refersTo);
+  const createOrder = [...dropOrder].reverse();
 
-  // console.log(`exports.up = async function(knex) {
-  //   ${doc.map().join("\n\n")}
-  //   };\n`);
-  //
-  // console.log(`exports.down = async function(knex) {
-  //   ${doc.map(table => knexDropTable(table)).join("\n")}
-  //   };`);
+  prettyOutput(
+    `exports.up = async function(knex) {
+    ${createOrder.map(tableName => tableInfo[tableName].createTable).join("\n")}
+    };\n`,
+    { parser: "babel" }
+  );
+
+  prettyOutput(`exports.down = async function(knex) {
+    ${dropOrder.map(tableName => tableInfo[tableName].dropTable).join("\n")}
+    };`);
 }
 
 try {
-  const doc = yaml.safeLoad(fs.readFileSync("./models.yaml", "utf-8"));
+  const doc = yaml.safeLoad(fs.readFileSync(process.argv[2], "utf-8"));
   convert(doc);
 } catch (err) {
   console.error("ERROR", err);

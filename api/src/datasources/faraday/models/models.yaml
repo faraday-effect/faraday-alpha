@@ -33,12 +33,16 @@
       options:
         - not-null
     - name: prefix_id
+      options:
+        - not-null
       relation:
-        type: one-to-many
+        type: many-to-one
         to: prefixes
     - name: department_id
+      options:
+        - not-null
       relation:
-        type: one-to-many
+        type: many-to-one
         to: departments
 
 - name: departments
@@ -50,7 +54,7 @@
 
 - name: prefixes
   columns:
-    - name: name
+    - name: value
       type: medium-string
       options:
         - not-null
