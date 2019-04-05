@@ -9,8 +9,15 @@ class {{modelName}} extends Model {
     return "{{tableName}}";
   }
 
+  {{#if relationMappings}}
   static get relationMappings() {
+    {{{relatedModels}}}
+
+    return {
+      {{{relationMappings}}}
+    }
   }
+  {{/if}}
 
   static get jsonSchema() {
     return {

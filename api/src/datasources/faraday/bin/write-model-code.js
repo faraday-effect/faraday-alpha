@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
-const yaml = require("js-yaml");
+const debug = require("debug")("model-code");
+
 const fs = require("fs");
 const path = require("path");
-const toposort = require("toposort");
+
 const _ = require("lodash");
+const yaml = require("js-yaml");
+const toposort = require("toposort");
 const prettier = require("prettier");
 const { capitalize, pluralize, singularize } = require("inflection");
 const Handlebars = require("handlebars");
@@ -30,14 +33,16 @@ class Column {
   asKnexDecl() {
     const segments = ["table"];
 
-    // Type
+    // Type and name
+    let type = null;
     if (this.name.endsWith("_id")) {
-      segments.push("integer");
-    } else if (name.type.endsWith("-string")) {
-      segments.push("string");
+      type = "integer";
+    } else if (this.type.endsWith("-string")) {
+      type = "string";
     } else {
-      segments.push(this.type);
+      type = this.type;
     }
+    segments.push(`${type}("${this.name}")`);
 
     // Options
     for (let option of this.options) {
@@ -58,16 +63,61 @@ class Table {
   constructor(entity) {
     this.name = entity.name;
     this.columns = _.map(entity.columns, col => new Column(col));
-    this.relatedTables = [];
+    this.relatedTableNames = [];
+    this.importedModelNames = [];
+    this.relationMappings = [];
   }
 
-  addColumn(col) {
-    this.columns.push(col);
+  addRelatedTable(tableName, fkCol) {
+    this.relatedTableNames.push(tableName);
+    this.columns.push(fkCol);
+  }
+
+  addRelationMapping(tableName, mapping) {
+    this.importedModelNames.push(tableName);
+    this.relationMappings.push(mapping);
+  }
+
+  requiredColumnNamesQuoted() {
+    return _.map(
+      _.filter(this.columns, column => column.options.includes("required")),
+      col => `"${col.name}"`
+    );
+  }
+
+  // EG: column type "long-string" in YAML becomes LONG_STRING.
+  applyValidators() {
+    const validators = new Set();
+
+    for (let column of this.columns) {
+      let validator = null;
+
+      if (column.name.endsWith("_id")) {
+        validator = "ID";
+      } else if (column.type.match(/-string$/)) {
+        validator = column.type.toUpperCase().replace("-", "_");
+      }
+      column.type = validator;
+      validators.add(validator);
+    }
+
+    return Array.from(validators);
+  }
+
+  relatedModelImports() {
+    return _.map(this.importedModelNames, tableName => {
+      const modelName = capitalize(singularize(tableName));
+      return `const ${modelName} = require("./${modelName}");`;
+    }).join("\n");
   }
 
   asKnexCreateTable() {
+    const deps = this.relatedTableNames.length
+      ? `\n// Dependencies: ${this.relatedTableNames.join(", ")}`
+      : "";
+
     return `
-    // Dependencies: ${this.relatedTables.join(", ")}
+    ${deps}
     await knex.schema.createTable("${this.name}", table => {
     table.increments();
     ${this.columns.map(column => column.asKnexDecl()).join("\n")}
@@ -76,6 +126,22 @@ class Table {
 
   asKnexDropTable() {
     return `await knex.schema.dropTable("${this.name}");`;
+  }
+
+  asObjectionModel() {
+    return modelTemplate({
+      tableName: this.name,
+      modelName: capitalize(singularize(this.name)),
+      relatedModels: this.relatedModelImports(),
+      relationMappings: this.relationMappings,
+      requiredProperties: this.requiredColumnNamesQuoted(),
+      validators: this.applyValidators()
+        .sort()
+        .join(","),
+      properties: _.map(this.columns, col => `${col.name}: ${col.type}`).join(
+        ","
+      )
+    });
   }
 }
 
@@ -94,44 +160,54 @@ class Tables {
   findTable(name) {
     return this.tableByName[name];
   }
+
+  asKnexMigration() {
+    // Nodes are table names, edges are table dependencies.
+    const allNodes = _.keys(this.tableByName);
+    const allEdges = _.reduce(
+      _.map(this.tableByName, table =>
+        _.map(table.relatedTableNames, related => [table.name, related])
+      ),
+      (accumulator, more) => accumulator.concat(more),
+      []
+    );
+
+    const dropOrder = toposort.array(allNodes, allEdges);
+    const createOrder = [...dropOrder].reverse();
+
+    debug("NAMES %O", allNodes);
+    debug("EDGES %O", allEdges);
+    debug("DROP %O", dropOrder);
+    debug("CREATE %O", createOrder);
+
+    const upMethod = `exports.up = async function(knex) {
+      // Create partial order: ${createOrder.join(", ")}
+      ${createOrder
+        .map(tableName => this.tableByName[tableName].asKnexCreateTable())
+        .join("\n")}
+      };\n`;
+
+    const downMethod = `exports.down = async function(knex) {
+      ${dropOrder
+        .map(tableName => this.tableByName[tableName].asKnexDropTable())
+        .join("\n")}
+      };`;
+
+    return [upMethod, downMethod].join("\n");
+  }
+
+  asObjectionModels() {
+    return _.map(_.values(this.tableByName), table =>
+      table.asObjectionModel()
+    ).join("\n");
+  }
 }
 
+// Poor man's static properties alternative.
 const AllTables = new Tables();
 Object.freeze(AllTables);
 
 // ---- Relationships
-
-// const relationships = {};
-// const tableDependsOn = [];
-//
-// function addRelationship(tableName, details) {
-//   if (tableName in relationships === false) {
-//     relationships[tableName] = [];
-//   }
-//   relationships[tableName].push(details);
-//
-//   if (details.relatedTable) {
-//     tableDependsOn.push([tableName, details.relatedTable]);
-//   }
-// }
-//
-// const haveRelatedTable = table =>
-//   table.name in relationships && relationships[table.name].relatedTable;
-//
-// const getRelations = table =>
-//   table.name in relationships ? relationships[table.name] : [];
-//
-// function printRelationships() {
-//   _.forEach(relationships, (details, tableName) =>
-//     _.forEach(details, d =>
-//       console.log(
-//         `[${tableName}] ${d.relatedTable} ${d.foreignKey} ${d.required}\n${
-//           d.relation
-//         }`
-//       )
-//     )
-//   );
-// }
 
 class OneToManyRelationship {
   constructor(rel) {
@@ -159,7 +235,8 @@ class OneToManyRelationship {
     }
     options.push(`references("${this.onePK}")`);
 
-    AllTables.findTable(this.manyTable).addColumn(
+    AllTables.findTable(this.manyTable).addRelatedTable(
+      this.oneTable,
       new Column({
         name: this.manyFK,
         type: "integer",
@@ -168,234 +245,59 @@ class OneToManyRelationship {
     );
   }
 
-  asModelManySide() {
-    belongsToOneTemplate({
-      relName: this.manyRel,
-      modelClass: this.oneModel,
-      fromCol: `${this.manyTable}.${this.manyFK}`,
-      toCol: this.onePK
-    });
-  }
+  injectObjectionRelationMappings() {
+    AllTables.findTable(this.manyTable).addRelationMapping(
+      this.oneTable,
+      belongsToOneTemplate({
+        relName: this.manyRel,
+        modelClass: this.oneModel,
+        fromCol: `${this.manyTable}.${this.manyFK}`,
+        toCol: this.onePK
+      })
+    );
 
-  asModelOneSide() {
-    hasManyTemplate({
-      relName: this.oneRel,
-      modelClass: this.manyModel,
-      fromCol: `${this.manyTable}.${this.manyFK}`,
-      toCol: `${this.oneTable}.id`
-    });
+    AllTables.findTable(this.oneTable).addRelationMapping(
+      this.manyTable,
+      hasManyTemplate({
+        relName: this.oneRel,
+        modelClass: this.manyModel,
+        fromCol: `${this.manyTable}.${this.manyFK}`,
+        toCol: `${this.oneTable}.id`
+      })
+    );
   }
 }
 
 class Relationships {
   constructor(relationships) {
-    this.relationships = relationships;
+    const all = [];
 
-    for (let rel of this.relationships) {
+    for (let rel of relationships) {
+      all.push(rel);
       switch (rel.type) {
         case "one-to-many":
           {
             const relObj = new OneToManyRelationship(rel);
             relObj.injectKnexForeignKey();
+            relObj.injectObjectionRelationMappings();
           }
           break;
+
+        case "many-to-many":
+          throw new Error("Implement me");
 
         default:
           throw new Error("Invalid relationship type: '${rel.type}'");
       }
     }
+
+    return all;
   }
 }
-
-// function buildRelationships(doc) {
-//   for (let rel of doc.relationships) {
-//     switch (rel.type) {
-//       case "one-to-many":
-//         {
-//           // The "one" side (e.g., "one department")
-//           const oneTable = pluralize(rel.one);
-//           const oneModel = capitalize(rel.one);
-//           const oneRel = rel.many;
-//           const onePK = `${oneTable}.id`;
-//
-//           // The "many" side (e.g., "has many courses")
-//           const manyTable = rel.many;
-//           const manyModel = capitalize(singularize(rel.many));
-//           const manyRel = rel.one;
-//           const manyFK = `${rel.one}_id`;
-//
-//           // Source model is "many" side (e.g., courses).
-//           addRelationship(manyTable, {
-//             relatedTable: {
-//               name: oneTable,
-//               primaryKey: onePK,
-//               foreignKey: manyFK,
-//               required: !!(rel.options && rel.options.includes("required"))
-//             },
-//             relation: belongsToOneTemplate({
-//               relName: manyRel,
-//               modelClass: oneModel,
-//               fromCol: `${manyTable}.${manyFK}`,
-//               toCol: onePK
-//             })
-//           });
-//
-//           // Source model is "one" side (e.g., department)
-//           addRelationship(oneTable, {
-//             relatedTable: null,
-//             relation: hasManyTemplate({
-//               relName: oneRel,
-//               modelClass: manyModel,
-//               fromCol: `${manyTable}.${manyFK}`,
-//               toCol: `${oneTable}.id`
-//             })
-//           });
-//         }
-//         break;
-//
-//       case "many-to-many":
-//         break;
-//
-//       default:
-//         throw new Error("Invalid relationship type: '${rel.type}'");
-//     }
-//   }
-//
-//   // printRelationships();
-// }
-
-// ---- Knex
-
-// function injectRelationColumns(table) {
-//   _.forEach(getRelations(table), details => {
-//     const options = [];
-//     const relatedTable = details.relatedTable;
-//
-//     if (relatedTable) {
-//       if (relatedTable.required) {
-//         options.push("required");
-//       }
-//
-//       options.push(`references("${relatedTable.foreignKey}")`);
-//
-//       table.columns.push({
-//         name: details.relatedTable.foreignKey,
-//         type: "integer",
-//         options
-//       });
-//     }
-//   });
-// }
 
 function prettyOutput(code) {
+  // debug("RAW CODE %s", code);
   console.log(prettier.format(code, { parser: "babel" }));
-}
-
-function outputKnexSchema(doc) {
-  let tableInfo = {};
-
-  for (let table of doc.entities) {
-    injectRelationColumns(table);
-    tableInfo[table.name] = {
-      createTable: knexCreateTable(table),
-      dropTable: knexDropTable(table)
-    };
-  }
-
-  const allTables = _.keys(tableInfo);
-  const dropOrder = toposort.array(allTables, tableDependsOn);
-  const createOrder = [...dropOrder].reverse();
-
-  prettyOutput(
-    `exports.up = async function(knex) {
-    // Create order: ${createOrder.join(", ")}
-    ${createOrder.map(tableName => tableInfo[tableName].createTable).join("\n")}
-    };\n`
-  );
-
-  prettyOutput(`exports.down = async function(knex) {
-    ${dropOrder.map(tableName => tableInfo[tableName].dropTable).join("\n")}
-    };`);
-}
-
-// ---- Objection Models
-
-function findRelationMappings(table) {
-  const mappings = {};
-  for (let column of table.columns) {
-    if ("relation" in column) {
-      mappings[column.name] = column;
-    }
-  }
-  return mappings;
-}
-
-function modelName(table) {
-  return capitalize(singularize(table.name));
-}
-
-function findRequiredColumns(table) {
-  return _.map(
-    _.filter(
-      table.columns,
-      col => col.options && col.options.includes("required")
-    ),
-    col => col.name
-  );
-}
-
-function mapColumnTypes(table) {
-  const validators = new Set();
-
-  for (let column of table.columns) {
-    let validator = null;
-
-    if (column.name.endsWith("_id")) {
-      validator = "ID";
-      column.type = validator;
-    } else if (column.type.match(/-string$/)) {
-      validator = column.type.toUpperCase().replace("-", "_");
-      column.type = validator;
-    }
-
-    validators.add(validator);
-  }
-
-  return Array.from(validators);
-}
-
-const schemaProperties = columns =>
-  _.map(columns, col => `${col.name}: ${col.type}`).join(",");
-
-const quoteAndJoin = values => _.map(values, prop => `"${prop}"`).join(", ");
-
-function outputObjectionModels(doc) {
-  let tableInfo = {};
-
-  for (let table of doc.entities) {
-    tableInfo[table.name] = {
-      tableName: table.name,
-      modelName: modelName(table),
-      relations: findRelationMappings(table),
-      required: findRequiredColumns(table),
-      validators: mapColumnTypes(table),
-      properties: schemaProperties(table.columns)
-    };
-  }
-
-  _.forEach(tableInfo, info => {
-    console.log("TABLE INFO", JSON.stringify(info, null, 2));
-    prettyOutput(
-      modelTemplate({
-        tableName: info.tableName,
-        modelName: info.modelName,
-        relations: info.relations,
-        requiredProperties: quoteAndJoin(info.required),
-        validators: info.validators.sort().join(", "),
-        properties: info.properties
-      })
-    );
-  });
 }
 
 try {
@@ -404,11 +306,11 @@ try {
   _.forEach(doc.entities, entity => AllTables.addTable(new Table(entity)));
   const relationships = new Relationships(doc.relationships);
 
-  console.log(JSON.stringify(relationships, null, 2));
-  console.log(JSON.stringify(AllTables, null, 2));
+  debug("ENTITIES %O", AllTables);
+  debug("RELATIONSHIPS %O", relationships);
 
-  // outputKnexSchema(doc);
-  // outputObjectionModels(doc);
+  prettyOutput(AllTables.asKnexMigration());
+  prettyOutput(AllTables.asObjectionModels());
 } catch (err) {
   console.error("ERROR", err);
 }
