@@ -18,174 +18,274 @@ const modelTemplate = readTemplate("./model-template.js.hbs");
 const belongsToOneTemplate = readTemplate("./belongs-to-one.js.hbs");
 const hasManyTemplate = readTemplate("./has-many.js.hbs");
 
+// ---- Entities
+
+class Column {
+  constructor(column) {
+    this.name = column.name;
+    this.type = column.type;
+    this.options = column.options || [];
+  }
+
+  asKnexDecl() {
+    const segments = ["table"];
+
+    // Type
+    if (this.name.endsWith("_id")) {
+      segments.push("integer");
+    } else if (name.type.endsWith("-string")) {
+      segments.push("string");
+    } else {
+      segments.push(this.type);
+    }
+
+    // Options
+    for (let option of this.options) {
+      if (option === "required") {
+        segments.push("notNullable()");
+      } else if (option === "unique") {
+        segments.push("unique()");
+      } else {
+        segments.push(option);
+      }
+    }
+
+    return segments.join(".") + ";";
+  }
+}
+
+class Table {
+  constructor(entity) {
+    this.name = entity.name;
+    this.columns = _.map(entity.columns, col => new Column(col));
+    this.relatedTables = [];
+  }
+
+  addColumn(col) {
+    this.columns.push(col);
+  }
+
+  asKnexCreateTable() {
+    return `
+    // Dependencies: ${this.relatedTables.join(", ")}
+    await knex.schema.createTable("${this.name}", table => {
+    table.increments();
+    ${this.columns.map(column => column.asKnexDecl()).join("\n")}
+    });`;
+  }
+
+  asKnexDropTable() {
+    return `await knex.schema.dropTable("${this.name}");`;
+  }
+}
+
+class Tables {
+  constructor() {
+    this.tableByName = {};
+  }
+
+  addTable(table) {
+    if (table.name in this.tableByName) {
+      throw new Error("Duplicate table: '${table.name}'");
+    }
+    this.tableByName[table.name] = table;
+  }
+
+  findTable(name) {
+    return this.tableByName[name];
+  }
+}
+
+const AllTables = new Tables();
+Object.freeze(AllTables);
+
 // ---- Relationships
 
-// if (createOrder.length) {
-//   console.log("// Dependencies:");
-//   _.map(tableInfo, (info, name) => {
-//     if (info.relationships.length) {
+// const relationships = {};
+// const tableDependsOn = [];
+//
+// function addRelationship(tableName, details) {
+//   if (tableName in relationships === false) {
+//     relationships[tableName] = [];
+//   }
+//   relationships[tableName].push(details);
+//
+//   if (details.relatedTable) {
+//     tableDependsOn.push([tableName, details.relatedTable]);
+//   }
+// }
+//
+// const haveRelatedTable = table =>
+//   table.name in relationships && relationships[table.name].relatedTable;
+//
+// const getRelations = table =>
+//   table.name in relationships ? relationships[table.name] : [];
+//
+// function printRelationships() {
+//   _.forEach(relationships, (details, tableName) =>
+//     _.forEach(details, d =>
 //       console.log(
-//         `//   ${name} => ${_.map(info.relationships, entry => entry[1]).join(
-//           ", "
-//         )}`
-//       );
-//     }
-//   });
-//   console.log(`// Create order: ${createOrder.join(", ")}`);
+//         `[${tableName}] ${d.relatedTable} ${d.foreignKey} ${d.required}\n${
+//           d.relation
+//         }`
+//       )
+//     )
+//   );
 // }
 
-const relationships = {};
-const tableDependsOn = [];
+class OneToManyRelationship {
+  constructor(rel) {
+    // The "one" side (e.g., "one department")
+    this.oneTable = pluralize(rel.one);
+    this.oneModel = capitalize(rel.one);
+    this.oneRel = rel.many;
+    this.onePK = `${this.oneTable}.id`;
 
-function addRelationship(tableName, details) {
-  if (tableName in relationships === false) {
-    relationships[tableName] = [];
+    // The "many" side (e.g., "has many courses")
+    this.manyTable = rel.many;
+    this.manyModel = capitalize(singularize(rel.many));
+    this.manyRel = rel.one;
+    this.manyFK = `${rel.one}_id`;
+
+    // Other
+    this.required = !!(rel.options && rel.options.includes("required"));
   }
-  relationships[tableName].push(details);
 
-  if (details.relatedTable) {
-    tableDependsOn.push([tableName, details.relatedTable]);
-  }
-}
+  injectKnexForeignKey() {
+    const options = [];
 
-const getRelations = table =>
-  table.name in relationships ? relationships[table.name] : [];
-
-function printRelationships() {
-  _.forEach(relationships, (details, tableName) =>
-    _.forEach(details, d =>
-      console.log(
-        `[${tableName}] ${d.relatedTable} ${d.foreignKey} ${d.required}\n${
-          d.relation
-        }`
-      )
-    )
-  );
-}
-
-function buildRelationships(doc) {
-  for (let rel of doc.relationships) {
-    switch (rel.type) {
-      case "one-to-many":
-        {
-          // The "one" side (e.g., "one department")
-          const oneTable = pluralize(rel.one);
-          const oneModel = capitalize(rel.one);
-          const oneRel = rel.many;
-          const onePK = `${oneTable}.id`;
-
-          // The "many" side (e.g., "has many courses")
-          const manyTable = rel.many;
-          const manyModel = capitalize(singularize(rel.many));
-          const manyRel = rel.one;
-          const manyFK = `${rel.one}_id`;
-
-          // Source model is "many" side (e.g., courses).
-          addRelationship(manyTable, {
-            relatedTable: oneTable,
-            foreignKey: manyFK,
-            referenced: onePK,
-            required: !!(rel.options && rel.options.includes("required")),
-            relation: belongsToOneTemplate({
-              relName: manyRel,
-              modelClass: oneModel,
-              fromCol: `${manyTable}.${manyFK}`,
-              toCol: onePK
-            })
-          });
-
-          // Source model is "one" side (e.g., department)
-          addRelationship(oneTable, {
-            relatedTable: null,
-            foreignKey: null,
-            referenced: null,
-            required: false,
-            relation: hasManyTemplate({
-              relName: oneRel,
-              modelClass: manyModel,
-              fromCol: `${manyTable}.${manyFK}`,
-              toCol: `${oneTable}.id`
-            })
-          });
-        }
-        break;
-
-      case "many-to-many":
-        break;
-
-      default:
-        throw new Error("Invalid relationship type: '${rel.type}'");
+    if (this.required) {
+      options.push("required");
     }
+    options.push(`references("${this.onePK}")`);
+
+    AllTables.findTable(this.manyTable).addColumn(
+      new Column({
+        name: this.manyFK,
+        type: "integer",
+        options
+      })
+    );
   }
 
-  printRelationships();
-}
-
-// ---- Knex
-
-function knexColumnType({ name, type }) {
-  if (name.endsWith("_id")) {
-    return "integer";
-  } else if (type.endsWith("-string")) {
-    return "string";
+  asModelManySide() {
+    belongsToOneTemplate({
+      relName: this.manyRel,
+      modelClass: this.oneModel,
+      fromCol: `${this.manyTable}.${this.manyFK}`,
+      toCol: this.onePK
+    });
   }
-  return type;
+
+  asModelOneSide() {
+    hasManyTemplate({
+      relName: this.oneRel,
+      modelClass: this.manyModel,
+      fromCol: `${this.manyTable}.${this.manyFK}`,
+      toCol: `${this.oneTable}.id`
+    });
+  }
 }
 
-function knexColumnOptions({ options }) {
-  let rtn = [];
+class Relationships {
+  constructor(relationships) {
+    this.relationships = relationships;
 
-  if (options) {
-    for (let option of options) {
-      if (option === "required") {
-        rtn.push("notNullable()");
-      } else if (option === "unique") {
-        rtn.push("unique()");
-      } else {
-        rtn.push(option);
+    for (let rel of this.relationships) {
+      switch (rel.type) {
+        case "one-to-many":
+          {
+            const relObj = new OneToManyRelationship(rel);
+            relObj.injectKnexForeignKey();
+          }
+          break;
+
+        default:
+          throw new Error("Invalid relationship type: '${rel.type}'");
       }
     }
   }
-
-  return rtn;
 }
 
-const knexColumn = column =>
-  [
-    "table",
-    `${knexColumnType(column)}("${column.name}")`,
-    ...knexColumnOptions(column)
-  ].join(".") + ";";
+// function buildRelationships(doc) {
+//   for (let rel of doc.relationships) {
+//     switch (rel.type) {
+//       case "one-to-many":
+//         {
+//           // The "one" side (e.g., "one department")
+//           const oneTable = pluralize(rel.one);
+//           const oneModel = capitalize(rel.one);
+//           const oneRel = rel.many;
+//           const onePK = `${oneTable}.id`;
+//
+//           // The "many" side (e.g., "has many courses")
+//           const manyTable = rel.many;
+//           const manyModel = capitalize(singularize(rel.many));
+//           const manyRel = rel.one;
+//           const manyFK = `${rel.one}_id`;
+//
+//           // Source model is "many" side (e.g., courses).
+//           addRelationship(manyTable, {
+//             relatedTable: {
+//               name: oneTable,
+//               primaryKey: onePK,
+//               foreignKey: manyFK,
+//               required: !!(rel.options && rel.options.includes("required"))
+//             },
+//             relation: belongsToOneTemplate({
+//               relName: manyRel,
+//               modelClass: oneModel,
+//               fromCol: `${manyTable}.${manyFK}`,
+//               toCol: onePK
+//             })
+//           });
+//
+//           // Source model is "one" side (e.g., department)
+//           addRelationship(oneTable, {
+//             relatedTable: null,
+//             relation: hasManyTemplate({
+//               relName: oneRel,
+//               modelClass: manyModel,
+//               fromCol: `${manyTable}.${manyFK}`,
+//               toCol: `${oneTable}.id`
+//             })
+//           });
+//         }
+//         break;
+//
+//       case "many-to-many":
+//         break;
+//
+//       default:
+//         throw new Error("Invalid relationship type: '${rel.type}'");
+//     }
+//   }
+//
+//   // printRelationships();
+// }
 
-function injectRelationColumns(table) {
-  _.forEach(getRelations(table), details => {
-    const options = [];
+// ---- Knex
 
-    if (details.required) {
-      options.push("required");
-    }
-
-    if (details.referenced) {
-      options.push(`references("${details.referenced}")`);
-    }
-
-    if (details.foreignKey) {
-      table.columns.push({
-        name: details.foreignKey,
-        type: "integer",
-        options
-      });
-    }
-  });
-}
-
-const knexCreateTable = table =>
-  `await knex.schema.createTable("${table.name}", table => {
-    table.increments();
-    ${table.columns.map(column => knexColumn(column)).join("\n")}
-  });`;
-
-const knexDropTable = table => `await knex.schema.dropTable("${table.name}");`;
+// function injectRelationColumns(table) {
+//   _.forEach(getRelations(table), details => {
+//     const options = [];
+//     const relatedTable = details.relatedTable;
+//
+//     if (relatedTable) {
+//       if (relatedTable.required) {
+//         options.push("required");
+//       }
+//
+//       options.push(`references("${relatedTable.foreignKey}")`);
+//
+//       table.columns.push({
+//         name: details.relatedTable.foreignKey,
+//         type: "integer",
+//         options
+//       });
+//     }
+//   });
+// }
 
 function prettyOutput(code) {
   console.log(prettier.format(code, { parser: "babel" }));
@@ -208,6 +308,7 @@ function outputKnexSchema(doc) {
 
   prettyOutput(
     `exports.up = async function(knex) {
+    // Create order: ${createOrder.join(", ")}
     ${createOrder.map(tableName => tableInfo[tableName].createTable).join("\n")}
     };\n`
   );
@@ -299,9 +400,15 @@ function outputObjectionModels(doc) {
 
 try {
   const doc = yaml.safeLoad(fs.readFileSync(process.argv[2], "utf-8"));
-  buildRelationships(doc);
-  outputKnexSchema(doc);
-  outputObjectionModels(doc);
+
+  _.forEach(doc.entities, entity => AllTables.addTable(new Table(entity)));
+  const relationships = new Relationships(doc.relationships);
+
+  console.log(JSON.stringify(relationships, null, 2));
+  console.log(JSON.stringify(AllTables, null, 2));
+
+  // outputKnexSchema(doc);
+  // outputObjectionModels(doc);
 } catch (err) {
   console.error("ERROR", err);
 }
