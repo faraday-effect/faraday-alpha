@@ -40,4 +40,3 @@ exports.down = async function(knex) {
   await knex.schema.dropTable("departments");
   await knex.schema.dropTable("prefixes");
 };
-

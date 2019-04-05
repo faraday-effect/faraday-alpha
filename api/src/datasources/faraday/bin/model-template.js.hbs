@@ -1,0 +1,28 @@
+// {{modelName}}
+
+const { Model } = require("objection");
+
+const { {{{validators}}} } = require("./validators");
+
+class {{modelName}} extends Model {
+  static get tableName() {
+    return "{{tableName}}";
+  }
+
+  static get relationMappings() {
+  }
+
+  static get jsonSchema() {
+    return {
+      type: "object",
+      properties: {
+        {{properties}}
+      },
+      required: [{{{requiredProperties}}}],
+      additionalProperties: false
+    };
+  }
+
+}
+
+model.exports = {{modelName}};
