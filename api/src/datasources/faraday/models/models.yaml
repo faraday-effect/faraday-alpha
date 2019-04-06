@@ -48,7 +48,62 @@ entities:
         options:
           - required
 
+  - name: sections
+    columns:
+      - name: title
+        type: medium-string
+        options:
+          - required
+      - name: regNumber
+        type: medium-string
+      - name: creditHours
+        type: integer
+        options:
+          - required
+
+  - name: terms
+    columns:
+      - name: name
+        type: medium-string
+        options:
+          - required
+      - name: startDate
+        type: date
+        options:
+          - required
+      - name: endDate
+        type: date
+        options:
+          - required
+
+  - name: holidays
+    columns:
+      - name: title
+        type: medium-string
+        options:
+          - required
+      - name: startDate
+        type: date
+        options:
+          - required
+      - name: endDate
+        type: date
+        options:
+          - required
+
 relationships:
+  - type: one-to-many
+    one: term
+    many: holidays
+    options:
+      - required
+
+  - type: one-to-many
+    one: term
+    many: sections
+    options:
+      - required
+
   - type: one-to-many
     one: prefix
     many: courses
@@ -58,6 +113,12 @@ relationships:
   - type: one-to-many
     one: department
     many: courses
+    options:
+      - required
+
+  - type: one-to-many
+    one: course
+    many: sections
     options:
       - required
 

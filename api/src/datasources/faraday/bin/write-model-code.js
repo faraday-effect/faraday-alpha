@@ -11,6 +11,7 @@ const toposort = require("toposort");
 const prettier = require("prettier");
 const { capitalize, pluralize, singularize } = require("inflection");
 const Handlebars = require("handlebars");
+const Ajv = require("ajv");
 
 // ---- Handlebars templates
 
@@ -20,6 +21,10 @@ const readTemplate = template =>
 const modelTemplate = readTemplate("./model-template.js.hbs");
 const belongsToOneTemplate = readTemplate("./belongs-to-one.js.hbs");
 const hasManyTemplate = readTemplate("./has-many.js.hbs");
+
+// ---- Handy functions
+
+const isSingular = word => singularize(word) === word;
 
 // ---- Entities
 
@@ -61,6 +66,10 @@ class Column {
 
 class Table {
   constructor(entity) {
+    if (isSingular(entity.name)) {
+      throw new Error(`Table name "${entity.name}" should be plural`);
+    }
+
     this.name = entity.name;
     this.columns = _.map(entity.columns, col => new Column(col));
     this.relatedTableNames = [];
@@ -303,10 +312,22 @@ function prettyOutput(code) {
 try {
   const doc = yaml.safeLoad(fs.readFileSync(process.argv[2], "utf-8"));
 
-  _.forEach(doc.entities, entity => AllTables.addTable(new Table(entity)));
-  const relationships = new Relationships(doc.relationships);
+  const ajv = new Ajv();
+  const schema = yaml.safeLoad(
+    fs.readFileSync(path.join(__dirname, "model-schema.yaml"))
+  );
+  debug("SCHEMA %O", schema);
 
+  const validate = ajv.compile(schema);
+  if (!validate(doc)) {
+    console.log("INVALID FILE", JSON.stringify(validate.errors, null, 2));
+    process.exit(1);
+  }
+
+  _.forEach(doc.entities, entity => AllTables.addTable(new Table(entity)));
   debug("ENTITIES %O", AllTables);
+
+  const relationships = new Relationships(doc.relationships);
   debug("RELATIONSHIPS %O", relationships);
 
   prettyOutput(AllTables.asKnexMigration());
