@@ -14,9 +14,10 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.16.3",
     "morgan": "^1.9.1",
-    "nodemon": "^1.18.10",
+    "nodemon": "^1.18.11",
     "objection": "^1.6.4",
-    "pg": "^7.9.0"
+    "pg": "^7.9.0",
+    "typescript": "^3.4.2"
   },
   "scripts": {
     "json-server": "json-server quiz-data.json",
@@ -25,9 +26,19 @@
     "test": "jest --watch",
     "test:cov": "jest --coverage",
     "one-true-test": "concurrently --kill-others --success=first \"node src/index.js\" jest",
-    "docs": "esdoc"
+    "docs": "esdoc",
+    "build-ts": "tsc",
+    "watch-ts": "tsc --watch"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.3",
+    "@types/inflection": "^1.5.28",
+    "@types/js-yaml": "^3.12.1",
+    "@types/lodash": "^4.14.123",
+    "@types/prettier": "^1.16.1",
+    "@types/yargs": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-link": "^1.2.11",
@@ -41,6 +52,9 @@
     "esdoc": "^1.1.0",
     "esdoc-node": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "handlebars": "^4.1.1",
     "inflection": "^1.12.0",
     "jest": "^24.5.0",
@@ -52,6 +66,7 @@
     "pg-escape": "^0.2.0",
     "prettier": "^1.16.4",
     "toposort": "^2.0.2",
+    "ts-node": "^8.0.3",
     "yargs": "^13.2.2"
   }
 }

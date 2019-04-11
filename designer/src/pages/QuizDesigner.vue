@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     isType: function(type) {
-      return this.quiz.type && this.quiz.type.value === type;
+      return this.quiz.type && this.quiz.type.validator === type;
     },
     submitMe() {
       this.$v.$touch();

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "lib": ["ES2017"],
+    "sourceMap": true,
+    "outDir": "./bin",
+    "moduleResolution": "node",
+    "baseUrl": "./"
+  },
+  "include": ["./tools/*.ts"]
+}
