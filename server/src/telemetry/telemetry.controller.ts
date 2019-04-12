@@ -1,12 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { arch, platform, release, hostname } from 'os';
+import { Controller, Get } from "@nestjs/common";
+import { arch, platform, release, hostname } from "os";
 
-@Controller('telemetry')
+@Controller("telemetry")
 export class TelemetryController {
-  @Get('ping')
+  @Get("ping")
   ping() {
     return {
-      ping: 'pong',
+      ping: "pong",
       time: new Date(),
       hostname: hostname(),
       arch: arch(),

@@ -2,8 +2,9 @@
 node_modules
 
 .idea
-.vscode
 
+
+dist/
 coverage/
 
 foo-*
