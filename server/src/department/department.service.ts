@@ -7,15 +7,15 @@ import { Repository } from "typeorm";
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
-    private readonly departmentRepository: Repository<Department>
+    private readonly repo: Repository<Department>
   ) {}
 
   async findAll(): Promise<Department[]> {
-    return await this.departmentRepository.find();
+    return await this.repo.find();
   }
 
   async addDepartment(name: string): Promise<Department> {
-    const newDepartment = await this.departmentRepository.create({ name });
-    return await this.departmentRepository.save(newDepartment);
+    const newDepartment = this.repo.create({ name });
+    return await this.repo.save(newDepartment);
   }
 }
