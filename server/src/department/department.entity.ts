@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { StringLength } from "src/enum/rdbms.enum";
+import { StringLength } from "../enum/string-length.enum";
 
 @Entity()
 export class Department {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: StringLength.SHORT })
-  value: string;
+  @Column({ length: StringLength.LONG })
+  name: string;
 }

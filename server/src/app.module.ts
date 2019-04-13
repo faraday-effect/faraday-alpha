@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TelemetryModule } from './telemetry/telemetry.module';
-import { RelationalDataModule } from './relational-data/relational-data.module';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { TelemetryModule } from "./telemetry/telemetry.module";
+import { DepartmentModule } from "./department/department.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
-  imports: [TelemetryModule, RelationalDataModule],
+  imports: [TypeOrmModule.forRoot(), TelemetryModule, DepartmentModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}

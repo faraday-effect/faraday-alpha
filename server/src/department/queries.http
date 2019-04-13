@@ -1,0 +1,10 @@
+GET http://localhost:3000/telemetry/ping
+###
+GET http://localhost:3000/departments
+###
+POST http://localhost:3000/departments
+Content-Type: application/json
+
+{
+    "name": "Computer Science & Engineering"
+}
