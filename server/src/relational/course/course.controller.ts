@@ -13,7 +13,7 @@ export class CourseController {
   }
 
   @Get()
-  findAll(): Promise<CourseEntity[]> {
-    return this.courseService.findAll();
+  readAll(): Promise<CourseEntity[]> {
+    return this.courseService.readAll();
   }
 }

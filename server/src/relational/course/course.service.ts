@@ -24,7 +24,7 @@ export class CourseService {
     return await this.courseRepo.save(newCourse);
   }
 
-  async findAll(): Promise<CourseEntity[]> {
+  async readAll(): Promise<CourseEntity[]> {
     return await this.courseRepo.find();
   }
 }
