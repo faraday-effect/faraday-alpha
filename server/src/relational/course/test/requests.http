@@ -5,5 +5,6 @@ Content-Type: application/json
 
 {
     "number": "COS243",
-    "title": "Multi-tier Web Application Development"
+    "title": "Multi-tier Web Application Development",
+    "departmentId": 1
 }
