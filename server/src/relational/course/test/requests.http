@@ -1,0 +1,9 @@
+GET http://localhost:3000/courses
+###
+POST http://localhost:3000/courses
+Content-Type: application/json
+
+{
+    "number": "COS243",
+    "title": "Multi-tier Web Application Development"
+}

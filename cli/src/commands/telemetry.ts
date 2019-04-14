@@ -27,7 +27,7 @@ export default class Telemetry extends Command {
         return index === 0 || index === 1 || index === size;
       }
     };
-    console.log(figlet.textSync('microFarady'));
+    console.log(figlet.textSync('microFaraday'));
     console.log(table(data, options));
   }
 }
