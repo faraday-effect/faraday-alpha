@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body } from "@nestjs/common";
 import { CourseService } from "./course.service";
-import { CourseEntity } from "./course.entity";
+import { Course } from "./course.entity";
 import { CreateCourseDto } from "./dto/create-course.dto";
 
 @Controller("courses")
@@ -13,7 +13,7 @@ export class CourseController {
   }
 
   @Get()
-  readAll(): Promise<CourseEntity[]> {
+  readAll(): Promise<Course[]> {
     return this.courseService.readAll();
   }
 }

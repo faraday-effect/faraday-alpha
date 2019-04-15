@@ -1,15 +1,20 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { CourseEntity } from "../course/course.entity";
+import { Course } from "../course/course.entity";
 import { StringLength } from "../enum/string-length.enum";
+import { ObjectType, Field, Int } from "type-graphql";
 
 @Entity("departments")
-export class DepartmentEntity {
+@ObjectType()
+export class Department {
   @PrimaryGeneratedColumn()
+  @Field(type => Int)
   id: number;
 
   @Column({ length: StringLength.LONG })
+  @Field()
   name: string;
 
-  @OneToMany(type => CourseEntity, course => course.department)
-  courses: CourseEntity[];
+  @OneToMany(type => Course, course => course.department)
+  @Field(type => [Course])
+  courses: Course[];
 }
