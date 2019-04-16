@@ -17,6 +17,8 @@ describe("Telemetry Controller", () => {
   });
 
   it("should pong a ping", () => {
-    expect(controller.ping()).toHaveProperty("platform");
+    const response = controller.ping();
+    expect(response).toHaveProperty("ping", "pong");
+    expect(response).toHaveProperty("platform");
   });
 });

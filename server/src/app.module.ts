@@ -3,7 +3,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RelationalModule } from "./relational/relational.module";
 import { TelemetryModule } from "./telemetry/telemetry.module";
-import { WeatherModule } from './weather/weather.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { WeatherModule } from './weather/weather.module';
     }),
     TelemetryModule,
     RelationalModule,
-    WeatherModule
-  ]
+  ],
+  controllers: [AppController]
 })
 export class AppModule {}

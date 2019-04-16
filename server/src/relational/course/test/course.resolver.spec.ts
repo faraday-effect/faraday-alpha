@@ -1,20 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { CourseResolver } from "../course.resolver";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { Course } from "../../course/course.entity";
-import { CourseModule } from "../../course/course.module";
-import { CourseService } from "../../course/course.service";
-import { Department } from "../department.entity";
-import { DepartmentResolver } from "../department.resolver";
-import { DepartmentService } from "../department.service";
+import { Course } from "../course.entity";
+import { CourseService } from "../course.service";
+import { Department } from "../../department/department.entity";
 
-describe("DepartmentResolver", () => {
-  let resolver: DepartmentResolver;
+describe("CourseResolver", () => {
+  let resolver: CourseResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        DepartmentResolver,
-        DepartmentService,
+        CourseResolver,
         CourseService,
         {
           provide: getRepositoryToken(Course),
@@ -27,7 +24,7 @@ describe("DepartmentResolver", () => {
       ]
     }).compile();
 
-    resolver = module.get<DepartmentResolver>(DepartmentResolver);
+    resolver = module.get<CourseResolver>(CourseResolver);
   });
 
   it("should be defined", () => {

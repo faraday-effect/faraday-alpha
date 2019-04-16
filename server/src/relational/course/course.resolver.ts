@@ -1,6 +1,6 @@
-import { Resolver, Query } from '@nestjs/graphql';
-import { CourseService } from './course.service';
+import { Query, Resolver } from '@nestjs/graphql';
 import { Course } from './course.entity';
+import { CourseService } from './course.service';
 
 @Resolver('Course')
 export class CourseResolver {
@@ -12,4 +12,5 @@ export class CourseResolver {
     async courses() {
         return this.courseService.readAll();
     }
+    
 }

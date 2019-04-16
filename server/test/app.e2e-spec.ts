@@ -1,23 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import * as request from "supertest";
+import { AppModule } from "./../src/app.module";
+import { INestApplication, HttpServer } from "@nestjs/common";
 
-describe('AppController (e2e)', () => {
-  let app;
+describe("AppController (e2e)", () => {
+  let app: INestApplication;
+  let mockServer: HttpServer;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+  beforeAll(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule]
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
     await app.init();
+    mockServer = app.getHttpServer();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("passes the sanity test", () => {
+    return request(mockServer)
+      .get("/")
       .expect(200)
-      .expect('Hello World!');
+      .expect("Faraday server is running");
+  });
+
+  it("can ping successfully", async () => {
+    const response = await request(mockServer).get("/telemetry/ping");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("ping", "pong");
   });
 });

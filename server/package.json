@@ -6,17 +6,18 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "build:prod": "rimraf dist && yarn build",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "ts-node -r tsconfig-paths/register src/main.ts",
-    "start:dev": "nodemon",
-    "start:debug": "nodemon --config nodemon-debug.json",
-    "prestart:prod": "rimraf dist && npm run build",
-    "start:prod": "node dist/main.js",
+    "serve": "ts-node -r tsconfig-paths/register src/main.ts",
+    "serve:dev": "nodemon",
+    "serve:debug": "nodemon --config nodemon-debug.json",
+    "serve:prod": "node dist/main.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:all": "yarn test && yarn test:e2e"
   },
   "dependencies": {
     "@nestjs/common": "^6.0.0",

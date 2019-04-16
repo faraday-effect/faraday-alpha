@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { StringLength } from "../enum/string-length.enum";
+import { Field, Int, ObjectType } from "type-graphql";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Department } from "../department/department.entity";
-import { ObjectType, Field, Int } from "type-graphql";
+import { StringLength } from "../enum/string-length.enum";
 
 @Entity("courses")
 @ObjectType()
@@ -11,11 +11,13 @@ export class Course {
   id: number;
 
   @Column({ length: StringLength.SHORT })
-  @Field()
+  @Field({ description: "Course number (e.g., `COS243`)" })
   number: string;
 
   @Column({ length: StringLength.LONG })
-  @Field()
+  @Field({
+    description: "Course title (e.g., `Multi-tier Web Application Develoment`"
+  })
   title: string;
 
   @ManyToOne(type => Department, dept => dept.courses, { eager: true })
