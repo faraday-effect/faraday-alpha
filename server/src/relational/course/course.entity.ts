@@ -2,6 +2,7 @@ import { Field, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Department } from "../department/department.entity";
 import { StringLength } from "../enum/string-length.enum";
+import { IsString, IsInt } from "class-validator";
 
 @Entity("courses")
 @ObjectType()
@@ -23,4 +24,19 @@ export class Course {
   @ManyToOne(type => Department, dept => dept.courses, { eager: true })
   @Field(type => Department)
   department: Department;
+}
+
+export class CourseCreateInput {
+  @IsString()
+  number: string;
+
+  @IsString()
+  title: string;
+
+  @IsInt()
+  departmentId: number;
+}
+
+export interface CourseWhereInput {
+  department?: Department
 }

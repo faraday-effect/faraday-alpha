@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CourseResolver } from "../course.resolver";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { DepartmentModule } from "../../department/department.module";
 import { Course } from "../course.entity";
+import { CourseResolver } from "../course.resolver";
 import { CourseService } from "../course.service";
-import { Department } from "../../department/department.entity";
 
 describe("CourseResolver", () => {
   let resolver: CourseResolver;
@@ -15,10 +15,6 @@ describe("CourseResolver", () => {
         CourseService,
         {
           provide: getRepositoryToken(Course),
-          useValue: {}
-        },
-        {
-          provide: getRepositoryToken(Department),
           useValue: {}
         }
       ]

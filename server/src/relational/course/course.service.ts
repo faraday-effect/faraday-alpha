@@ -1,36 +1,39 @@
-import { Injectable, Body } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Course } from "./course.entity";
-import { CreateCourseDto } from "./dto/create-course.dto";
-import { Department } from "../department/department.entity";
+import { Repository, FindManyOptions } from "typeorm";
+import { Course, CourseCreateInput, CourseWhereInput } from "./course.entity";
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectRepository(Course)
-    private readonly courseRepository: Repository<Course>,
-    @InjectRepository(Department)
-    private readonly deptRepository: Repository<Department>
+    private readonly courseRepository: Repository<Course>
   ) {}
 
-  async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    const existingDepartment = await this.deptRepository.findOne(
-      createCourseDto.departmentId
-    );
+  // Create
+  async createCourse(data: CourseCreateInput) {
     const newCourse = this.courseRepository.create({
-      number: createCourseDto.number,
-      title: createCourseDto.title,
-      department: existingDepartment
+      number: data.number,
+      title: data.title
     });
     return await this.courseRepository.save(newCourse);
   }
 
-  async readAll(): Promise<Course[]> {
-    return await this.courseRepository.find();
+  // Read
+  async course(id: number) {
+    return await this.courseRepository.findOne(id);
   }
 
-  async find(args: object): Promise<Course[]> {
-    return await this.courseRepository.find(args);
+  async courses(where?: CourseWhereInput) {
+    let options: CourseWhereInput = {};
+    
+    if (where) {
+      if (where.department) {
+        options.department = where.department;
+      } else {
+        throw new Error("No search properties");
+      }
+    }
+    return await this.courseRepository.find(options);
   }
 }

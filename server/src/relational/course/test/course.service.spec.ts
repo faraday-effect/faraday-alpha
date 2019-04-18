@@ -1,31 +1,27 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CourseService } from "../course.service";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Department } from "../..//department/department.entity";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { DepartmentModule } from "../../department/department.module";
 import { Course } from "../course.entity";
+import { CourseService } from "../course.service";
 
 describe("CourseService", () => {
-  let service: CourseService;
+  let module: TestingModule;
+  let courseService: CourseService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CourseService,
-        {
-          provide: getRepositoryToken(Department),
-          useValue: {}
-        },
-        {
-          provide: getRepositoryToken(Course),
-          useValue: {}
-        }
-      ]
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([Course])],
+      providers: [CourseService]
     }).compile();
 
-    service = module.get<CourseService>(CourseService);
+    courseService = module.get<CourseService>(CourseService);
+  });
+
+  afterAll(() => {
+    return module.close();
   });
 
   it("should be defined", () => {
-    expect(service).toBeDefined();
+    expect(courseService).toBeDefined();
   });
 });
