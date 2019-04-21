@@ -1,8 +1,8 @@
+import { IsArray, IsString } from "class-validator";
+import { Field, Int, ObjectType } from "type-graphql";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Course } from "../course/course.entity";
 import { StringLength } from "../enum/string-length.enum";
-import { ObjectType, Field, Int } from "type-graphql";
-import { IsString, IsArray } from "class-validator";
 
 @Entity("departments")
 @ObjectType()

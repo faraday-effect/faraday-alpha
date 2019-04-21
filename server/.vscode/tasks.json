@@ -9,10 +9,23 @@
             "problemMatcher": [
                 "$tsc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "npm",
+            "script": "build:watch",
+            "problemMatcher": [
+                "$tsc"
+            ]
         }
     ]
 }
