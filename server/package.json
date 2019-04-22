@@ -6,11 +6,14 @@
   "license": "MIT",
   "description": "Faraday - Actionable Educational Intelligence",
   "scripts": {
-    "build": "tsc",
     "build:watch": "tsc --watch",
-    "serve": "node build/src/main.js",
+    "build": "tsc",
+    "dev": "concurrently \"yarn:build:watch\" \"yarn:serve:watch\"",
     "serve:watch": "node-dev build/src/main.js",
-    "dev": "concurrently \"yarn:build:watch\" \"yarn:serve:watch\""
+    "serve": "node build/src/main.js",
+    "test:cov": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test": "jest"
   },
   "dependencies": {
     "@nestjs/common": "^6.1.1",

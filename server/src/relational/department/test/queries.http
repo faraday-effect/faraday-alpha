@@ -8,3 +8,10 @@ Content-Type: application/json
 {
     "name": "Computer Science & Engineering"
 }
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+
+{
+    "query": "department { id name }"
+}

@@ -12,9 +12,7 @@ export class DepartmentService {
 
   // Create
   async createDepartment(data: DepartmentCreateInput) {
-    console.log("DATA", data);
     const newDepartment = this.departmentRepository.create(data);
-    console.log("NEW", newDepartment);
     return await this.departmentRepository.save(newDepartment);
   }
 
