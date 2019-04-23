@@ -45,3 +45,7 @@ So I started over.
 implementation, this step is apparently just to pick the desired version of the transpiler.
 
 4. Create an initial `tsconfig.json` file
+
+## Concurrent Execution
+
+    parallel --tag --linebuffer yarn ::: build:watch serve:watch

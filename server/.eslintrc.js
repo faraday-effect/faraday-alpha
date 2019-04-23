@@ -1,3 +1,5 @@
+// See https://dev.to/robertcoopercode/using-eslint-and-prettier-in-a-typescript-project-53jb
+
 module.exports = {
   // Use Typescript parser.
   parser: "@typescript-eslint/parser",
