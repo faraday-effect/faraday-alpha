@@ -1,0 +1,77 @@
+"$schema": "http://json-schema.org/draft-07/schema#"
+title: Model File Schema
+type: object
+properties:
+  entities:
+    description: All entities
+    type: array
+    items:
+      description: One entity
+      type: object
+      properties:
+        name:
+          description: Table name
+          type: string
+        columns:
+          description: List of columns
+          type: array
+          items:
+            description: One column
+            type: object
+            properties:
+              name:
+                description: Column name
+                type: string
+              type:
+                description: Column type
+                type: string
+              options:
+                description: Column options
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - required
+                    - unique
+            required:
+              - name
+              - type
+            additionalProperties: false
+  relationships:
+    description: All relationships
+    type: array
+    items:
+      description: One relationship
+      type: object
+      oneOf:
+        - properties:
+            type:
+              description: Type of relationship
+              type: string
+              constant: one-to-many
+            one:
+              description: Table on "one" side of relationship
+              type: string
+            many:
+              description: Table on "many" side of relationship
+              type: string
+            options:
+              description: Options for this relationship
+              type: array
+              items:
+                type: string
+                enum:
+                  - required
+        - properties:
+            type:
+              type: string
+              constant: many-to-many
+            many:
+              type: array
+              items:
+                type: string
+
+additionalProperties: false
+required:
+  - entities
+  - relationships

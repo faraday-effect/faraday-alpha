@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Term } from "./term.entity";
+import { Term } from "../term/term.entity";
 
 @Entity("holidays")
 @ObjectType()
@@ -23,5 +23,5 @@ export class Holiday {
 
   @ManyToOne(type => Term, term => term.holidays)
   @Field(type => Term)
-  term: Term
+  term: Term;
 }

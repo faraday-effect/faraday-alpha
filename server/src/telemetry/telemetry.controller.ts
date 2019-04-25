@@ -1,14 +1,13 @@
 import { Controller, Get } from "@nestjs/common";
-import { arch, platform, release, hostname } from "os";
-import { timer } from "rxjs";
+import { arch, hostname, platform, release } from "os";
 
 interface PingResponse {
-  ping: string,
-  time: Date,
-  hostname: string,
-  arch: string,
-  platform: string,
-  release: string
+  ping: string;
+  time: Date;
+  hostname: string;
+  arch: string;
+  platform: string;
+  release: string;
 }
 
 @Controller("telemetry")
@@ -17,7 +16,7 @@ export class TelemetryController {
    * Handle a `ping` request by returning information about the run-time system.
    */
   @Get("ping")
-  ping(): PingResponse {
+  public ping(): PingResponse {
     return {
       ping: "pong",
       time: new Date(),
@@ -27,12 +26,4 @@ export class TelemetryController {
       release: release()
     };
   }
-}
-
-function add(a: number, b: number) {
-  return a + b;
-}
-
-function foo() {
-  return add(17, 42);
 }

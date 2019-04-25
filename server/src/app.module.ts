@@ -3,7 +3,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RelationalModule } from "./relational/relational.module";
 import { TelemetryModule } from "./telemetry/telemetry.module";
-import { AppController } from './app.controller';
+import { AppController } from "./app.controller";
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { AppController } from './app.controller';
       autoSchemaFile: "schema.gql"
     }),
     TelemetryModule,
-    RelationalModule,
+    RelationalModule
   ],
   controllers: [AppController]
 })
