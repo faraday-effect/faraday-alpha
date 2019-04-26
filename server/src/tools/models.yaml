@@ -91,6 +91,17 @@ entities:
         options:
           - required
 
+  - name: roles
+    attributes:
+      - name: title
+        type: medium-string
+        options:
+          - required
+      - name: description
+        type: text
+        options:
+          - required
+
 relationships:
   - type: one-to-many
     one: term
@@ -121,8 +132,7 @@ relationships:
     many: sections
     options:
       - required
-
-#  - type: many-to-many
-#    many:
-#      - users
-#      - roles
+  
+  - type: many-to-many
+    owner: users
+    other: roles

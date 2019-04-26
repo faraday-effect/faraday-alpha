@@ -19,7 +19,7 @@ import prettier = require("prettier");
 import { capitalize, pluralize, singularize } from "inflection";
 
 import Ajv = require("ajv");
-import { existsTypeAnnotation } from "@babel/types";
+import { existsTypeAnnotation, stringLiteral } from "@babel/types";
 import { RaceSubscriber } from "rxjs/internal/observable/race";
 import { config } from "rxjs";
 
@@ -107,6 +107,10 @@ class Attribute {
         this.dbType = inputType;
         this.jsType = "Date";
         break;
+      case "text":
+        this.dbType = "text";
+        this.jsType = "string";
+        break;
       default:
         throw new Error(`Invalid column type (${inputType}) for ${name}`);
     }
@@ -116,7 +120,7 @@ class Attribute {
     return this.options.includes(option);
   }
 
-  private columnDecorator() {
+  public columnDecorator() {
     let config = [`type: "${this.dbType}"`];
 
     if (this.length) {
@@ -134,7 +138,7 @@ class Attribute {
     return `@Column({${config.join(", ")}})`;
   }
 
-  private fieldDecorator() {
+  public fieldDecorator() {
     let config = [];
 
     if (this.gqlType) {
@@ -144,14 +148,10 @@ class Attribute {
     return `@Field(${config.join(", ")})`;
   }
 
-  public asString() {
+  public declaration() {
     const punctuation = this.hasOption("required") ? "" : "?";
 
-    return `
-    ${this.columnDecorator()}
-    ${this.fieldDecorator()}
-    ${this.name}${punctuation}: ${this.jsType};
-    `;
+    return `${this.name}${punctuation}: ${this.jsType};`;
   }
 }
 
@@ -164,6 +164,7 @@ class Entity {
   public readonly name: string;
   public readonly attributes: Attribute[];
   private importMap: ImportMap = new ImportMap();
+  private injectedRelationships: string[] = [];
 
   public constructor(entityDef: EntityDef) {
     const { name, attributes } = entityDef;
@@ -179,7 +180,7 @@ class Entity {
         new Attribute(attribute.name, attribute.type, attribute.options)
     );
     this.importMap.addEntries(
-      ["Field", "Int", "ObjectType", "ArgsType"],
+      ["Field", "Int", "ObjectType", "ArgsType", "InputType"],
       "type-graphql"
     );
     this.importMap.addEntries(
@@ -188,8 +189,21 @@ class Entity {
     );
   }
 
-  public asString() {
+  public injectRelationship(relationship: string) {
+    this.injectedRelationships.push(relationship);
+  }
+
+  private entityClassAsString() {
+    const attributeStrings = this.attributes.map(
+      attribute => `
+    ${attribute.columnDecorator()}
+    ${attribute.fieldDecorator()}
+    ${attribute.declaration()}`
+    );
+
     return `
+    // ----- ${this.name.toUpperCase()} -----
+
     ${this.importMap.asString()}
 
     @Entity("${this.name}")
@@ -202,10 +216,31 @@ class Entity {
       id: number;
 
       // ATTRIBUTES
-      ${this.attributes.map(attribute => attribute.asString()).join("")}
+      ${attributeStrings.join("\n")}
 
       // RELATIONSHIPS
+      ${this.injectedRelationships.join("\n\n")}
     }`;
+  }
+
+  private createInputClassAsString() {
+    const attributeStrings = this.attributes.map(
+      attribute => `
+    ${attribute.fieldDecorator()}
+    ${attribute.declaration()}`
+    );
+
+    return `
+    @InputType()
+    export class ${capitalize(singularize(this.name))}CreateInput {
+      ${attributeStrings.join("\n")}
+    }`;
+  }
+
+  public asString() {
+    return [this.entityClassAsString(), this.createInputClassAsString()].join(
+      "\n\n"
+    );
   }
 }
 
@@ -241,67 +276,122 @@ interface OneToManyDef {
 
 interface ManyToManyDef {
   type: RelType;
-  entityA: string;
-  entityB: string;
+  owner: string;
+  other: string;
 }
 
 type RelDef = OneToManyDef | ManyToManyDef;
 
-class OneToManyRelationship {
+abstract class Relationship {
+  abstract injectIntoEntities(): void;
+}
+
+class OneToManyRelationship extends Relationship {
   // The "one" side (e.g., "one department")
-  private readonly oneEntity: string;
-  private readonly oneModel: string;
-  private readonly oneRel: string;
-  private readonly onePK: string;
+  private readonly oneSg: string;
+  private readonly oneSgCap: string;
+  private readonly onePl: string;
 
   // The "many" side (e.g., "has many courses")
-  private readonly manyEntity: string;
-  private readonly manyModel: string;
-  private readonly manyRel: string;
-  private readonly manyFK: string;
+  private readonly manySg: string;
+  private readonly manySgCap: string;
+  private readonly manyPl: string;
 
   // Other
   private readonly required: boolean;
 
   public constructor(rel: OneToManyDef) {
-    this.oneEntity = pluralize(rel.one);
-    this.oneModel = capitalize(rel.one);
-    this.oneRel = rel.many;
-    this.onePK = `${this.oneEntity}.id`;
+    super();
 
-    this.manyEntity = rel.many;
-    this.manyModel = capitalize(singularize(rel.many));
-    this.manyRel = rel.one;
-    this.manyFK = `${rel.one}_id`;
+    this.oneSg = rel.one; // term
+    this.oneSgCap = capitalize(rel.one); // Term
+    this.onePl = pluralize(rel.one); // terms
+
+    this.manySg = singularize(rel.many); // holiday
+    this.manySgCap = capitalize(singularize(rel.many)); // Holiday
+    this.manyPl = rel.many; // holidays
 
     this.required = !!(rel.options && rel.options.includes("required"));
   }
+
+  private asOneToMany() {
+    return `
+    @OneToMany(type => ${this.manySgCap}, 
+      ${this.manySg} => ${this.manySg}.${this.oneSg})
+    @Field(type => [${this.manySgCap}])
+    ${this.manyPl}${this.required ? "" : "?"}: ${this.manySgCap}[];`;
+  }
+
+  private asManyToOne() {
+    return `
+    @ManyToOne(type => ${this.oneSgCap}, 
+      ${this.oneSg} => ${this.oneSg}.${this.manyPl})
+    @Field(type => ${this.oneSgCap})
+    ${this.oneSg}${this.required ? "" : "?"}: ${this.oneSgCap};`;
+  }
+
+  public injectIntoEntities() {
+    Entities.findEntity(this.onePl).injectRelationship(this.asOneToMany());
+    Entities.findEntity(this.manyPl).injectRelationship(this.asManyToOne());
+  }
 }
 
-class Relationships {
-  public constructor(relationships: RelDef[]) {
-    const all = [];
+class ManyToManyRelationship extends Relationship {
+  // Owner side
+  private readonly ownerSg: string;
+  private readonly ownerSgCap: string;
+  private readonly ownerPl: string;
 
-    for (let rel of relationships) {
-      all.push(rel);
-      switch (rel.type) {
-        case "one-to-many":
-          {
-            // const relObj = new OneToManyRelationship(engine, <OneToManyDef>rel);
-            // relObj.injectKnexForeignKey();
-            // relObj.injectObjectionRelationMappings();
-          }
-          break;
+  // Other side
+  private readonly otherSg: string;
+  private readonly otherSgCap: string;
+  private readonly otherPl: string;
 
-        case "many-to-many":
-          throw new Error("Implement me");
+  public constructor(rel: ManyToManyDef) {
+    super();
 
-        default:
-          throw new Error("Invalid relationship type: '${rel.type}'");
-      }
-    }
+    this.ownerSg = singularize(rel.owner); // user
+    this.ownerSgCap = capitalize(singularize(rel.owner)); // User
+    this.ownerPl = rel.owner; // users
 
-    return all;
+    this.otherSg = singularize(rel.other); // role
+    this.otherSgCap = capitalize(singularize(rel.other)); // Role
+    this.otherPl = rel.other; // roles
+  }
+
+  private asOwner() {
+    return `
+    @ManyToMany(type => ${this.otherSgCap},
+     ${this.otherSg} => ${this.otherSg}.${this.ownerPl})
+    @JoinTable()
+    ${this.otherPl}: ${this.otherSgCap}[];`;
+  }
+
+  private asOther() {
+    return `
+    @ManyToMany(type => ${this.ownerSgCap},
+      ${this.ownerSg} => ${this.ownerSg}.${this.otherPl})
+    ${this.ownerPl}: ${this.ownerSgCap}[];`;
+  }
+
+  public injectIntoEntities() {
+    Entities.findEntity(this.ownerPl).injectRelationship(this.asOwner());
+    Entities.findEntity(this.otherPl).injectRelationship(this.asOther());
+  }
+}
+
+function relationshipFactory(relDef: RelDef) {
+  switch (relDef.type) {
+    case "one-to-many":
+      return new OneToManyRelationship(relDef as OneToManyDef);
+      break;
+
+    case "many-to-many":
+      return new ManyToManyRelationship(relDef as ManyToManyDef);
+      break;
+
+    default:
+      throw new Error("Invalid relationship type: '${rel.type}'");
   }
 }
 
@@ -315,6 +405,7 @@ function prettyOutput(code: string) {
 }
 
 try {
+  // Command-line arguments.
   const args = yargs
     .usage("usage: $0 [options] <model-file.yaml>")
     .version("0.1")
@@ -334,6 +425,7 @@ try {
     })
     .demandCommand(1).argv;
 
+  // Load the models YAML file.
   let doc = null;
   try {
     doc = yaml.safeLoad(fs.readFileSync(args._[0], "utf-8"));
@@ -342,27 +434,39 @@ try {
     process.exit(1);
   }
 
+  // Load the JSON schema.
   const ajv = new Ajv();
   const schema = yaml.safeLoad(
     fs.readFileSync(path.join(args["schema-dir"], "model-schema.yaml"), "utf-8")
   );
   debug("SCHEMA %O", schema);
 
+  // Validate the YAML document.
   const validate = ajv.compile(schema);
   if (!validate(doc)) {
-    console.log("INVALID FILE", JSON.stringify(validate.errors, null, 2));
+    console.log(
+      "INVALID MODEL DOCUMENT",
+      JSON.stringify(validate.errors, null, 2)
+    );
     process.exit(1);
   }
 
-  _.forEach(doc.entities, (entity: EntityDef) =>
-    Entities.addEntity(new Entity(entity))
+  // Process the entities.
+  doc.entities.forEach((entityDef: EntityDef) =>
+    Entities.addEntity(new Entity(entityDef))
   );
-  const relationships = new Relationships(doc.relationships);
+
+  // Process the relationships.
+  doc.relationships.forEach((relDef: RelDef) => {
+    const relationship = relationshipFactory(relDef);
+    relationship.injectIntoEntities();
+  });
 
   // Dump these _after_ building relationships, which injects various data into the entities.
   debug("ENTITIES %O", Entities);
-  debug("RELATIONSHIPS %O", relationships);
+  debug("RELATIONSHIPS %O", doc.relationships);
 
+  // Output everything.
   Entities.allEntities().map(entity => prettyOutput(entity.asString()));
 } catch (err) {
   console.error("ERROR", err);

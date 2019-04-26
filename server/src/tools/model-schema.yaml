@@ -41,10 +41,10 @@ properties:
     description: All relationships
     type: array
     items:
-      description: One relationship
       type: object
       oneOf:
-        - properties:
+        - description: One-to-Many relationship
+          properties:
             type:
               description: Type of relationship
               type: string
@@ -62,14 +62,28 @@ properties:
                 type: string
                 enum:
                   - required
-        - properties:
+          additionalProperties: false
+          required:
+            - type
+            - one
+            - many
+        - description: Many-to-Many relationship
+          properties:
             type:
+              description: Type of relationship
               type: string
               constant: many-to-many
-            many:
-              type: array
-              items:
-                type: string
+            owner:
+              description: Owner of the relationship
+              type: string
+            other:
+              description: Other side of the relationship
+              type: string
+          additionalProperties: false
+          required:
+            - type
+            - owner
+            - other
 
 additionalProperties: false
 required:
