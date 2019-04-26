@@ -29,17 +29,17 @@ const isSingular = (word: string) => singularize(word) === word;
 // ---- Imports
 
 class ImportMap {
-  private importMap: Map<string, Set<string>>;
+  private importsByModule: Map<string, Set<string>>;
 
   constructor() {
-    this.importMap = new Map();
+    this.importsByModule = new Map();
   }
 
   public addEntry(importName: string, moduleName: string) {
-    if (!this.importMap.has(moduleName)) {
-      this.importMap.set(moduleName, new Set());
+    if (!this.importsByModule.has(moduleName)) {
+      this.importsByModule.set(moduleName, new Set());
     }
-    this.importMap.get(moduleName).add(importName);
+    this.importsByModule.get(moduleName).add(importName);
   }
 
   public addEntries(importNames: string[], moduleName: string) {
@@ -48,7 +48,7 @@ class ImportMap {
 
   public asString() {
     const statements: string[] = [];
-    for (const [moduleName, importSet] of this.importMap) {
+    for (const [moduleName, importSet] of this.importsByModule) {
       const imports = Array.from(importSet).join(", ");
       statements.push(`import { ${imports} } from "${moduleName}";`);
     }
@@ -339,10 +339,12 @@ class OneToManyRelationship extends Relationship {
   public injectIntoEntities() {
     const oneEntity = Entities.findEntity(this.onePl);
     oneEntity.injectEntityImport("OneToMany", "typeorm");
+    oneEntity.injectEntityImport(this.manySgCap, `./${this.manySg}.entity`);
     oneEntity.injectRelationship(this.asOneToMany());
 
     const manyEntity = Entities.findEntity(this.manyPl);
     manyEntity.injectEntityImport("ManyToOne", "typeorm");
+    manyEntity.injectEntityImport(this.oneSgCap, `./${this.oneSg}.entity`);
     manyEntity.injectRelationship(this.asManyToOne());
   }
 }
@@ -387,12 +389,14 @@ class ManyToManyRelationship extends Relationship {
 
   public injectIntoEntities() {
     const ownerEntity = Entities.findEntity(this.ownerPl);
-    ownerEntity.injectRelationship(this.asOwner());
     ownerEntity.injectEntityImports(["ManyToMany", "JoinTable"], "typeorm");
+    ownerEntity.injectEntityImport(this.otherSgCap, `./${this.otherSg}.entity`);
+    ownerEntity.injectRelationship(this.asOwner());
 
     const otherEntity = Entities.findEntity(this.otherPl);
-    otherEntity.injectRelationship(this.asOther());
     otherEntity.injectEntityImport("ManyToMany", "typeorm");
+    otherEntity.injectEntityImport(this.ownerSgCap, `./${this.ownerSg}.entity`);
+    otherEntity.injectRelationship(this.asOther());
   }
 }
 
@@ -423,23 +427,31 @@ function prettify(code: string) {
 try {
   // Command-line arguments.
   const args = yargs
+    .strict()
     .usage("usage: $0 [options] <model-file.yaml>")
     .version("0.1")
     .example(
-      "$0 --template-dir=templates --schema-dir=schema models.yaml",
+      "$0 --schema=model-schema.yaml models.yaml",
       "Process models.yaml with specified templates"
     )
-    .option("template-dir", {
-      description: "Template directory",
+    .option("schema", {
+      description: "JSON schema",
       type: "string",
       demand: true
     })
-    .option("schema-dir", {
-      description: "Schema directory",
+    .option("out-dir", {
+      description: "Output directory",
       type: "string",
-      demand: true
+      default: "."
+    })
+    .option("sub-dirs", {
+      description: "Use subdirectories with the same name as the entity",
+      type: "boolean",
+      default: false
     })
     .demandCommand(1).argv;
+
+  debug("ARGS %O", args);
 
   // Load the models YAML file.
   let doc = null;
@@ -452,9 +464,7 @@ try {
 
   // Load the JSON schema.
   const ajv = new Ajv();
-  const schema = yaml.safeLoad(
-    fs.readFileSync(path.join(args["schema-dir"], "model-schema.yaml"), "utf-8")
-  );
+  const schema = yaml.safeLoad(fs.readFileSync(args.schema, "utf-8"));
   debug("SCHEMA %O", schema);
 
   // Validate the YAML document.
@@ -484,10 +494,15 @@ try {
 
   // Output everything.
   Entities.allEntities().map(entity => {
-    fs.writeFileSync(
-      `${singularize(entity.name)}.entity.ts`,
-      prettify(entity.asString())
+    const entityName = singularize(entity.name);
+    const entityDir = path.join(
+      args["out-dir"],
+      args["sub-dirs"] ? entityName : ""
     );
+    const entityPath = path.join(entityDir, `${entityName}.entity.ts`);
+
+    fs.mkdirSync(entityDir, { recursive: true, mode: 0o755 });
+    fs.writeFileSync(entityPath, prettify(entity.asString()));
   });
 } catch (err) {
   console.error("ERROR", err);
