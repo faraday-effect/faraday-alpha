@@ -12,7 +12,6 @@ import fs = require("fs");
 import path = require("path");
 
 import yargs = require("yargs");
-import _ = require("lodash");
 import yaml = require("js-yaml");
 
 import prettier = require("prettier");
@@ -174,8 +173,7 @@ class Entity {
     }
 
     this.name = name;
-    this.attributes = _.map(
-      attributes,
+    this.attributes = attributes.map(
       (attribute: AttributeDef) =>
         new Attribute(attribute.name, attribute.type, attribute.options)
     );
@@ -187,6 +185,14 @@ class Entity {
       ["Column", "Entity", "PrimaryGeneratedColumn"],
       "typeorm"
     );
+  }
+
+  public injectEntityImport(importName: string, moduleName: string) {
+    this.importMap.addEntry(importName, moduleName);
+  }
+
+  public injectEntityImports(importNames: string[], moduleName: string) {
+    this.importMap.addEntries(importNames, moduleName);
   }
 
   public injectRelationship(relationship: string) {
@@ -331,8 +337,13 @@ class OneToManyRelationship extends Relationship {
   }
 
   public injectIntoEntities() {
-    Entities.findEntity(this.onePl).injectRelationship(this.asOneToMany());
-    Entities.findEntity(this.manyPl).injectRelationship(this.asManyToOne());
+    const oneEntity = Entities.findEntity(this.onePl);
+    oneEntity.injectEntityImport("OneToMany", "typeorm");
+    oneEntity.injectRelationship(this.asOneToMany());
+
+    const manyEntity = Entities.findEntity(this.manyPl);
+    manyEntity.injectEntityImport("ManyToOne", "typeorm");
+    manyEntity.injectRelationship(this.asManyToOne());
   }
 }
 
@@ -375,8 +386,13 @@ class ManyToManyRelationship extends Relationship {
   }
 
   public injectIntoEntities() {
-    Entities.findEntity(this.ownerPl).injectRelationship(this.asOwner());
-    Entities.findEntity(this.otherPl).injectRelationship(this.asOther());
+    const ownerEntity = Entities.findEntity(this.ownerPl);
+    ownerEntity.injectRelationship(this.asOwner());
+    ownerEntity.injectEntityImports(["ManyToMany", "JoinTable"], "typeorm");
+
+    const otherEntity = Entities.findEntity(this.otherPl);
+    otherEntity.injectRelationship(this.asOther());
+    otherEntity.injectEntityImport("ManyToMany", "typeorm");
   }
 }
 
@@ -395,9 +411,9 @@ function relationshipFactory(relDef: RelDef) {
   }
 }
 
-function prettyOutput(code: string) {
+function prettify(code: string) {
   try {
-    console.log(prettier.format(code, { parser: "typescript" }));
+    return prettier.format(code, { parser: "typescript" });
   } catch (err) {
     console.error(`Prettier failed: ${err}`);
     console.error(`Raw code ${code}`);
@@ -467,7 +483,12 @@ try {
   debug("RELATIONSHIPS %O", doc.relationships);
 
   // Output everything.
-  Entities.allEntities().map(entity => prettyOutput(entity.asString()));
+  Entities.allEntities().map(entity => {
+    fs.writeFileSync(
+      `${singularize(entity.name)}.entity.ts`,
+      prettify(entity.asString())
+    );
+  });
 } catch (err) {
   console.error("ERROR", err);
 }
