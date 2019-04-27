@@ -24,6 +24,22 @@ import { currentDateAndTime } from "../utils/date-and-time";
 
 const isSingular = (word: string) => singularize(word) === word;
 
+function fileHeader(name: string) {
+  return `
+    // ----- ${name.toUpperCase()} -----
+    // Generated ${currentDateAndTime()}
+    `;
+}
+
+function prettify(code: string) {
+  try {
+    return prettier.format(code, { parser: "typescript" });
+  } catch (err) {
+    console.error(`Prettier failed: ${err}`);
+    console.error(`Raw code ${code}`);
+  }
+}
+
 // ---- Imports
 
 class ImportMap {
@@ -211,7 +227,7 @@ class RelationshipAttribute extends Attribute {
 
 // ---- Entities
 
-interface EntityDef {
+interface EntityInput {
   name: string;
   attributes: AttributeInput[];
 }
@@ -222,7 +238,7 @@ class Entity {
   public readonly attributes: Attribute[];
   private importMap: ImportMap = new ImportMap();
 
-  public constructor(entityDef: EntityDef) {
+  public constructor(entityDef: EntityInput) {
     const { name, attributes } = entityDef;
 
     if (isSingular(name)) {
@@ -315,8 +331,7 @@ class Entity {
 
   public asString() {
     return `
-    // ----- ${this.name.toUpperCase()} -----
-    // Generated ${currentDateAndTime()}
+    ${fileHeader(this.name)}
 
     ${this.importMap.asString()}
 
@@ -491,14 +506,89 @@ class RelationshipFactory {
   }
 }
 
-function prettify(code: string) {
-  try {
-    return prettier.format(code, { parser: "typescript" });
-  } catch (err) {
-    console.error(`Prettier failed: ${err}`);
-    console.error(`Raw code ${code}`);
+// ---- Services
+
+class Service {
+  private importMap: ImportMap;
+  private nameSg: string;
+  private nameSgCap: string;
+
+  constructor(
+    private readonly entityName: string,
+    private readonly attributes: Attribute[]
+  ) {
+    this.nameSg = singularize(entityName);
+    this.nameSgCap = capitalize(this.nameSg);
+
+    this.importMap = new ImportMap();
+    this.importMap.addEntry("Injectable", "@nestjs/common");
+    this.importMap.addEntry("InjectRepository", "@nestjs/typeorm");
+    this.importMap.addEntry("Repository", "typeorm");
+
+    this.importMap.addEntries(
+      [
+        "", // Base class
+        "CreateInput",
+        "WhereUniqueInput",
+        "WhereInput",
+        "OrderByInput",
+        "UpdateInput"
+      ].map(suffix => `${this.nameSgCap}${suffix}`),
+      `./${this.nameSg}.entity`
+    );
+  }
+
+  asString() {
+    const nameSg = this.nameSg;
+    const nameSgCap = capitalize(nameSg);
+    const namePl = pluralize(nameSg);
+    const namePlCap = capitalize(namePl);
+
+    const header = fileHeader(`${nameSg} service`);
+    return `${header}
+
+    ${this.importMap.asString()}
+
+    @Injectable()
+    export class ${nameSgCap}Service {
+      constructor(
+        @InjectRepository(${nameSgCap}) 
+        private readonly ${this.nameSg}Repository: Repository<${nameSgCap}>
+      ){}
+
+      // Create
+      create${nameSgCap}(data: ${nameSgCap}CreateInput) {}
+        
+      upsert${nameSgCap}(args: {
+        where: ${nameSgCap}WhereUniqueInput;
+        create: ${nameSgCap}CreateInput;
+        update: ${nameSgCap}UpdateInput;
+      }) {}
+
+      // Read
+      ${nameSg}(where: ${nameSgCap}WhereUniqueInput) {}
+
+      ${namePl}(args?: {
+        where?: ${nameSgCap}WhereInput;
+        orderBy?: ${nameSgCap}OrderByInput;
+        skip?: number;
+        take?: number;
+      }) {}
+
+      // Update
+      update${nameSgCap}(args: { data: ${nameSgCap}UpdateInput; where: ${nameSgCap}WhereUniqueInput }) {}
+
+      updateMany${namePlCap}(args: { data: ${nameSgCap}UpdateInput; where?: ${nameSgCap}WhereInput }) {}
+
+      // Delete
+      delete${nameSgCap}(where: ${nameSgCap}WhereUniqueInput) {}
+
+      deleteMany${namePlCap}(where?: ${nameSgCap}WhereInput) {}
+    }`;
   }
 }
+
+// ---- Main
 
 try {
   // Command-line arguments.
@@ -554,7 +644,7 @@ try {
   }
 
   // Process the entities.
-  doc.entities.forEach((entityDef: EntityDef) =>
+  doc.entities.forEach((entityDef: EntityInput) =>
     Entities.addEntity(new Entity(entityDef))
   );
 
@@ -571,14 +661,26 @@ try {
   // Output everything.
   Entities.allEntities().map(entity => {
     const entityName = singularize(entity.name);
-    const entityDir = path.join(
+    const destinationDir = path.join(
       args["out-dir"],
       args["sub-dirs"] ? entityName : ""
     );
-    const entityPath = path.join(entityDir, `${entityName}.entity.ts`);
 
-    fs.mkdirSync(entityDir, { recursive: true, mode: 0o755 });
-    fs.writeFileSync(entityPath, prettify(entity.asString()));
+    // Make sure the directory exists.
+    fs.mkdirSync(destinationDir, { recursive: true, mode: 0o755 });
+
+    // Ouptut the entity file.
+    fs.writeFileSync(
+      path.join(destinationDir, `${entityName}.entity.ts`),
+      prettify(entity.asString())
+    );
+
+    // Output the service file.
+    const service = new Service(entity.name, entity.attributes);
+    fs.writeFileSync(
+      path.join(destinationDir, `${entityName}.service.ts`),
+      prettify(service.asString())
+    );
   });
 } catch (err) {
   console.error("ERROR", err);
