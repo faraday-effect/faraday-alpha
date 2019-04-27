@@ -18,9 +18,7 @@ import prettier = require("prettier");
 import { capitalize, pluralize, singularize } from "inflection";
 
 import Ajv = require("ajv");
-import { existsTypeAnnotation, stringLiteral } from "@babel/types";
-import { RaceSubscriber } from "rxjs/internal/observable/race";
-import { config } from "rxjs";
+import { currentDateAndTime } from "../utils/date-and-time";
 
 // ---- Handy functions
 
@@ -72,12 +70,12 @@ interface AttributeSpec {
 
 class Attribute {
   private dbType: string; // Database type (e.g., "varchar")
-  private jsType: string; // JavaScript type (e.g., "string")
+  public readonly jsType: string; // JavaScript type (e.g., "string")
   private gqlType: string; // GraphQL type (if any; e.g., "Int")
   private length: number; // String length (if any)
 
   public constructor(
-    private readonly name: string,
+    public readonly name: string,
     inputType: string,
     private readonly options: string[] = []
   ) {
@@ -161,9 +159,11 @@ interface EntityDef {
 
 class Entity {
   public readonly name: string;
+  public readonly className: string;
   public readonly attributes: Attribute[];
   private importMap: ImportMap = new ImportMap();
   private injectedRelationships: string[] = [];
+  private injectedDeclarations: string[] = [];
 
   public constructor(entityDef: EntityDef) {
     const { name, attributes } = entityDef;
@@ -173,6 +173,7 @@ class Entity {
     }
 
     this.name = name;
+    this.className = capitalize(singularize(this.name));
     this.attributes = attributes.map(
       (attribute: AttributeDef) =>
         new Attribute(attribute.name, attribute.type, attribute.options)
@@ -199,7 +200,73 @@ class Entity {
     this.injectedRelationships.push(relationship);
   }
 
-  private entityClassAsString() {
+  private injectCreateInput() {
+    const inputAttributeStrings = this.attributes.map(
+      attribute => `
+    ${attribute.fieldDecorator()}
+    ${attribute.declaration()}`
+    );
+
+    this.injectedDeclarations.push(`
+    @InputType()
+    export class ${this.className}CreateInput {
+      ${inputAttributeStrings.join("\n")}
+    }`);
+  }
+
+  private injectWhereUniqueInput() {
+    const uniqueAttributeStrings = this.attributes
+      .filter(attribute => attribute.hasOption("unique"))
+      .map(attribute => `${attribute.name}?: ${attribute.jsType}`);
+
+    uniqueAttributeStrings.unshift("id?: number");
+
+    this.injectedDeclarations.push(`
+    export interface ${this.className}WhereUniqueInput {
+      ${uniqueAttributeStrings.join("\n")}
+    }`);
+  }
+
+  private injectWhereInput() {
+    const whereAttributeStrings = this.attributes.map(
+      attribute => `${attribute.name}?: ${attribute.jsType}`
+    );
+
+    this.injectedDeclarations.push(`
+    export interface ${this.className}WhereInput {
+      ${whereAttributeStrings.join("\n")}
+    }`);
+  }
+
+  private injectUpdateInput() {
+    const updateAttributeStrings = this.attributes.map(
+      attribute => `${attribute.name}?: ${attribute.jsType}`
+    );
+
+    this.injectedDeclarations.push(`
+    export interface ${this.className}UpdateInput {
+      ${updateAttributeStrings.join("\n")}
+    }`);
+  }
+
+  private injectOrderByInput() {
+    const orderByAttributeStrings = this.attributes.map(
+      attribute => `${attribute.name}Asc, ${attribute.name}Desc`
+    );
+
+    this.injectedDeclarations.push(`
+    export enum ${this.className}OrderByInput {
+      ${orderByAttributeStrings.join(",")}
+    }`);
+  }
+
+  public asString() {
+    this.injectCreateInput();
+    this.injectWhereUniqueInput();
+    this.injectWhereInput();
+    this.injectUpdateInput();
+    this.injectOrderByInput();
+
     const attributeStrings = this.attributes.map(
       attribute => `
     ${attribute.columnDecorator()}
@@ -209,44 +276,24 @@ class Entity {
 
     return `
     // ----- ${this.name.toUpperCase()} -----
+    // Generated ${currentDateAndTime()}
 
     ${this.importMap.asString()}
 
     @Entity("${this.name}")
     @ObjectType()
-    export class ${capitalize(singularize(this.name))} {
-      // PK
-
+    export class ${this.className} {
       @PrimaryGeneratedColumn()
       @Field(type => Int)
       id: number;
 
-      // ATTRIBUTES
       ${attributeStrings.join("\n")}
 
-      // RELATIONSHIPS
       ${this.injectedRelationships.join("\n\n")}
-    }`;
-  }
-
-  private createInputClassAsString() {
-    const attributeStrings = this.attributes.map(
-      attribute => `
-    ${attribute.fieldDecorator()}
-    ${attribute.declaration()}`
-    );
-
-    return `
-    @InputType()
-    export class ${capitalize(singularize(this.name))}CreateInput {
-      ${attributeStrings.join("\n")}
-    }`;
-  }
-
-  public asString() {
-    return [this.entityClassAsString(), this.createInputClassAsString()].join(
-      "\n\n"
-    );
+    }
+    
+    ${this.injectedDeclarations.join("\n\n")}
+    `;
   }
 }
 
@@ -289,7 +336,46 @@ interface ManyToManyDef {
 type RelDef = OneToManyDef | ManyToManyDef;
 
 abstract class Relationship {
-  abstract injectIntoEntities(): void;
+  protected modulePath(baseName: string, useSubdirs: boolean) {
+    if (useSubdirs) {
+      return path.join("..", baseName, `${baseName}.entity`);
+    } else {
+      return path.join(".", `${baseName}.entity`);
+    }
+  }
+
+  abstract injectIntoEntities(useSubdirs: boolean): void;
+}
+
+class AOneToManyRel extends Relationship {
+  constructor(
+    private readonly oneSg,
+    private readonly onePl,
+    private readonly manySg,
+    private readonly manySgCap,
+    private readonly manyPl,
+    private readonly required
+  ) {
+    super();
+  }
+
+  public injectIntoEntity() {
+    const oneEntity = Entities.findEntity(this.onePl);
+    oneEntity.injectEntityImport("OneToMany", "typeorm");
+    oneEntity.injectEntityImport(
+      this.manySgCap,
+      this.modulePath(this.manySg, useSubdirs)
+    );
+    oneEntity.injectRelationship(this);
+  }
+
+  public asString() {
+    return `
+    @OneToMany(type => ${this.manySgCap}, 
+    ${this.manySg} => ${this.manySg}.${this.oneSg})
+    @Field(type => [${this.manySgCap}])
+    ${this.manyPl}${this.required ? "" : "?"}: ${this.manySgCap}[];`;
+  }
 }
 
 class OneToManyRelationship extends Relationship {
@@ -336,15 +422,21 @@ class OneToManyRelationship extends Relationship {
     ${this.oneSg}${this.required ? "" : "?"}: ${this.oneSgCap};`;
   }
 
-  public injectIntoEntities() {
+  public injectIntoEntities(useSubdirs: boolean) {
     const oneEntity = Entities.findEntity(this.onePl);
     oneEntity.injectEntityImport("OneToMany", "typeorm");
-    oneEntity.injectEntityImport(this.manySgCap, `./${this.manySg}.entity`);
+    oneEntity.injectEntityImport(
+      this.manySgCap,
+      this.modulePath(this.manySg, useSubdirs)
+    );
     oneEntity.injectRelationship(this.asOneToMany());
 
     const manyEntity = Entities.findEntity(this.manyPl);
     manyEntity.injectEntityImport("ManyToOne", "typeorm");
-    manyEntity.injectEntityImport(this.oneSgCap, `./${this.oneSg}.entity`);
+    manyEntity.injectEntityImport(
+      this.oneSgCap,
+      this.modulePath(this.oneSg, useSubdirs)
+    );
     manyEntity.injectRelationship(this.asManyToOne());
   }
 }
@@ -387,15 +479,21 @@ class ManyToManyRelationship extends Relationship {
     ${this.ownerPl}: ${this.ownerSgCap}[];`;
   }
 
-  public injectIntoEntities() {
+  public injectIntoEntities(useSubdirs: boolean) {
     const ownerEntity = Entities.findEntity(this.ownerPl);
     ownerEntity.injectEntityImports(["ManyToMany", "JoinTable"], "typeorm");
-    ownerEntity.injectEntityImport(this.otherSgCap, `./${this.otherSg}.entity`);
+    ownerEntity.injectEntityImport(
+      this.otherSgCap,
+      this.modulePath(this.otherSg, useSubdirs)
+    );
     ownerEntity.injectRelationship(this.asOwner());
 
     const otherEntity = Entities.findEntity(this.otherPl);
     otherEntity.injectEntityImport("ManyToMany", "typeorm");
-    otherEntity.injectEntityImport(this.ownerSgCap, `./${this.ownerSg}.entity`);
+    otherEntity.injectEntityImport(
+      this.ownerSgCap,
+      this.modulePath(this.ownerSg, useSubdirs)
+    );
     otherEntity.injectRelationship(this.asOther());
   }
 }
@@ -485,7 +583,7 @@ try {
   // Process the relationships.
   doc.relationships.forEach((relDef: RelDef) => {
     const relationship = relationshipFactory(relDef);
-    relationship.injectIntoEntities();
+    relationship.injectIntoEntities(args["sub-dirs"]);
   });
 
   // Dump these _after_ building relationships, which injects various data into the entities.
