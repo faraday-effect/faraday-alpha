@@ -35,8 +35,8 @@ export class DepartmentResolver {
     return this.departmentService.createDepartment({ name });
   }
 
-  @ResolveProperty("courses", returns => [Course])
-  async getCourses(@Parent() department: Department) {
-    return this.courseService.courses({ department });
-  }
+  // @ResolveProperty("courses", returns => [Course])
+  // async getCourses(@Parent() department: Department) {
+  //   return this.courseService.courses({ department });
+  // }
 }

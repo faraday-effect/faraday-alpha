@@ -1,8 +1,9 @@
-import { IsArray, IsString } from "class-validator";
-import { Field, Int, ObjectType } from "type-graphql";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+// ----- DEPARTMENTS -----
+// Generated 2019-04-26 23:07:12
+
+import { Field, Int, ObjectType, ArgsType, InputType } from "type-graphql";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Course } from "../course/course.entity";
-import { StringLength } from "../enum/string-length.enum";
 
 @Entity("departments")
 @ObjectType()
@@ -11,7 +12,7 @@ export class Department {
   @Field(type => Int)
   id: number;
 
-  @Column({ length: StringLength.LONG })
+  @Column({ type: "varchar", length: 255 })
   @Field()
   name: string;
 
@@ -20,10 +21,25 @@ export class Department {
   courses: Course[];
 }
 
+@InputType()
 export class DepartmentCreateInput {
-  @IsString()
-  readonly name: string;
+  @Field()
+  name: string;
+}
 
-  @IsArray()
-  readonly courses?: Course[];
+export interface DepartmentWhereUniqueInput {
+  id?: number;
+}
+
+export interface DepartmentWhereInput {
+  name?: string;
+}
+
+export interface DepartmentUpdateInput {
+  name?: string;
+}
+
+export enum DepartmentOrderByInput {
+  nameAsc,
+  nameDesc
 }

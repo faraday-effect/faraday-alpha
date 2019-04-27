@@ -26,14 +26,7 @@ export class CourseService {
 
   async courses(where?: CourseWhereInput) {
     let options: CourseWhereInput = {};
-    
-    if (where) {
-      if (where.department) {
-        options.department = where.department;
-      } else {
-        throw new Error("No search properties");
-      }
-    }
+
     return await this.courseRepository.find(options);
   }
 }

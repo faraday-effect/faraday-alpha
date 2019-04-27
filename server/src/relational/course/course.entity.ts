@@ -1,8 +1,17 @@
-import { Field, Int, ObjectType } from "type-graphql";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+// ----- COURSES -----
+// Generated 2019-04-26 23:07:12
+
+import { Field, Int, ObjectType, ArgsType, InputType } from "type-graphql";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany
+} from "typeorm";
+import { Prefix } from "../prefix/prefix.entity";
 import { Department } from "../department/department.entity";
-import { StringLength } from "../enum/string-length.enum";
-import { IsString, IsInt } from "class-validator";
+import { Section } from "../section/section.entity";
 
 @Entity("courses")
 @ObjectType()
@@ -11,32 +20,53 @@ export class Course {
   @Field(type => Int)
   id: number;
 
-  @Column({ length: StringLength.SHORT })
-  @Field({ description: "Course number (e.g., `COS243`)" })
+  @Column({ type: "varchar", length: 64 })
+  @Field()
   number: string;
 
-  @Column({ length: StringLength.LONG })
-  @Field({
-    description: "Course title (e.g., `Multi-tier Web Application Develoment`"
-  })
+  @Column({ type: "varchar", length: 255 })
+  @Field()
   title: string;
 
-  @ManyToOne(type => Department, dept => dept.courses, { eager: true })
+  @ManyToOne(type => Prefix, prefix => prefix.courses)
+  @Field(type => Prefix)
+  prefix: Prefix;
+
+  @ManyToOne(type => Department, department => department.courses)
   @Field(type => Department)
   department: Department;
+
+  @OneToMany(type => Section, section => section.course)
+  @Field(type => [Section])
+  sections: Section[];
 }
 
+@InputType()
 export class CourseCreateInput {
-  @IsString()
+  @Field()
   number: string;
 
-  @IsString()
+  @Field()
   title: string;
+}
 
-  @IsInt()
-  departmentId: number;
+export interface CourseWhereUniqueInput {
+  id?: number;
 }
 
 export interface CourseWhereInput {
-  department?: Department
+  number?: string;
+  title?: string;
+}
+
+export interface CourseUpdateInput {
+  number?: string;
+  title?: string;
+}
+
+export enum CourseOrderByInput {
+  numberAsc,
+  numberDesc,
+  titleAsc,
+  titleDesc
 }
