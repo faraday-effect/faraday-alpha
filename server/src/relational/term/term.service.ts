@@ -1,27 +1,64 @@
+// ----- TERM SERVICE -----
+// Generated 2019-04-27 19:12:17
+
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Term, TermCreateInput } from "./term.entity";
+import {
+  Term,
+  TermCreateInput,
+  TermWhereUniqueInput,
+  TermWhereInput,
+  TermOrderByInput,
+  TermUpdateInput
+} from "./term.entity";
 
 @Injectable()
 export class TermService {
-  public constructor(
+  constructor(
     @InjectRepository(Term)
     private readonly termRepository: Repository<Term>
   ) {}
 
   // Create
-  public async createTerm(data: TermCreateInput) {
+  async createTerm(data: TermCreateInput) {
     const newTerm = this.termRepository.create(data);
     return await this.termRepository.save(newTerm);
   }
 
+  async upsertTerm(args: {
+    where: TermWhereUniqueInput;
+    create: TermCreateInput;
+    update: TermUpdateInput;
+  }) {}
+
   // Read
-  public async term(id: number) {
-    return await this.termRepository.findOne(id);
+  async term(where: TermWhereUniqueInput) {
+    return await this.termRepository.findOne(where);
   }
 
-  public async terms() {
-    return await this.termRepository.find();
+  async terms(args?: {
+    where?: TermWhereInput;
+    orderBy?: TermOrderByInput;
+    skip?: number;
+    take?: number;
+  }) {
+    return await this.termRepository.find(args.where);
   }
+
+  // Update
+  async updateTerm(args: {
+    data: TermUpdateInput;
+    where: TermWhereUniqueInput;
+  }) {}
+
+  async updateManyTerms(args: {
+    data: TermUpdateInput;
+    where?: TermWhereInput;
+  }) {}
+
+  // Delete
+  async deleteTerm(where: TermWhereUniqueInput) {}
+
+  async deleteManyTerms(where?: TermWhereInput) {}
 }

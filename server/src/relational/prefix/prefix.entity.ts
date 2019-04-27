@@ -1,59 +1,59 @@
-// ----- DEPARTMENTS -----
+// ----- PREFIXES -----
 // Generated 2019-04-27 19:12:17
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Course } from "../course/course.entity";
 
-@Entity("departments")
+@Entity("prefixes")
 @ObjectType()
-export class Department {
+export class Prefix {
   @PrimaryGeneratedColumn()
   @Field(type => Int)
   id: number;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ type: "varchar", length: 64 })
   @Field()
-  name: string;
+  value: string;
 
-  @OneToMany(type => Course, course => course.department)
+  @OneToMany(type => Course, course => course.prefix)
   @Field(type => [Course])
   courses: Course[];
 }
 
 @InputType()
-export class DepartmentCreateInput {
+export class PrefixCreateInput {
   @Field(type => Int)
   id: number;
 
   @Field()
-  name: string;
+  value: string;
 
   @Field(type => [Course])
   courses: Course[];
 }
 
-export interface DepartmentWhereUniqueInput {
+export interface PrefixWhereUniqueInput {
   id?: number;
 }
 
-export interface DepartmentWhereInput {
+export interface PrefixWhereInput {
   id?: number;
-  name?: string;
+  value?: string;
   courses?: Course[];
 }
 
-export interface DepartmentUpdateInput {
+export interface PrefixUpdateInput {
   id?: number;
-  name?: string;
+  value?: string;
   courses?: Course[];
 }
 
-export enum DepartmentOrderByInput {
+export enum PrefixOrderByInput {
   idAsc,
   idDesc,
-  nameAsc,
-  nameDesc,
+  valueAsc,
+  valueDesc,
   coursesAsc,
   coursesDesc
 }

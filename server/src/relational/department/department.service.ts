@@ -1,7 +1,17 @@
+// ----- DEPARTMENT SERVICE -----
+// Generated 2019-04-27 19:12:17
+
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Department, DepartmentCreateInput } from "./department.entity";
+import {
+  Department,
+  DepartmentCreateInput,
+  DepartmentWhereUniqueInput,
+  DepartmentWhereInput,
+  DepartmentOrderByInput,
+  DepartmentUpdateInput
+} from "./department.entity";
 
 @Injectable()
 export class DepartmentService {
@@ -16,12 +26,39 @@ export class DepartmentService {
     return await this.departmentRepository.save(newDepartment);
   }
 
+  async upsertDepartment(args: {
+    where: DepartmentWhereUniqueInput;
+    create: DepartmentCreateInput;
+    update: DepartmentUpdateInput;
+  }) {}
+
   // Read
-  async department(id: number) {
-    return await this.departmentRepository.findOne(id);
+  async department(where: DepartmentWhereUniqueInput) {
+    return await this.departmentRepository.findOne(where);
   }
 
-  async departments() {
-    return await this.departmentRepository.find();
+  async departments(args?: {
+    where?: DepartmentWhereInput;
+    orderBy?: DepartmentOrderByInput;
+    skip?: number;
+    take?: number;
+  }) {
+    return await this.departmentRepository.find(args.where);
   }
+
+  // Update
+  async updateDepartment(args: {
+    data: DepartmentUpdateInput;
+    where: DepartmentWhereUniqueInput;
+  }) {}
+
+  async updateManyDepartments(args: {
+    data: DepartmentUpdateInput;
+    where?: DepartmentWhereInput;
+  }) {}
+
+  // Delete
+  async deleteDepartment(where: DepartmentWhereUniqueInput) {}
+
+  async deleteManyDepartments(where?: DepartmentWhereInput) {}
 }

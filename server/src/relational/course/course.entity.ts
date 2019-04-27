@@ -1,7 +1,7 @@
 // ----- COURSES -----
-// Generated 2019-04-26 23:07:12
+// Generated 2019-04-27 19:12:17
 
-import { Field, Int, ObjectType, ArgsType, InputType } from "type-graphql";
+import { Field, Int, ObjectType, InputType } from "type-graphql";
 import {
   Column,
   Entity,
@@ -43,11 +43,23 @@ export class Course {
 
 @InputType()
 export class CourseCreateInput {
+  @Field(type => Int)
+  id: number;
+
   @Field()
   number: string;
 
   @Field()
   title: string;
+
+  @Field(type => Prefix)
+  prefix: Prefix;
+
+  @Field(type => Department)
+  department: Department;
+
+  @Field(type => [Section])
+  sections: Section[];
 }
 
 export interface CourseWhereUniqueInput {
@@ -55,18 +67,34 @@ export interface CourseWhereUniqueInput {
 }
 
 export interface CourseWhereInput {
+  id?: number;
   number?: string;
   title?: string;
+  prefix?: Prefix;
+  department?: Department;
+  sections?: Section[];
 }
 
 export interface CourseUpdateInput {
+  id?: number;
   number?: string;
   title?: string;
+  prefix?: Prefix;
+  department?: Department;
+  sections?: Section[];
 }
 
 export enum CourseOrderByInput {
+  idAsc,
+  idDesc,
   numberAsc,
   numberDesc,
   titleAsc,
-  titleDesc
+  titleDesc,
+  prefixAsc,
+  prefixDesc,
+  departmentAsc,
+  departmentDesc,
+  sectionsAsc,
+  sectionsDesc
 }

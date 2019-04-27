@@ -92,6 +92,14 @@ abstract class Attribute {
     return this.options.includes(option);
   }
 
+  isRequired() {
+    return this.hasOption("required");
+  }
+
+  isUnique() {
+    return this.hasOption("unique");
+  }
+
   asString() {
     return [
       this.columnDecorator(),
@@ -101,7 +109,7 @@ abstract class Attribute {
   }
 }
 
-class PropertyAttribute extends Attribute {
+class YamlAttribute extends Attribute {
   private dbType: string; // Database type (e.g., "varchar")
   private readonly jsType: string; // JavaScript type (e.g., "string")
   private gqlType: string; // GraphQL type (if any; e.g., "Int")
@@ -163,11 +171,11 @@ class PropertyAttribute extends Attribute {
       config.push(`length: ${this.length}`);
     }
 
-    if (this.hasOption("unique")) {
+    if (this.isUnique()) {
       config.push("unique: true");
     }
 
-    if (!this.hasOption("required")) {
+    if (!this.isRequired()) {
       config.push("nullable: true"); // False by default.
     }
 
@@ -185,21 +193,21 @@ class PropertyAttribute extends Attribute {
   }
 
   declaration() {
-    const punctuation = this.hasOption("required") ? "" : "?";
+    const punctuation = this.isRequired() ? "" : "?";
 
     return `${this.inputName}${punctuation}: ${this.jsType};`;
   }
 }
 
-class RelationshipAttribute extends Attribute {
+class ProgrammaticAttribute extends Attribute {
   constructor(
     private readonly columnDecoratorString: string,
     private readonly fieldDecoratorString: string,
     private readonly propertyName: string,
     private readonly propertyType: string,
-    private readonly isRequired: boolean
+    private readonly inputOptions: string[] = []
   ) {
-    super(isRequired ? ["required"] : []);
+    super(inputOptions);
   }
 
   name() {
@@ -219,7 +227,7 @@ class RelationshipAttribute extends Attribute {
   }
 
   declaration() {
-    return `${this.propertyName}${this.isRequired ? "" : "?"}: ${
+    return `${this.propertyName}${this.isRequired() ? "" : "?"}: ${
       this.propertyType
     }`;
   }
@@ -235,26 +243,42 @@ interface EntityInput {
 class Entity {
   public readonly name: string;
   public readonly className: string;
-  public readonly attributes: Attribute[];
+  public readonly attributes: Attribute[] = [];
   private importMap: ImportMap = new ImportMap();
 
   public constructor(entityDef: EntityInput) {
-    const { name, attributes } = entityDef;
+    const { name: entityName, attributes: inputAttributes } = entityDef;
 
-    if (isSingular(name)) {
-      throw new Error(`Entity name "${name}" should be plural`);
+    if (isSingular(entityName)) {
+      throw new Error(`Entity name "${entityName}" should be plural`);
     }
 
-    this.name = name;
+    this.name = entityName;
     this.className = capitalize(singularize(this.name));
-    this.attributes = attributes.map(
-      (attribute: AttributeInput) =>
-        new PropertyAttribute(attribute.name, attribute.type, attribute.options)
+
+    // Primary key
+    this.addAttribute(
+      new ProgrammaticAttribute(
+        "@PrimaryGeneratedColumn()",
+        "@Field(type => Int)",
+        "id",
+        "number",
+        ["required", "unique"]
+      )
     );
+
+    // Additional attributes from the input file.
+    inputAttributes.forEach((attribute: AttributeInput) =>
+      this.addAttribute(
+        new YamlAttribute(attribute.name, attribute.type, attribute.options)
+      )
+    );
+
     this.importMap.addEntries(
       ["Field", "Int", "ObjectType", "InputType"],
       "type-graphql"
     );
+
     this.importMap.addEntries(
       ["Column", "Entity", "PrimaryGeneratedColumn"],
       "typeorm"
@@ -285,10 +309,8 @@ class Entity {
 
   private whereUniqueInputAsString() {
     const uniqueAttributeStrings = this.attributes
-      .filter(attribute => attribute.hasOption("unique"))
+      .filter(attribute => attribute.isUnique())
       .map(attribute => `${attribute.name()}?: ${attribute.type()}`);
-
-    uniqueAttributeStrings.unshift("id?: number");
 
     return `
     export interface ${this.className}WhereUniqueInput {
@@ -330,18 +352,13 @@ class Entity {
   }
 
   public asString() {
-    return `
-    ${fileHeader(this.name)}
+    return `${fileHeader(this.name)}
 
     ${this.importMap.asString()}
 
     @Entity("${this.name}")
     @ObjectType()
     export class ${this.className} {
-      @PrimaryGeneratedColumn()
-      @Field(type => Int)
-      id: number;
-
       ${this.attributes.map(attribute => attribute.asString()).join("\n\n")}
     }
 
@@ -349,8 +366,7 @@ class Entity {
     ${this.whereUniqueInputAsString()}
     ${this.whereInputAsString()}
     ${this.updateInputAsString()}
-    ${this.orderByInputAsString()}
-    `;
+    ${this.orderByInputAsString()}`;
   }
 }
 
@@ -420,12 +436,12 @@ class RelationshipFactory {
     oneEntity.addImport("OneToMany", "typeorm");
     oneEntity.addImport(manySgCap, this.modulePath(manySg, this.useSubdirs));
     oneEntity.addAttribute(
-      new RelationshipAttribute(
+      new ProgrammaticAttribute(
         `@OneToMany(type => ${manySgCap}, ${manySg} => ${manySg}.${oneSg})`,
         `@Field(type => [${manySgCap}])`,
-        oneSg,
-        oneSgCap,
-        required
+        manyPl,
+        `${manySgCap}[]`,
+        ["required"]
       )
     );
 
@@ -433,12 +449,12 @@ class RelationshipFactory {
     manyEntity.addImport("ManyToOne", "typeorm");
     manyEntity.addImport(oneSgCap, this.modulePath(oneSg, this.useSubdirs));
     manyEntity.addAttribute(
-      new RelationshipAttribute(
+      new ProgrammaticAttribute(
         `@ManyToOne(type => ${oneSgCap}, ${oneSg} => ${oneSg}.${manyPl})`,
         `@Field(type => ${oneSgCap})`,
         oneSg,
         oneSgCap,
-        required
+        ["required"]
       )
     );
   }
@@ -463,12 +479,11 @@ class RelationshipFactory {
       this.modulePath(otherSg, this.useSubdirs)
     );
     ownerEntity.addAttribute(
-      new RelationshipAttribute(
+      new ProgrammaticAttribute(
         `@ManyToMany(type => ${otherSgCap}, ${otherSg} => ${otherSg}.${ownerPl}) @JoinTable()`,
         "",
         otherPl,
-        `${otherSgCap}[]`,
-        false
+        `${otherSgCap}[]`
       )
     );
 
@@ -480,12 +495,11 @@ class RelationshipFactory {
       this.modulePath(ownerSg, this.useSubdirs)
     );
     otherEntity.addAttribute(
-      new RelationshipAttribute(
+      new ProgrammaticAttribute(
         `@ManyToMany(type => ${ownerSgCap}, ${ownerSg} => ${ownerSg}.${otherPl})`,
         "",
         ownerPl,
-        `${ownerSgCap}[]`,
-        false
+        `${ownerSgCap}[]`
       )
     );
   }
@@ -538,6 +552,10 @@ class Service {
     );
   }
 
+  private uniqueAttributes() {
+    return this.attributes.filter(attribute => attribute.isUnique());
+  }
+
   asString() {
     const nameSg = this.nameSg;
     const nameSgCap = capitalize(nameSg);
@@ -557,33 +575,40 @@ class Service {
       ){}
 
       // Create
-      create${nameSgCap}(data: ${nameSgCap}CreateInput) {}
+      async create${nameSgCap}(data: ${nameSgCap}CreateInput) {
+        const new${nameSgCap} = this.${nameSg}Repository.create(data);
+        return await this.${nameSg}Repository.save(new${nameSgCap});
+      }
         
-      upsert${nameSgCap}(args: {
+      async upsert${nameSgCap}(args: {
         where: ${nameSgCap}WhereUniqueInput;
         create: ${nameSgCap}CreateInput;
         update: ${nameSgCap}UpdateInput;
       }) {}
 
       // Read
-      ${nameSg}(where: ${nameSgCap}WhereUniqueInput) {}
+      async ${nameSg}(where: ${nameSgCap}WhereUniqueInput) {
+        return await this.${nameSg}Repository.findOne(where);
+      }
 
-      ${namePl}(args?: {
+      async ${namePl}(args?: {
         where?: ${nameSgCap}WhereInput;
         orderBy?: ${nameSgCap}OrderByInput;
         skip?: number;
         take?: number;
-      }) {}
+      }) {
+        return await this.${nameSg}Repository.find(args.where)
+      }
 
       // Update
-      update${nameSgCap}(args: { data: ${nameSgCap}UpdateInput; where: ${nameSgCap}WhereUniqueInput }) {}
+      async update${nameSgCap}(args: { data: ${nameSgCap}UpdateInput; where: ${nameSgCap}WhereUniqueInput }) {}
 
-      updateMany${namePlCap}(args: { data: ${nameSgCap}UpdateInput; where?: ${nameSgCap}WhereInput }) {}
+      async updateMany${namePlCap}(args: { data: ${nameSgCap}UpdateInput; where?: ${nameSgCap}WhereInput }) {}
 
       // Delete
-      delete${nameSgCap}(where: ${nameSgCap}WhereUniqueInput) {}
+      async delete${nameSgCap}(where: ${nameSgCap}WhereUniqueInput) {}
 
-      deleteMany${namePlCap}(where?: ${nameSgCap}WhereInput) {}
+      async deleteMany${namePlCap}(where?: ${nameSgCap}WhereInput) {}
     }`;
   }
 }

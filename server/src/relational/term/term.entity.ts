@@ -1,7 +1,7 @@
 // ----- TERMS -----
-// Generated 2019-04-26 23:07:12
+// Generated 2019-04-27 19:12:17
 
-import { Field, Int, ObjectType, ArgsType, InputType } from "type-graphql";
+import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Holiday } from "../holiday/holiday.entity";
 import { Section } from "../section/section.entity";
@@ -36,6 +36,9 @@ export class Term {
 
 @InputType()
 export class TermCreateInput {
+  @Field(type => Int)
+  id: number;
+
   @Field()
   name: string;
 
@@ -44,6 +47,12 @@ export class TermCreateInput {
 
   @Field()
   endDate: Date;
+
+  @Field(type => [Holiday])
+  holidays: Holiday[];
+
+  @Field(type => [Section])
+  sections: Section[];
 }
 
 export interface TermWhereUniqueInput {
@@ -51,22 +60,34 @@ export interface TermWhereUniqueInput {
 }
 
 export interface TermWhereInput {
+  id?: number;
   name?: string;
   startDate?: Date;
   endDate?: Date;
+  holidays?: Holiday[];
+  sections?: Section[];
 }
 
 export interface TermUpdateInput {
+  id?: number;
   name?: string;
   startDate?: Date;
   endDate?: Date;
+  holidays?: Holiday[];
+  sections?: Section[];
 }
 
 export enum TermOrderByInput {
+  idAsc,
+  idDesc,
   nameAsc,
   nameDesc,
   startDateAsc,
   startDateDesc,
   endDateAsc,
-  endDateDesc
+  endDateDesc,
+  holidaysAsc,
+  holidaysDesc,
+  sectionsAsc,
+  sectionsDesc
 }

@@ -1,7 +1,7 @@
 // ----- HOLIDAYS -----
-// Generated 2019-04-26 23:07:12
+// Generated 2019-04-27 19:12:17
 
-import { Field, Int, ObjectType, ArgsType, InputType } from "type-graphql";
+import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { Term } from "../term/term.entity";
 
@@ -31,6 +31,9 @@ export class Holiday {
 
 @InputType()
 export class HolidayCreateInput {
+  @Field(type => Int)
+  id: number;
+
   @Field()
   title: string;
 
@@ -39,6 +42,9 @@ export class HolidayCreateInput {
 
   @Field()
   endDate: Date;
+
+  @Field(type => Term)
+  term: Term;
 }
 
 export interface HolidayWhereUniqueInput {
@@ -46,22 +52,30 @@ export interface HolidayWhereUniqueInput {
 }
 
 export interface HolidayWhereInput {
+  id?: number;
   title?: string;
   startDate?: Date;
   endDate?: Date;
+  term?: Term;
 }
 
 export interface HolidayUpdateInput {
+  id?: number;
   title?: string;
   startDate?: Date;
   endDate?: Date;
+  term?: Term;
 }
 
 export enum HolidayOrderByInput {
+  idAsc,
+  idDesc,
   titleAsc,
   titleDesc,
   startDateAsc,
   startDateDesc,
   endDateAsc,
-  endDateDesc
+  endDateDesc,
+  termAsc,
+  termDesc
 }
