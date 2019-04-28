@@ -1,5 +1,4 @@
 // ----- ROLES -----
-// Generated 2019-04-27 19:12:17
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
@@ -26,9 +25,6 @@ export class Role {
 
 @InputType()
 export class RoleCreateInput {
-  @Field(type => Int)
-  id: number;
-
   @Field()
   title: string;
 

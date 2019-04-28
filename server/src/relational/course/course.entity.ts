@@ -1,5 +1,4 @@
 // ----- COURSES -----
-// Generated 2019-04-27 19:12:17
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import {
@@ -43,9 +42,6 @@ export class Course {
 
 @InputType()
 export class CourseCreateInput {
-  @Field(type => Int)
-  id: number;
-
   @Field()
   number: string;
 

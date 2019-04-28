@@ -1,5 +1,4 @@
 // ----- SECTIONS -----
-// Generated 2019-04-27 19:12:17
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
@@ -36,9 +35,6 @@ export class Section {
 
 @InputType()
 export class SectionCreateInput {
-  @Field(type => Int)
-  id: number;
-
   @Field()
   title: string;
 

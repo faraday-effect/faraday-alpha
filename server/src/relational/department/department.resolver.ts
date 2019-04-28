@@ -1,15 +1,7 @@
-import {
-  Args,
-  Mutation,
-  Parent,
-  Query,
-  ResolveProperty,
-  Resolver
-} from "@nestjs/graphql";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Arg, Int } from "type-graphql";
-import { Course } from "../course/course.entity";
 import { CourseService } from "../course/course.service";
-import { Department } from "./department.entity";
+import { Department, DepartmentCreateInput } from "./department.entity";
 import { DepartmentService } from "./department.service";
 
 @Resolver(() => Department)
@@ -26,13 +18,13 @@ export class DepartmentResolver {
 
   @Query(returns => Department)
   async department(@Arg("id", type => Int) id: number) {
-    return this.departmentService.department(id);
+    return this.departmentService.department({ id });
   }
 
   @Mutation(returns => Department)
-  async create(@Args("name") name: string) {
-    console.log("DEPT NAME", name);
-    return this.departmentService.createDepartment({ name });
+  async create(@Args("data") data: DepartmentCreateInput) {
+    console.log("DEPT DATA", data);
+    return this.departmentService.createDepartment(data);
   }
 
   // @ResolveProperty("courses", returns => [Course])

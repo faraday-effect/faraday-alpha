@@ -1,5 +1,4 @@
 // ----- PREFIX SERVICE -----
-// Generated 2019-04-27 19:12:17
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";

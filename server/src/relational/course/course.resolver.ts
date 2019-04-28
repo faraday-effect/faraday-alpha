@@ -14,6 +14,6 @@ export class CourseResolver {
 
   @Query(returns => Course)
   async course(@Arg("id", type => Int) id: number) {
-    return this.courseService.course(id);
+    return this.courseService.course({ id });
   }
 }

@@ -19,16 +19,21 @@ import { capitalize, pluralize, singularize } from "inflection";
 
 import Ajv = require("ajv");
 import { currentDateAndTime } from "../utils/date-and-time";
+import { hashFile, hashString } from "../utils/message-digest";
 
 // ---- Handy functions
 
 const isSingular = (word: string) => singularize(word) === word;
 
+/**
+ * Generate a header for this file.
+ *
+ * This used to include a time stamp, but that thwarted the MD5
+ * that determines whether or not to regenerate the file.
+ * @param name Name to include in the header
+ */
 function fileHeader(name: string) {
-  return `
-    // ----- ${name.toUpperCase()} -----
-    // Generated ${currentDateAndTime()}
-    `;
+  return `// ----- ${name.toUpperCase()} -----`;
 }
 
 function prettify(code: string) {
@@ -98,6 +103,10 @@ abstract class Attribute {
 
   isUnique() {
     return this.hasOption("unique");
+  }
+
+  isPrimaryKey() {
+    return this.hasOption("pk");
   }
 
   asString() {
@@ -263,7 +272,7 @@ class Entity {
         "@Field(type => Int)",
         "id",
         "number",
-        ["required", "unique"]
+        ["required", "unique", "pk"]
       )
     );
 
@@ -294,16 +303,18 @@ class Entity {
   }
 
   private createInputAsString() {
-    const inputAttributeStrings = this.attributes.map(
-      attribute => `
+    const createInputStrings = this.attributes
+      .filter(attribute => !attribute.isPrimaryKey())
+      .map(
+        attribute => `
     ${attribute.fieldDecorator()}
     ${attribute.declaration()}`
-    );
+      );
 
     return `
     @InputType()
     export class ${this.className}CreateInput {
-      ${inputAttributeStrings.join("\n")}
+      ${createInputStrings.join("\n")}
     }`;
   }
 
@@ -386,6 +397,10 @@ class Entities {
 
   public static allEntities() {
     return Array.from(Entities.entityByName.values());
+  }
+
+  public static size() {
+    return this.entityByName.size;
   }
 }
 
@@ -640,9 +655,48 @@ try {
       type: "boolean",
       default: false
     })
+    .option("only", {
+      description: "Only generate the listed entities (comma separated list)",
+      type: "string"
+    })
+    .option("overwrite", {
+      description: "Overwrite existing output files",
+      type: "boolean",
+      default: false
+    })
+    .option("verbose", {
+      description: "Ouptut additional details on what's happening",
+      type: "boolean",
+      default: false
+    })
     .demandCommand(1).argv;
 
-  debug("ARGS %O", args);
+  /**
+   * Check whether the file at `path` exists, and if so, contains `content`
+   * @param path Location of file to check.
+   * @param content Content to check for.
+   */
+  function alreadyContains(path: fs.PathLike, content: string) {
+    if (fs.existsSync(path)) {
+      return hashFile(path) === hashString(content);
+    }
+    return false;
+  }
+
+  /**
+   * Write `path` with `content` if it doesn't already contain it.
+   * Do so unconditionally if the command line `overwrite` flag is set.
+   * @param path Path to the file
+   * @param content Content to write there
+   */
+  function maybeWriteFileSync(path: fs.PathLike, content: string) {
+    if (args.overwrite || !alreadyContains(path, content)) {
+      fs.writeFileSync(path, content);
+      if (args.verbose) console.debug(`Wrote '${path}'`);
+    } else if (args.verbose) {
+      console.debug(`Skipped writing '${path}'`);
+    }
+  }
 
   // Load the models YAML file.
   let doc = null;
@@ -652,10 +706,12 @@ try {
     console.error(`Can't load model file: ${err}`);
     process.exit(1);
   }
+  if (args.verbose) console.debug(`Loaded models from '${args._[0]}'`);
 
   // Load the JSON schema.
   const ajv = new Ajv();
   const schema = yaml.safeLoad(fs.readFileSync(args.schema, "utf-8"));
+  if (args.verbose) console.debug(`Loaded schema from '${args.schema}'`);
   debug("SCHEMA %O", schema);
 
   // Validate the YAML document.
@@ -667,6 +723,7 @@ try {
     );
     process.exit(1);
   }
+  if (args.verbose) console.debug("Model file validated successfully");
 
   // Process the entities.
   doc.entities.forEach((entityDef: EntityInput) =>
@@ -678,34 +735,48 @@ try {
   doc.relationships.forEach((relDef: RelDef) => {
     relationshipFactory.build(relDef);
   });
+  if (args.verbose) {
+    console.debug(`Loaded ${Entities.size()} entities`);
+  }
 
   // Dump these _after_ building relationships, which injects various data into the entities.
   debug("ENTITIES %O", Entities);
   debug("RELATIONSHIPS %O", doc.relationships);
 
-  // Output everything.
+  // Generate output.
+  let onlyTheseEntities = [];
+  if (args["only"]) {
+    onlyTheseEntities = args["only"].split(/\s*,\s*/);
+  }
+
   Entities.allEntities().map(entity => {
-    const entityName = singularize(entity.name);
-    const destinationDir = path.join(
-      args["out-dir"],
-      args["sub-dirs"] ? entityName : ""
-    );
+    if (
+      onlyTheseEntities.length == 0 ||
+      onlyTheseEntities.includes(entity.name)
+    ) {
+      // We're not filtering or we found the entity in the filter list.
+      const entityName = singularize(entity.name);
+      const destinationDir = path.join(
+        args["out-dir"],
+        args["sub-dirs"] ? entityName : ""
+      );
 
-    // Make sure the directory exists.
-    fs.mkdirSync(destinationDir, { recursive: true, mode: 0o755 });
+      // Make sure the directory exists.
+      fs.mkdirSync(destinationDir, { recursive: true, mode: 0o755 });
 
-    // Ouptut the entity file.
-    fs.writeFileSync(
-      path.join(destinationDir, `${entityName}.entity.ts`),
-      prettify(entity.asString())
-    );
+      // Ouptut the entity file.
+      maybeWriteFileSync(
+        path.join(destinationDir, `${entityName}.entity.ts`),
+        prettify(entity.asString())
+      );
 
-    // Output the service file.
-    const service = new Service(entity.name, entity.attributes);
-    fs.writeFileSync(
-      path.join(destinationDir, `${entityName}.service.ts`),
-      prettify(service.asString())
-    );
+      // Output the service file.
+      const service = new Service(entity.name, entity.attributes);
+      maybeWriteFileSync(
+        path.join(destinationDir, `${entityName}.service.ts`),
+        prettify(service.asString())
+      );
+    }
   });
 } catch (err) {
   console.error("ERROR", err);

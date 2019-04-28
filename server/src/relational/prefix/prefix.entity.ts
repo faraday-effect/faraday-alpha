@@ -1,5 +1,4 @@
 // ----- PREFIXES -----
-// Generated 2019-04-27 19:12:17
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
@@ -23,9 +22,6 @@ export class Prefix {
 
 @InputType()
 export class PrefixCreateInput {
-  @Field(type => Int)
-  id: number;
-
   @Field()
   value: string;
 

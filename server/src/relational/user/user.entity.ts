@@ -1,5 +1,4 @@
 // ----- USERS -----
-// Generated 2019-04-27 19:12:16
 
 import { Field, Int, ObjectType, InputType } from "type-graphql";
 import {
@@ -49,9 +48,6 @@ export class User {
 
 @InputType()
 export class UserCreateInput {
-  @Field(type => Int)
-  id: number;
-
   @Field()
   email: string;
 

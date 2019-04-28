@@ -19,6 +19,6 @@ export class TermResolver {
 
   @Query(returns => Term)
   public async term(@Arg("id", type => Int) id: number) {
-    return this.termService.term(id);
+    return this.termService.term({ id });
   }
 }
