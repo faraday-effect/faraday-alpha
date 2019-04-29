@@ -42,7 +42,7 @@ export class DepartmentService {
     skip?: number;
     take?: number;
   }) {
-    return await this.departmentRepository.find(args.where);
+    return await this.departmentRepository.find(args);
   }
 
   // Update

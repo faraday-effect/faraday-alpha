@@ -44,7 +44,7 @@ describe("DepartmentService", () => {
 
   it("can create a new department without courses", async () => {
     const name = "Department of Departments Department";
-    await deptService.createDepartment({ name, courses: [] });
+    await deptService.createDepartment({ name });
 
     const dept = await deptRepo.find({ name });
     expect(dept).toHaveLength(1);

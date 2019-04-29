@@ -1,20 +1,27 @@
 {
-    "compilerOptions": {
-        // Enable incremental builds
-        "incremental": true,
-        // This appears to be necessary for Apollo server (https://github.com/apollographql/apollo-server/issues/2025)
-        "allowSyntheticDefaultImports": true,
-        // Necessary for decorator reflection
-        "emitDecoratorMetadata": true,
-        // Enable decorators.
-        "experimentalDecorators": true,
-        // Use CommonJS (Node-style) module linkage
-        "module": "commonjs",
-        // Build directory for .js and .map files
-        "outDir": "build",
-        // Include source maps for debugging
-        "sourceMap": true,
-        // JavaScript target
-        "target": "es2017",
-    }
+  "compilerOptions": {
+    // Enable incremental builds
+    "incremental": true,
+
+    // This appears to be necessary for Apollo server (https://github.com/apollographql/apollo-server/issues/2025)
+    "allowSyntheticDefaultImports": true,
+
+    // Necessary for decorator reflection
+    "emitDecoratorMetadata": true,
+
+    // Enable decorators.
+    "experimentalDecorators": true,
+
+    // Use CommonJS (Node-style) module linkage
+    "module": "commonjs",
+
+    // Build directory for .js and .map files
+    "outDir": "build",
+
+    // Include source maps for debugging
+    "sourceMap": true,
+
+    // JavaScript target
+    "target": "es2017"
+  }
 }

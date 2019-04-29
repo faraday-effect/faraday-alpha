@@ -30,8 +30,6 @@ export class RoleCreateInput {
 
   @Field()
   description: string;
-
-  users?: User[];
 }
 
 export interface RoleWhereUniqueInput {

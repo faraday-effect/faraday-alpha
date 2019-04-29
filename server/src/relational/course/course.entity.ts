@@ -47,15 +47,6 @@ export class CourseCreateInput {
 
   @Field()
   title: string;
-
-  @Field(type => Prefix)
-  prefix: Prefix;
-
-  @Field(type => Department)
-  department: Department;
-
-  @Field(type => [Section])
-  sections: Section[];
 }
 
 export interface CourseWhereUniqueInput {

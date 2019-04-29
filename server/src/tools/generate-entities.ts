@@ -109,6 +109,10 @@ abstract class Attribute {
     return this.hasOption("pk");
   }
 
+  isRelationship() {
+    return this.hasOption("relationship");
+  }
+
   asString() {
     return [
       this.columnDecorator(),
@@ -304,7 +308,9 @@ class Entity {
 
   private createInputAsString() {
     const createInputStrings = this.attributes
-      .filter(attribute => !attribute.isPrimaryKey())
+      .filter(
+        attribute => !(attribute.isPrimaryKey() || attribute.isRelationship())
+      )
       .map(
         attribute => `
     ${attribute.fieldDecorator()}
@@ -445,7 +451,11 @@ class RelationshipFactory {
     const manySgCap = capitalize(singularize(rel.many)); // Holiday
     const manyPl = rel.many; // holidays
 
+    const attributeOptions = ["relationship"];
     const required = !!(rel.options && rel.options.includes("required"));
+    if (required) {
+      attributeOptions.push("required");
+    }
 
     const oneEntity = Entities.findEntity(onePl);
     oneEntity.addImport("OneToMany", "typeorm");
@@ -456,7 +466,7 @@ class RelationshipFactory {
         `@Field(type => [${manySgCap}])`,
         manyPl,
         `${manySgCap}[]`,
-        ["required"]
+        attributeOptions
       )
     );
 
@@ -469,7 +479,7 @@ class RelationshipFactory {
         `@Field(type => ${oneSgCap})`,
         oneSg,
         oneSgCap,
-        ["required"]
+        attributeOptions
       )
     );
   }
@@ -498,7 +508,8 @@ class RelationshipFactory {
         `@ManyToMany(type => ${otherSgCap}, ${otherSg} => ${otherSg}.${ownerPl}) @JoinTable()`,
         "",
         otherPl,
-        `${otherSgCap}[]`
+        `${otherSgCap}[]`,
+        ["relationship"]
       )
     );
 
@@ -514,7 +525,8 @@ class RelationshipFactory {
         `@ManyToMany(type => ${ownerSgCap}, ${ownerSg} => ${ownerSg}.${otherPl})`,
         "",
         ownerPl,
-        `${ownerSgCap}[]`
+        `${ownerSgCap}[]`,
+        ["relationship"]
       )
     );
   }

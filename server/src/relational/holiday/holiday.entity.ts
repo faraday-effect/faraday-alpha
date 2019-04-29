@@ -38,9 +38,6 @@ export class HolidayCreateInput {
 
   @Field()
   endDate: Date;
-
-  @Field(type => Term)
-  term: Term;
 }
 
 export interface HolidayWhereUniqueInput {

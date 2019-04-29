@@ -24,9 +24,6 @@ export class Prefix {
 export class PrefixCreateInput {
   @Field()
   value: string;
-
-  @Field(type => [Course])
-  courses: Course[];
 }
 
 export interface PrefixWhereUniqueInput {

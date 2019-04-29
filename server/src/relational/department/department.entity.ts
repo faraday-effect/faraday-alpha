@@ -24,9 +24,6 @@ export class Department {
 export class DepartmentCreateInput {
   @Field()
   name: string;
-
-  @Field(type => [Course])
-  courses: Course[];
 }
 
 export interface DepartmentWhereUniqueInput {

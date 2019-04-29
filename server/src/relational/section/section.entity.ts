@@ -43,12 +43,6 @@ export class SectionCreateInput {
 
   @Field(type => Int)
   creditHours: number;
-
-  @Field(type => Term)
-  term: Term;
-
-  @Field(type => Course)
-  course: Course;
 }
 
 export interface SectionWhereUniqueInput {

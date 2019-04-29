@@ -65,8 +65,6 @@ export class UserCreateInput {
 
   @Field()
   mobilePhone?: string;
-
-  roles?: Role[];
 }
 
 export interface UserWhereUniqueInput {

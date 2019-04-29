@@ -43,12 +43,6 @@ export class TermCreateInput {
 
   @Field()
   endDate: Date;
-
-  @Field(type => [Holiday])
-  holidays: Holiday[];
-
-  @Field(type => [Section])
-  sections: Section[];
 }
 
 export interface TermWhereUniqueInput {

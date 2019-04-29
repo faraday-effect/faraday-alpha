@@ -8,7 +8,7 @@ export class TermResolver {
   public constructor(private readonly termService: TermService) {}
 
   @Mutation(returns => Term)
-  public async create(@Args() data: TermCreateInput) {
+  public async create(@Args("data") data: TermCreateInput) {
     return this.termService.createTerm(data);
   }
 
