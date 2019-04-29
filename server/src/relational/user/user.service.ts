@@ -42,7 +42,11 @@ export class UserService {
     skip?: number;
     take?: number;
   }) {
-    return await this.userRepository.find(args.where);
+    if (args) {
+      return await this.userRepository.find(args.where);
+    } else {
+      return await this.userRepository.find();
+    }
   }
 
   // Update

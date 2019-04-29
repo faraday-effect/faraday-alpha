@@ -8,7 +8,7 @@
   "scripts": {
     "build:watch": "tsc --watch",
     "build": "tsc",
-    "dev": "concurrently --kill-others --prefix-colors=cyan \"yarn:build:watch\" \"yarn:serve:watch\"",
+    "dev": "ts-node-dev --respawn src/main.ts",
     "serve:watch": "node-dev build/src/main.js",
     "serve": "node build/src/main.js",
     "test:cov": "yarn build && jest --coverage",
@@ -43,6 +43,7 @@
     "@types/md5": "^2.1.33",
     "@types/node": "^11.13.6",
     "@types/prettier": "^1.16.3",
+    "@types/supertest": "^2.0.7",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
     "concurrently": "^4.1.0",
@@ -59,6 +60,9 @@
     "prettier": "^1.17.0",
     "source-map-support": "^0.5.12",
     "supertest": "^4.0.2",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.1.0",
+    "ts-node-dev": "^1.0.0-pre.32",
     "typescript": "^3.4.4"
   }
 }

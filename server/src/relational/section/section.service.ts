@@ -42,7 +42,11 @@ export class SectionService {
     skip?: number;
     take?: number;
   }) {
-    return await this.sectionRepository.find(args.where);
+    if (args) {
+      return await this.sectionRepository.find(args.where);
+    } else {
+      return await this.sectionRepository.find();
+    }
   }
 
   // Update

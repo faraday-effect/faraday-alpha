@@ -42,7 +42,11 @@ export class CourseService {
     skip?: number;
     take?: number;
   }) {
-    return await this.courseRepository.find(args.where);
+    if (args) {
+      return await this.courseRepository.find(args.where);
+    } else {
+      return await this.courseRepository.find();
+    }
   }
 
   // Update

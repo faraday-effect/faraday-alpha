@@ -1,23 +1,23 @@
 // ----- DEPARTMENTS -----
 
-import { Field, Int, ObjectType, InputType } from "type-graphql";
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Field, InputType, Int, ObjectType } from "type-graphql";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { Course } from "../course/course.entity";
 
 @Entity("departments")
 @ObjectType()
 export class Department {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 255 })
   @Field()
   name: string;
 
-  @OneToMany(type => Course, course => course.department)
-  @Field(type => [Course])
-  courses: Course[];
+  // @OneToMany(() => Course, course => course.department)
+  // @Field(() => [Course])
+  // courses: Course[];
 }
 
 @InputType()

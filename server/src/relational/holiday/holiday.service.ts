@@ -42,7 +42,11 @@ export class HolidayService {
     skip?: number;
     take?: number;
   }) {
-    return await this.holidayRepository.find(args.where);
+    if (args) {
+      return await this.holidayRepository.find(args.where);
+    } else {
+      return await this.holidayRepository.find();
+    }
   }
 
   // Update

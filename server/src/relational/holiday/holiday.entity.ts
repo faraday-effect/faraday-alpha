@@ -8,7 +8,7 @@ import { Term } from "../term/term.entity";
 @ObjectType()
 export class Holiday {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -23,8 +23,8 @@ export class Holiday {
   @Field()
   endDate: Date;
 
-  @ManyToOne(type => Term, term => term.holidays)
-  @Field(type => Term)
+  @ManyToOne(() => Term, term => term.holidays)
+  @Field(() => Term)
   term: Term;
 }
 

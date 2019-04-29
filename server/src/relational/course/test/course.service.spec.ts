@@ -1,6 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DepartmentModule } from "../../department/department.module";
 import { Course } from "../course.entity";
 import { CourseService } from "../course.service";
 

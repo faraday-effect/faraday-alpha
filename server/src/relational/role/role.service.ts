@@ -42,7 +42,11 @@ export class RoleService {
     skip?: number;
     take?: number;
   }) {
-    return await this.roleRepository.find(args.where);
+    if (args) {
+      return await this.roleRepository.find(args.where);
+    } else {
+      return await this.roleRepository.find();
+    }
   }
 
   // Update

@@ -16,10 +16,9 @@ import yaml = require("js-yaml");
 
 import prettier = require("prettier");
 import { capitalize, pluralize, singularize } from "inflection";
+import { hashFile, hashString } from "../utils/message-digest";
 
 import Ajv = require("ajv");
-import { currentDateAndTime } from "../utils/date-and-time";
-import { hashFile, hashString } from "../utils/message-digest";
 
 // ---- Handy functions
 
@@ -42,6 +41,7 @@ function prettify(code: string) {
   } catch (err) {
     console.error(`Prettier failed: ${err}`);
     console.error(`Raw code ${code}`);
+    throw err;
   }
 }
 
@@ -58,7 +58,12 @@ class ImportMap {
     if (!this.importsByModule.has(moduleName)) {
       this.importsByModule.set(moduleName, new Set());
     }
-    this.importsByModule.get(moduleName).add(importName);
+
+    const entry = this.importsByModule.get(moduleName);
+    if (!entry) {
+      throw new Error(`Can't find module '${moduleName}'`);
+    }
+    entry.add(importName);
   }
 
   public addEntries(importNames: string[], moduleName: string) {
@@ -130,8 +135,8 @@ class YamlAttribute extends Attribute {
 
   constructor(
     private readonly inputName: string,
-    private readonly inputType: string,
-    private readonly inputOptions: string[] = []
+    inputType: string,
+    inputOptions: string[] = []
   ) {
     super(inputOptions);
 
@@ -199,7 +204,7 @@ class YamlAttribute extends Attribute {
     let config = [];
 
     if (this.gqlType) {
-      config.push(`type => ${this.gqlType}`);
+      config.push(`() => ${this.gqlType}`);
     }
 
     return `@Field(${config.join(", ")})`;
@@ -218,7 +223,7 @@ class ProgrammaticAttribute extends Attribute {
     private readonly fieldDecoratorString: string,
     private readonly propertyName: string,
     private readonly propertyType: string,
-    private readonly inputOptions: string[] = []
+    inputOptions: string[] = []
   ) {
     super(inputOptions);
   }
@@ -273,7 +278,7 @@ class Entity {
     this.addAttribute(
       new ProgrammaticAttribute(
         "@PrimaryGeneratedColumn()",
-        "@Field(type => Int)",
+        "@Field(() => Int)",
         "id",
         "number",
         ["required", "unique", "pk"]
@@ -313,8 +318,8 @@ class Entity {
       )
       .map(
         attribute => `
-    ${attribute.fieldDecorator()}
-    ${attribute.declaration()}`
+        ${attribute.fieldDecorator()}
+        ${attribute.declaration()}`
       );
 
     return `
@@ -398,7 +403,11 @@ class Entities {
   }
 
   public static findEntity(name: string) {
-    return Entities.entityByName.get(name);
+    const entity = Entities.entityByName.get(name);
+    if (!entity) {
+      throw new Error(`Can't find entity '${name}'`);
+    }
+    return entity;
   }
 
   public static allEntities() {
@@ -462,8 +471,8 @@ class RelationshipFactory {
     oneEntity.addImport(manySgCap, this.modulePath(manySg, this.useSubdirs));
     oneEntity.addAttribute(
       new ProgrammaticAttribute(
-        `@OneToMany(type => ${manySgCap}, ${manySg} => ${manySg}.${oneSg})`,
-        `@Field(type => [${manySgCap}])`,
+        `@OneToMany(() => ${manySgCap}, ${manySg} => ${manySg}.${oneSg})`,
+        `@Field(() => [${manySgCap}])`,
         manyPl,
         `${manySgCap}[]`,
         attributeOptions
@@ -475,8 +484,8 @@ class RelationshipFactory {
     manyEntity.addImport(oneSgCap, this.modulePath(oneSg, this.useSubdirs));
     manyEntity.addAttribute(
       new ProgrammaticAttribute(
-        `@ManyToOne(type => ${oneSgCap}, ${oneSg} => ${oneSg}.${manyPl})`,
-        `@Field(type => ${oneSgCap})`,
+        `@ManyToOne(() => ${oneSgCap}, ${oneSg} => ${oneSg}.${manyPl})`,
+        `@Field(() => ${oneSgCap})`,
         oneSg,
         oneSgCap,
         attributeOptions
@@ -505,7 +514,7 @@ class RelationshipFactory {
     );
     ownerEntity.addAttribute(
       new ProgrammaticAttribute(
-        `@ManyToMany(type => ${otherSgCap}, ${otherSg} => ${otherSg}.${ownerPl}) @JoinTable()`,
+        `@ManyToMany(() => ${otherSgCap}, ${otherSg} => ${otherSg}.${ownerPl}) @JoinTable()`,
         "",
         otherPl,
         `${otherSgCap}[]`,
@@ -522,7 +531,7 @@ class RelationshipFactory {
     );
     otherEntity.addAttribute(
       new ProgrammaticAttribute(
-        `@ManyToMany(type => ${ownerSgCap}, ${ownerSg} => ${ownerSg}.${otherPl})`,
+        `@ManyToMany(() => ${ownerSgCap}, ${ownerSg} => ${ownerSg}.${otherPl})`,
         "",
         ownerPl,
         `${ownerSgCap}[]`,
@@ -554,10 +563,7 @@ class Service {
   private nameSg: string;
   private nameSgCap: string;
 
-  constructor(
-    private readonly entityName: string,
-    private readonly attributes: Attribute[]
-  ) {
+  constructor(entityName: string) {
     this.nameSg = singularize(entityName);
     this.nameSgCap = capitalize(this.nameSg);
 
@@ -577,10 +583,6 @@ class Service {
       ].map(suffix => `${this.nameSgCap}${suffix}`),
       `./${this.nameSg}.entity`
     );
-  }
-
-  private uniqueAttributes() {
-    return this.attributes.filter(attribute => attribute.isUnique());
   }
 
   asString() {
@@ -624,7 +626,11 @@ class Service {
         skip?: number;
         take?: number;
       }) {
-        return await this.${nameSg}Repository.find(args.where)
+        if (args) {
+          return await this.${nameSg}Repository.find(args.where);
+        } else {
+          return await this.${nameSg}Repository.find();
+        }
       }
 
       // Update
@@ -756,7 +762,7 @@ try {
   debug("RELATIONSHIPS %O", doc.relationships);
 
   // Generate output.
-  let onlyTheseEntities = [];
+  let onlyTheseEntities: string[] = [];
   if (args["only"]) {
     onlyTheseEntities = args["only"].split(/\s*,\s*/);
   }
@@ -783,7 +789,7 @@ try {
       );
 
       // Output the service file.
-      const service = new Service(entity.name, entity.attributes);
+      const service = new Service(entity.name);
       maybeWriteFileSync(
         path.join(destinationDir, `${entityName}.service.ts`),
         prettify(service.asString())

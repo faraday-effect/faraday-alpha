@@ -1,10 +1,17 @@
+import { printSchema } from "graphql";
 import { buildSchema } from "type-graphql";
+import { CourseResolver } from "./relational/course/course.resolver";
 import { DepartmentResolver } from "./relational/department/department.resolver";
 import { TermResolver } from "./relational/term/term.resolver";
-import { CourseResolver } from "./relational/course/course.resolver";
 
-const schema = buildSchema({
-  resolvers: [DepartmentResolver, TermResolver, CourseResolver]
-});
+function createSchema() {
+  return buildSchema({
+    resolvers: [DepartmentResolver, TermResolver, CourseResolver]
+  });
+}
 
-console.log("SCHEMA", schema);
+(async () => {
+  const schema = await createSchema();
+  const sdl = printSchema(schema);
+  console.log(sdl);
+})();

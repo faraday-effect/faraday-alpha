@@ -42,7 +42,11 @@ export class PrefixService {
     skip?: number;
     take?: number;
   }) {
-    return await this.prefixRepository.find(args.where);
+    if (args) {
+      return await this.prefixRepository.find(args.where);
+    } else {
+      return await this.prefixRepository.find();
+    }
   }
 
   // Update

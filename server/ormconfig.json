@@ -5,8 +5,6 @@
   "database": "faraday",
   "username": "faraday",
   "password": null,
-  "entities": [
-    "build/src/**/*.entity.js"
-  ],
-  "synchronize": true
+  "synchronize": true,
+  "entities": ["src/relational/**/*.entity.[tj]s"]
 }

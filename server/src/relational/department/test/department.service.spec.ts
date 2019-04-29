@@ -62,7 +62,7 @@ describe("DepartmentService", () => {
   it("can fetch all departments", async () => {
     const howMany = 4;
     for (let i = 0; i < howMany; i++) {
-      const id = await _createNewDepartment(`Department #${i}`);
+      await _createNewDepartment(`Department #${i}`);
     }
 
     const readResult = await deptService.departments();

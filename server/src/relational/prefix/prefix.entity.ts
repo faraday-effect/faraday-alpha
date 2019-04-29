@@ -8,15 +8,15 @@ import { Course } from "../course/course.entity";
 @ObjectType()
 export class Prefix {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
   @Field()
   value: string;
 
-  @OneToMany(type => Course, course => course.prefix)
-  @Field(type => [Course])
+  @OneToMany(() => Course, course => course.prefix)
+  @Field(() => [Course])
   courses: Course[];
 }
 

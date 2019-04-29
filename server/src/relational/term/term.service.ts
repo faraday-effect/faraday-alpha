@@ -42,7 +42,11 @@ export class TermService {
     skip?: number;
     take?: number;
   }) {
-    return await this.termRepository.find(args.where);
+    if (args) {
+      return await this.termRepository.find(args.where);
+    } else {
+      return await this.termRepository.find();
+    }
   }
 
   // Update

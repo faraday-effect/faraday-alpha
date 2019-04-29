@@ -9,7 +9,7 @@ import { Course } from "../course/course.entity";
 @ObjectType()
 export class Section {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -21,15 +21,15 @@ export class Section {
   regNumber?: string;
 
   @Column({ type: "integer" })
-  @Field(type => Int)
+  @Field(() => Int)
   creditHours: number;
 
-  @ManyToOne(type => Term, term => term.sections)
-  @Field(type => Term)
+  @ManyToOne(() => Term, term => term.sections)
+  @Field(() => Term)
   term: Term;
 
-  @ManyToOne(type => Course, course => course.sections)
-  @Field(type => Course)
+  @ManyToOne(() => Course, course => course.sections)
+  @Field(() => Course)
   course: Course;
 }
 
@@ -41,7 +41,7 @@ export class SectionCreateInput {
   @Field()
   regNumber?: string;
 
-  @Field(type => Int)
+  @Field(() => Int)
   creditHours: number;
 }
 

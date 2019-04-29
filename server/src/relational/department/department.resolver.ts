@@ -1,23 +1,15 @@
-import {
-  Args,
-  Mutation,
-  Parent,
-  Query,
-  ResolveProperty,
-  Resolver
-} from "@nestjs/graphql";
-import { Arg, Int } from "type-graphql";
-import { Course } from "../course/course.entity";
-import { CourseService } from "../course/course.service";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Department, DepartmentCreateInput } from "./department.entity";
 import { DepartmentService } from "./department.service";
 
-@Resolver(() => Department)
+@Resolver("Department")
 export class DepartmentResolver {
-  constructor(
-    private readonly departmentService: DepartmentService,
-    private readonly courseService: CourseService
-  ) {}
+  constructor(private readonly departmentService: DepartmentService) {}
+
+  @Mutation(returns => Department)
+  async createDepartment(@Args("data") data: DepartmentCreateInput) {
+    return this.departmentService.createDepartment(data);
+  }
 
   @Query(returns => [Department])
   async departments() {
@@ -25,18 +17,12 @@ export class DepartmentResolver {
   }
 
   @Query(returns => Department)
-  async department(@Arg("id", type => Int) id: number) {
+  async department(@Args("id") id: number) {
     return this.departmentService.department({ id });
   }
 
-  @Mutation(returns => Department)
-  async create(@Args("data") data: DepartmentCreateInput) {
-    console.log("DEPT DATA", data);
-    return this.departmentService.createDepartment(data);
-  }
-
-  @ResolveProperty("courses", returns => [Course])
-  async getCourses(@Parent() department: Department) {
-    return this.courseService.courses({ where: { department } });
-  }
+  // @ResolveProperty("courses", returns => [Course])
+  // async getCourses(@Parent() department: Department) {
+  //   return this.courseService.courses({ where: { department } });
+  // }
 }

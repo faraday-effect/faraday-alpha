@@ -16,7 +16,7 @@ import { Section } from "../section/section.entity";
 @ObjectType()
 export class Course {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -27,16 +27,16 @@ export class Course {
   @Field()
   title: string;
 
-  @ManyToOne(type => Prefix, prefix => prefix.courses)
-  @Field(type => Prefix)
+  @ManyToOne(() => Prefix, prefix => prefix.courses)
+  @Field(() => Prefix)
   prefix: Prefix;
 
-  @ManyToOne(type => Department, department => department.courses)
-  @Field(type => Department)
+  @ManyToOne(() => Department, department => department.courses)
+  @Field(() => Department)
   department: Department;
 
-  @OneToMany(type => Section, section => section.course)
-  @Field(type => [Section])
+  @OneToMany(() => Section, section => section.course)
+  @Field(() => [Section])
   sections: Section[];
 }
 

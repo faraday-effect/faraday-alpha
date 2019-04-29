@@ -14,7 +14,7 @@ import { Role } from "../role/role.entity";
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64, unique: true })
@@ -41,7 +41,7 @@ export class User {
   @Field()
   mobilePhone?: string;
 
-  @ManyToMany(type => Role, role => role.users)
+  @ManyToMany(() => Role, role => role.users)
   @JoinTable()
   roles?: Role[];
 }

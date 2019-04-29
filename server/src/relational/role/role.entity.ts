@@ -8,7 +8,7 @@ import { User } from "../user/user.entity";
 @ObjectType()
 export class Role {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -19,7 +19,7 @@ export class Role {
   @Field()
   description: string;
 
-  @ManyToMany(type => User, user => user.roles)
+  @ManyToMany(() => User, user => user.roles)
   users?: User[];
 }
 
