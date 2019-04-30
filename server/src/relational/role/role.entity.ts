@@ -8,7 +8,7 @@ import { User } from "../user/user.entity";
 @ObjectType()
 export class Role {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(type => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })

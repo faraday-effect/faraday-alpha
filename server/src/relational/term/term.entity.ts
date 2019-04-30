@@ -9,7 +9,7 @@ import { Section } from "../section/section.entity";
 @ObjectType()
 export class Term {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(type => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -25,11 +25,11 @@ export class Term {
   endDate: Date;
 
   @OneToMany(() => Holiday, holiday => holiday.term)
-  @Field(() => [Holiday])
+  @Field(type => [Holiday])
   holidays: Holiday[];
 
   @OneToMany(() => Section, section => section.term)
-  @Field(() => [Section])
+  @Field(type => [Section])
   sections: Section[];
 }
 

@@ -9,7 +9,7 @@
     "build:watch": "tsc --watch",
     "build": "tsc",
     "dev": "ts-node-dev --respawn src/main.ts",
-    "serve:watch": "node-dev build/src/main.js",
+    "serve:watch": "node-dev --respawn build/src/main.js",
     "serve": "node build/src/main.js",
     "test:cov": "yarn build && jest --coverage",
     "test:watch": "jest --watch",

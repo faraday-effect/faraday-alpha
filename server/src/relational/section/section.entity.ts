@@ -9,7 +9,7 @@ import { Course } from "../course/course.entity";
 @ObjectType()
 export class Section {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(type => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })

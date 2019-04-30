@@ -1,5 +1,5 @@
-import { Query, Resolver } from "@nestjs/graphql";
-import { Arg, Int } from "type-graphql";
+import { Args, Query, Resolver } from "@nestjs/graphql";
+import { Int } from "type-graphql";
 import { Course } from "./course.entity";
 import { CourseService } from "./course.service";
 
@@ -13,7 +13,7 @@ export class CourseResolver {
   }
 
   @Query(() => Course)
-  async course(@Arg("id", () => Int) id: number) {
+  async course(@Args({ name: "id", type: () => Int }) id: number) {
     return this.courseService.course({ id });
   }
 }

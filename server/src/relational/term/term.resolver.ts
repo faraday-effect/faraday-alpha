@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Term, TermCreateInput } from "./term.entity";
 import { TermService } from "./term.service";
+import { Int } from "type-graphql";
 
 @Resolver(Term)
 export class TermResolver {
@@ -16,8 +17,8 @@ export class TermResolver {
     return this.termService.terms();
   }
 
-  // @Query(returns => Term)
-  // async term(@Arg("id", type => Int) id: number) {
-  //   return this.termService.term({ id });
-  // }
+  @Query(returns => Term)
+  async term(@Args({ name: "id", type: () => Int }) id: number) {
+    return this.termService.term({ id });
+  }
 }

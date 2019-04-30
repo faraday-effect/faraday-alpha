@@ -8,7 +8,7 @@ import { Term } from "../term/term.entity";
 @ObjectType()
 export class Holiday {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(type => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })

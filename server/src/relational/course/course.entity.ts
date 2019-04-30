@@ -16,7 +16,7 @@ import { Section } from "../section/section.entity";
 @ObjectType()
 export class Course {
   @PrimaryGeneratedColumn()
-  @Field(() => Int)
+  @Field(type => Int)
   id: number;
 
   @Column({ type: "varchar", length: 64 })
@@ -36,7 +36,7 @@ export class Course {
   department: Department;
 
   @OneToMany(() => Section, section => section.course)
-  @Field(() => [Section])
+  @Field(type => [Section])
   sections: Section[];
 }
 

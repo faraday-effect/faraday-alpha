@@ -1,10 +1,22 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveProperty,
+  Resolver
+} from "@nestjs/graphql";
+import { CourseService } from "../course/course.service";
 import { Department, DepartmentCreateInput } from "./department.entity";
 import { DepartmentService } from "./department.service";
+import { Course } from "../course/course.entity";
 
-@Resolver("Department")
+@Resolver((of: any) => Department)
 export class DepartmentResolver {
-  constructor(private readonly departmentService: DepartmentService) {}
+  constructor(
+    private readonly departmentService: DepartmentService,
+    private readonly courseService: CourseService
+  ) {}
 
   @Mutation(returns => Department)
   async createDepartment(@Args("data") data: DepartmentCreateInput) {
@@ -21,8 +33,10 @@ export class DepartmentResolver {
     return this.departmentService.department({ id });
   }
 
-  // @ResolveProperty("courses", returns => [Course])
-  // async getCourses(@Parent() department: Department) {
-  //   return this.courseService.courses({ where: { department } });
-  // }
+  @ResolveProperty("courses", returns => [Course])
+  async getDepartmentCourses(
+    @Parent() department: Department
+  ): Promise<Course[]> {
+    return this.courseService.courses({ where: { department } });
+  }
 }

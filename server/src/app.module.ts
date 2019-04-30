@@ -4,13 +4,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { RelationalModule } from "./relational/relational.module";
 import { TelemetryModule } from "./telemetry/telemetry.module";
-import { Department } from "./relational/department/department.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      entities: [Department]
-    }),
+    TypeOrmModule.forRoot(),
     GraphQLModule.forRoot({
       autoSchemaFile: "schema.gql"
     }),

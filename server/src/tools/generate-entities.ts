@@ -278,7 +278,7 @@ class Entity {
     this.addAttribute(
       new ProgrammaticAttribute(
         "@PrimaryGeneratedColumn()",
-        "@Field(() => Int)",
+        "@Field(type => Int)",
         "id",
         "number",
         ["required", "unique", "pk"]
@@ -472,7 +472,7 @@ class RelationshipFactory {
     oneEntity.addAttribute(
       new ProgrammaticAttribute(
         `@OneToMany(() => ${manySgCap}, ${manySg} => ${manySg}.${oneSg})`,
-        `@Field(() => [${manySgCap}])`,
+        `@Field(type => [${manySgCap}])`,
         manyPl,
         `${manySgCap}[]`,
         attributeOptions
