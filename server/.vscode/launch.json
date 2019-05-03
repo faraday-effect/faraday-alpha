@@ -1,0 +1,19 @@
+{
+    // Docs: https://go.microsoft.com/fwlink/?linkid=830387
+    
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Schema Builder",
+            "program": "${workspaceFolder}/build/src/build-schema.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Faraday Server",
+            "program": "${workspaceFolder}/build/src/main.js"
+        }
+    ]
+}

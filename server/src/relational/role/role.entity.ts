@@ -24,7 +24,7 @@ export class Role {
 }
 
 @InputType()
-export class RoleCreateInput {
+export class RoleCreateInput implements Partial<Role> {
   @Field()
   title: string;
 

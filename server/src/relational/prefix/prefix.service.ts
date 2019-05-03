@@ -20,7 +20,7 @@ export class PrefixService {
   ) {}
 
   // Create
-  async createPrefix(data: PrefixCreateInput) {
+  async create(data: PrefixCreateInput) {
     const newPrefix = this.prefixRepository.create(data);
     return await this.prefixRepository.save(newPrefix);
   }

@@ -41,7 +41,7 @@ export class Course {
 }
 
 @InputType()
-export class CourseCreateInput {
+export class CourseCreateInput implements Partial<Course> {
   @Field()
   number: string;
 

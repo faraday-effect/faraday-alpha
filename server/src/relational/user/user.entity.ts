@@ -47,7 +47,7 @@ export class User {
 }
 
 @InputType()
-export class UserCreateInput {
+export class UserCreateInput implements Partial<User> {
   @Field()
   email: string;
 

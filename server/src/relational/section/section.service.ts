@@ -20,7 +20,7 @@ export class SectionService {
   ) {}
 
   // Create
-  async createSection(data: SectionCreateInput) {
+  async create(data: SectionCreateInput) {
     const newSection = this.sectionRepository.create(data);
     return await this.sectionRepository.save(newSection);
   }

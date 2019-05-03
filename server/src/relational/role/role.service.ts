@@ -20,7 +20,7 @@ export class RoleService {
   ) {}
 
   // Create
-  async createRole(data: RoleCreateInput) {
+  async create(data: RoleCreateInput) {
     const newRole = this.roleRepository.create(data);
     return await this.roleRepository.save(newRole);
   }

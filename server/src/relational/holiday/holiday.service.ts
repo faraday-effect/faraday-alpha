@@ -20,7 +20,7 @@ export class HolidayService {
   ) {}
 
   // Create
-  async createHoliday(data: HolidayCreateInput) {
+  async create(data: HolidayCreateInput) {
     const newHoliday = this.holidayRepository.create(data);
     return await this.holidayRepository.save(newHoliday);
   }

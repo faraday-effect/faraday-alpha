@@ -34,7 +34,7 @@ export class Term {
 }
 
 @InputType()
-export class TermCreateInput {
+export class TermCreateInput implements Partial<Term> {
   @Field()
   name: string;
 

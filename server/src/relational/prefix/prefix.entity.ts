@@ -21,7 +21,7 @@ export class Prefix {
 }
 
 @InputType()
-export class PrefixCreateInput {
+export class PrefixCreateInput implements Partial<Prefix> {
   @Field()
   value: string;
 }

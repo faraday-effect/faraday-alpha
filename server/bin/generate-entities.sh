@@ -5,4 +5,5 @@ ts-node    ./src/tools/generate-entities.ts \
     --out-dir=./src/relational \
     --sub-dirs \
     --verbose \
+    $* \
     ./src/relational/models.yaml 

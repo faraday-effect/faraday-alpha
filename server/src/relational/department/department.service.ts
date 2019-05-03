@@ -20,7 +20,7 @@ export class DepartmentService {
   ) {}
 
   // Create
-  async createDepartment(data: DepartmentCreateInput) {
+  async create(data: DepartmentCreateInput) {
     const newDepartment = this.departmentRepository.create(data);
     return await this.departmentRepository.save(newDepartment);
   }

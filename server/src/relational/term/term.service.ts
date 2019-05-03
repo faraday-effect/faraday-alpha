@@ -20,7 +20,7 @@ export class TermService {
   ) {}
 
   // Create
-  async createTerm(data: TermCreateInput) {
+  async create(data: TermCreateInput) {
     const newTerm = this.termRepository.create(data);
     return await this.termRepository.save(newTerm);
   }

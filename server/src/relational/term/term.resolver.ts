@@ -9,7 +9,7 @@ export class TermResolver {
 
   @Mutation(returns => Term)
   async createTerm(@Args("data") data: TermCreateInput) {
-    return this.termService.createTerm(data);
+    return this.termService.create(data);
   }
 
   @Query(returns => [Term])

@@ -29,7 +29,7 @@ export class Holiday {
 }
 
 @InputType()
-export class HolidayCreateInput {
+export class HolidayCreateInput implements Partial<Holiday> {
   @Field()
   title: string;
 

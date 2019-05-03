@@ -201,7 +201,7 @@ class YamlAttribute extends Attribute {
   }
 
   fieldDecorator() {
-    let config = [];
+    let config: string[] = [];
 
     if (this.gqlType) {
       config.push(`() => ${this.gqlType}`);
@@ -324,7 +324,8 @@ class Entity {
 
     return `
     @InputType()
-    export class ${this.className}CreateInput {
+    export class ${this.className}CreateInput 
+        implements Partial<${this.className}> {
       ${createInputStrings.join("\n")}
     }`;
   }
@@ -604,7 +605,7 @@ class Service {
       ){}
 
       // Create
-      async create${nameSgCap}(data: ${nameSgCap}CreateInput) {
+      async create(data: ${nameSgCap}CreateInput) {
         const new${nameSgCap} = this.${nameSg}Repository.create(data);
         return await this.${nameSg}Repository.save(new${nameSgCap});
       }
@@ -717,7 +718,7 @@ try {
   }
 
   // Load the models YAML file.
-  let doc = null;
+  let doc;
   try {
     doc = yaml.safeLoad(fs.readFileSync(args._[0], "utf-8"));
   } catch (err) {

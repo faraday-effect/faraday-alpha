@@ -20,7 +20,7 @@ export class CourseService {
   ) {}
 
   // Create
-  async createCourse(data: CourseCreateInput) {
+  async create(data: CourseCreateInput) {
     const newCourse = this.courseRepository.create(data);
     return await this.courseRepository.save(newCourse);
   }

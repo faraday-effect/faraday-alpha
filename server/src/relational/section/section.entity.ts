@@ -34,7 +34,7 @@ export class Section {
 }
 
 @InputType()
-export class SectionCreateInput {
+export class SectionCreateInput implements Partial<Section> {
   @Field()
   title: string;
 

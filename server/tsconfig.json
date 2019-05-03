@@ -25,7 +25,7 @@
     "target": "es2017",
 
     // Warn on expressions and declarations with an implied 'any' type.
-    "noImplicitAny": true,
+    "noImplicitAny": false, // TODO: Set to `true`
 
     // Enable strict null checks. Requires TypeScript version 2.0 or later.
     "strictNullChecks": true,
@@ -37,11 +37,10 @@
     "noImplicitThis": true,
 
     // Report errors on unused locals.
-    "noUnusedLocals": true,
+    "noUnusedLocals": false, // TODO: Set to `true`
 
     // Report errors on unused parameters.
-    // TODO: At some point, set this to `true`.
-    "noUnusedParameters": false,
+    "noUnusedParameters": false, // TODO: Set to `true`
 
     // Report error when not all code paths in function return a value.
     "noImplicitReturns": true,
