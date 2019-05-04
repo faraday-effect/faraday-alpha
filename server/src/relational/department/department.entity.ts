@@ -16,7 +16,7 @@ export class Department {
   name: string;
 
   @OneToMany(() => Course, course => course.department)
-  // @Field(type => [Course])
+  @Field(type => [Course])
   courses: Course[];
 }
 

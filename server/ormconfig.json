@@ -6,5 +6,5 @@
   "username": "faraday",
   "password": null,
   "synchronize": true,
-  "entities": ["build/src/relational/*/*.entity.js"]
+  "entities": ["src/relational/*/*.entity.ts"]
 }

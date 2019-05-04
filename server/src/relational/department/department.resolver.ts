@@ -6,12 +6,11 @@ import {
   ResolveProperty,
   Resolver
 } from "@nestjs/graphql";
+import { Int } from "type-graphql";
+import { Course } from "../course/course.entity";
 import { CourseService } from "../course/course.service";
 import { Department, DepartmentCreateInput } from "./department.entity";
 import { DepartmentService } from "./department.service";
-import { Course } from "../course/course.entity";
-import { Int } from "type-graphql";
-import { createPropertyDecorator } from "@nestjs/graphql/dist/decorators/resolvers.utils";
 
 @Resolver(of => Department)
 export class DepartmentResolver {
@@ -47,13 +46,13 @@ export class DepartmentResolver {
   //            name -- type Schema Name
   //
   // @Field        functionName  propertyName  schemaName    Resolver      SDL
-  // --            courses       --            --                          courses
-  // --            courses       --            courses                     courses
-  // --            courses       courses       --                          courses
-  // --            courses       courses       courses                     courses
-  // --            getCourses    --            --                          getCourses
-  // --            getCourses    --            courses                     Error: Department.getCourses defined in resolvers, but not in schema
-  // --            getCourses    courses       --                          Error: Department.courses defined in resolvers, but not in schema
+  // --            courses       --            --            courses       courses
+  // --            courses       --            courses       courses       courses
+  // --            courses       courses       --            courses       courses
+  // --            courses       courses       courses       courses       courses
+  // --            getCourses    --            --            getCourses    getCourses
+  // --            getCourses    --            courses       courses       courses
+  // --            getCourses    courses       --            getCourses    getCourses
   // --            getCourses    courses       courses       courses       courses
   // --            getCourses    --            getCourses    getCourses    getCourses
   // --            getCourses    courses       getCourses    getCourses    getCourses
@@ -84,8 +83,8 @@ export class DepartmentResolver {
   //   > (e.g. averageRating from ratings array) and we don't want to pollute the class signature,
   //   > we can omit it and just implement the field resolver (described in resolvers doc).
 
-  @ResolveProperty("courses", () => [Course], { name: "courses" })
-  async getCourses(@Parent() department: Department): Promise<Course[]> {
-    return [new Course()]; //this.courseService.courses({ where: { department } });
+  @ResolveProperty()
+  async courses(@Parent() department: Department) {
+    return this.courseService.courses({ where: { department } });
   }
 }
