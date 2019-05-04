@@ -5,9 +5,11 @@ import { AppController } from "./app.controller";
 import { RelationalModule } from "./relational/relational.module";
 import { TelemetryModule } from "./telemetry/telemetry.module";
 
+import { ormConfig } from "../ormconfig";
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot(),
+    TypeOrmModule.forRoot(ormConfig),
     GraphQLModule.forRoot({
       autoSchemaFile: "schema.gql"
     }),
