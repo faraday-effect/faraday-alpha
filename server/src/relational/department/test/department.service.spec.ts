@@ -3,6 +3,7 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Department } from "../department.entity";
 import { DepartmentService } from "../department.service";
+import { ormConfig } from "../../../../orm.config";
 
 describe("DepartmentService", () => {
   let module: TestingModule;
@@ -12,7 +13,7 @@ describe("DepartmentService", () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot(),
+        TypeOrmModule.forRoot(ormConfig),
         TypeOrmModule.forFeature([Department])
       ],
       providers: [DepartmentService]

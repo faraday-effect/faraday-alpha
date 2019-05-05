@@ -5,7 +5,7 @@ import { AppController } from "./app.controller";
 import { RelationalModule } from "./relational/relational.module";
 import { TelemetryModule } from "./telemetry/telemetry.module";
 
-import { ormConfig } from "../ormconfig";
+import { ormConfig } from "../orm.config";
 
 @Module({
   imports: [

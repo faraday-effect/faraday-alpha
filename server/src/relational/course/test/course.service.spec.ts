@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Course } from "../course.entity";
 import { CourseService } from "../course.service";
+import { ormConfig } from "../../../../orm.config";
 
 describe("CourseService", () => {
   let module: TestingModule;
@@ -9,7 +10,10 @@ describe("CourseService", () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([Course])],
+      imports: [
+        TypeOrmModule.forRoot(ormConfig),
+        TypeOrmModule.forFeature([Course])
+      ],
       providers: [CourseService]
     }).compile();
 
