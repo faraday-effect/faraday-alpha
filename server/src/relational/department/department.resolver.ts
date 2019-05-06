@@ -7,7 +7,6 @@ import {
   Resolver
 } from "@nestjs/graphql";
 import { Int } from "type-graphql";
-import { Course } from "../course/course.entity";
 import { CourseService } from "../course/course.service";
 import { Department, DepartmentCreateInput } from "./department.entity";
 import { DepartmentService } from "./department.service";
