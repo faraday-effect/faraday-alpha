@@ -34,6 +34,9 @@ describe("Department (e2e)", () => {
       getRepositoryToken(Department)
     );
 
+    // TODO - FIX ME to use db-helper function.
+    // ! Hello
+    // ? This is a test
     // Clear relevant database content.
     await deptRepository.query("TRUNCATE TABLE departments CASCADE");
 
@@ -48,7 +51,7 @@ describe("Department (e2e)", () => {
       .post("/graphql")
       .send({
         query: /* GraphQL */ `
-          query simpleQuery {
+          query allDepartments {
             departments {
               id
               name
