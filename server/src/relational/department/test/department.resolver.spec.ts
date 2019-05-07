@@ -1,49 +1,52 @@
+import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { gql } from "apollo-server-core";
-import { Course } from "../../course/course.entity";
-import { CourseService } from "../../course/course.service";
-import { Department } from "../department.entity";
-import { DepartmentResolver } from "../department.resolver";
-import { DepartmentService } from "../department.service";
+import request from "supertest";
+import { AppModule } from "../../../app.module";
 
 describe("DepartmentResolver", () => {
-  let resolver: DepartmentResolver;
+  let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        DepartmentResolver,
-        DepartmentService,
-        CourseService,
-        {
-          provide: getRepositoryToken(Course),
-          useValue: {}
-        },
-        {
-          provide: getRepositoryToken(Department),
-          useValue: {}
-        }
-      ]
+      imports: [AppModule]
     }).compile();
 
-    resolver = module.get<DepartmentResolver>(DepartmentResolver);
+    app = module.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => {
+    app.close();
   });
 
   it("should be defined", () => {
-    expect(resolver).toBeDefined();
+    expect(app).toBeDefined();
   });
 
-  const allDeptsQuery = gql`
-    query simplerDepts {
-      departments {
-        id
-        name
-      }
-    }
-  `;
+  it("can be pinged", () => {
+    return request(app.getHttpServer())
+      .get("/telemetry/ping")
+      .expect(200)
+      .then(response => {
+        expect(response.body).toHaveProperty("ping", "pong");
+        expect(response.body).toHaveProperty("platform");
+      });
+  });
 
-  it("can fetch all departments", async () => {
-    expect(true).toBe(true);
+  it("can fetch all departments", () => {
+    return request(app.getHttpServer())
+      .post("/graphql")
+      .send({
+        query: /* GraphQL */ `
+          query simpleQuery {
+            departments {
+              id
+              name
+            }
+          }
+        `
+      })
+      .expect(200)
+      .then(response => expect(response.body.data.departments).toHaveLength(4));
   });
 });
