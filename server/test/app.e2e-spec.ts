@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import request from "supertest";
-import { AppModule } from "./../src/app.module";
+import { AppModule } from "../src/app.module";
 import { INestApplication, HttpServer } from "@nestjs/common";
 
-describe("AppController (e2e)", () => {
+describe("App (e2e)", () => {
   let app: INestApplication;
-  let mockServer: HttpServer;
+  let httpServer: HttpServer;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,7 +14,7 @@ describe("AppController (e2e)", () => {
 
     app = module.createNestApplication();
     await app.init();
-    mockServer = app.getHttpServer();
+    httpServer = app.getHttpServer();
   });
 
   afterAll(async () => {
@@ -22,14 +22,14 @@ describe("AppController (e2e)", () => {
   });
 
   it("passes the sanity test", () => {
-    return request(mockServer)
+    return request(httpServer)
       .get("/")
       .expect(200)
       .expect("Faraday server is running");
   });
 
   it("can ping successfully", async () => {
-    const response = await request(mockServer).get("/telemetry/ping");
+    const response = await request(httpServer).get("/telemetry/ping");
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("ping", "pong");
   });
