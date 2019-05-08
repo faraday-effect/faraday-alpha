@@ -32,8 +32,8 @@ export class Course {
   prefix: Prefix;
 
   @ManyToOne(() => Department, department => department.courses)
-  @Field(() => Department)
-  department: Department;
+  @Field(() => Department, { nullable: true })
+  department?: Department;
 
   @OneToMany(() => Section, section => section.course)
   @Field(type => [Section])

@@ -82,6 +82,7 @@ export class DepartmentResolver {
   //   > (e.g. averageRating from ratings array) and we don't want to pollute the class signature,
   //   > we can omit it and just implement the field resolver (described in resolvers doc).
 
+  // TODO: Is this the best query??
   @ResolveProperty()
   async courses(@Parent() department: Department) {
     return this.courseService.courses({ where: { department } });

@@ -21,14 +21,4 @@ export class CourseResolver {
   async course(@Args({ name: "id", type: () => Int }) id: number) {
     return this.courseService.course({ id });
   }
-
-  // @ResolveProperty("prefix", returns => Prefix)
-  // async getPrefix(@Parent() course: Course) {
-  //   return new Prefix();
-  // }
-
-  // @ResolveProperty("department", returns => Department)
-  // async getDepartment(@Parent() course: Course): Promise<Department> {
-  //   return new Department();
-  // }
 }

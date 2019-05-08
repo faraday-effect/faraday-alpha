@@ -24,18 +24,22 @@ export class CourseService {
 
   // Create
   async create(data: CourseCreateInput) {
+    // Create initial course with required fields.
     const newCourse = this.courseRepository.create({
       title: data.title,
       number: data.number
     });
 
+    // Handle optional department.
     if (data.departmentId) {
       const existingDepartment = await this.departmentRepository.findOne(
         data.departmentId
       );
       if (existingDepartment) {
+        // Add the requested department to the new course.
         newCourse.department = existingDepartment;
       } else {
+        // No such department.
         throw new Error(
           `No department with ID ${data.departmentId} while creating course ${
             data.title
@@ -44,6 +48,7 @@ export class CourseService {
       }
     }
 
+    // Save everything.
     return await this.courseRepository.save(newCourse);
   }
 
@@ -55,7 +60,9 @@ export class CourseService {
 
   // Read
   async course(where: CourseWhereUniqueInput) {
-    return await this.courseRepository.findOne(where);
+    return await this.courseRepository.findOne(where, {
+      relations: ["department"]
+    });
   }
 
   async courses(args?: {
@@ -65,9 +72,12 @@ export class CourseService {
     take?: number;
   }) {
     if (args) {
-      return await this.courseRepository.find(args.where);
+      return await this.courseRepository.find({
+        where: args.where,
+        relations: ["department"]
+      });
     } else {
-      return await this.courseRepository.find();
+      return await this.courseRepository.find({ relations: ["department"] });
     }
   }
 
