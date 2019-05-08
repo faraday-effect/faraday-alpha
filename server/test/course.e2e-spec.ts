@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CourseModule } from "../course.module";
-import { CourseResolver } from "../course.resolver";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ormConfig } from "../../../../orm.config";
+import { ormConfig } from "../orm.config";
+import { CourseModule } from "../src/relational/course/course.module";
+import { CourseResolver } from "../src/relational/course/course.resolver";
 
 describe("CourseResolver", () => {
   let resolver: CourseResolver;
@@ -18,4 +18,6 @@ describe("CourseResolver", () => {
   it("should be defined", () => {
     expect(resolver).toBeDefined();
   });
+
+  // TODO Write many more tests.
 });
