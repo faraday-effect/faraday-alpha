@@ -11,17 +11,39 @@ import {
   CourseOrderByInput,
   CourseUpdateInput
 } from "./course.entity";
+import { Department } from "../department/department.entity";
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectRepository(Course)
-    private readonly courseRepository: Repository<Course>
+    private readonly courseRepository: Repository<Course>,
+    @InjectRepository(Department)
+    private readonly departmentRepository: Repository<Department>
   ) {}
 
   // Create
   async create(data: CourseCreateInput) {
-    const newCourse = this.courseRepository.create(data);
+    const newCourse = this.courseRepository.create({
+      title: data.title,
+      number: data.number
+    });
+
+    if (data.departmentId) {
+      const existingDepartment = await this.departmentRepository.findOne(
+        data.departmentId
+      );
+      if (existingDepartment) {
+        newCourse.department = existingDepartment;
+      } else {
+        throw new Error(
+          `No department with ID ${data.departmentId} while creating course ${
+            data.title
+          }`
+        );
+      }
+    }
+
     return await this.courseRepository.save(newCourse);
   }
 

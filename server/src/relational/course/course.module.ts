@@ -8,6 +8,6 @@ import { CourseService } from "./course.service";
 @Module({
   imports: [TypeOrmModule.forFeature([Course, Department])],
   providers: [CourseService, CourseResolver],
-  exports: [CourseService]
+  exports: [CourseService, CourseResolver]
 })
 export class CourseModule {}

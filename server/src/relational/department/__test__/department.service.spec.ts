@@ -5,6 +5,7 @@ import { Department } from "../department.entity";
 import { DepartmentService } from "../department.service";
 import { ormConfig } from "../../../../orm.config";
 import { truncateTable } from "../../../utils/db-helpers";
+import { DepartmentModule } from "../department.module";
 
 describe("DepartmentService", () => {
   let module: TestingModule;
@@ -13,11 +14,7 @@ describe("DepartmentService", () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(ormConfig),
-        TypeOrmModule.forFeature([Department])
-      ],
-      providers: [DepartmentService]
+      imports: [TypeOrmModule.forRoot(ormConfig), DepartmentModule]
     }).compile();
 
     deptService = module.get(DepartmentService);
@@ -28,8 +25,8 @@ describe("DepartmentService", () => {
     return module.close();
   });
 
-  beforeEach(() => {
-    return truncateTable(deptRepository, "departments");
+  beforeEach(async () => {
+    return await truncateTable(deptRepository, "departments");
   });
 
   it("should be defined", () => {

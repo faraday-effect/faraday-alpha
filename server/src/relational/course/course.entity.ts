@@ -47,6 +47,9 @@ export class CourseCreateInput implements Partial<Course> {
 
   @Field()
   title: string;
+
+  @Field(() => Int, { nullable: true })
+  departmentId?: number;
 }
 
 export interface CourseWhereUniqueInput {

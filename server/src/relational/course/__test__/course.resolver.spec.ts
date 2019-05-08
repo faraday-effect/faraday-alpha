@@ -1,25 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Course } from "../course.entity";
+import { CourseModule } from "../course.module";
 import { CourseResolver } from "../course.resolver";
-import { CourseService } from "../course.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ormConfig } from "../../../../orm.config";
 
 describe("CourseResolver", () => {
   let resolver: CourseResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CourseResolver,
-        CourseService,
-        {
-          provide: getRepositoryToken(Course),
-          useValue: {}
-        }
-      ]
+      imports: [TypeOrmModule.forRoot(ormConfig), CourseModule]
     }).compile();
 
-    resolver = module.get<CourseResolver>(CourseResolver);
+    resolver = module.get(CourseResolver);
   });
 
   it("should be defined", () => {
