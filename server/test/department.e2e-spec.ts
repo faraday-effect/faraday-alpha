@@ -35,8 +35,6 @@ describe("Department (e2e)", () => {
     );
 
     // TODO - FIX ME to use db-helper function.
-    // ! Hello
-    // ? This is a test
     // Clear relevant database content.
     await deptRepository.query("TRUNCATE TABLE departments CASCADE");
 

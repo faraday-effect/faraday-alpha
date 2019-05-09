@@ -27,13 +27,15 @@ export class Course {
   @Field()
   title: string;
 
-  @ManyToOne(() => Prefix, prefix => prefix.courses)
+  @ManyToOne(() => Prefix, prefix => prefix.courses, { nullable: false })
   @Field(() => Prefix)
   prefix: Prefix;
 
-  @ManyToOne(() => Department, department => department.courses)
-  @Field(() => Department, { nullable: true })
-  department?: Department;
+  @ManyToOne(() => Department, department => department.courses, {
+    nullable: false
+  })
+  @Field(() => Department)
+  department: Department;
 
   @OneToMany(() => Section, section => section.course)
   @Field(type => [Section])
@@ -48,8 +50,11 @@ export class CourseCreateInput implements Partial<Course> {
   @Field()
   title: string;
 
-  @Field(() => Int, { nullable: true })
-  departmentId?: number;
+  @Field(() => Int)
+  departmentId: number;
+
+  @Field(() => Int)
+  prefixId: number;
 }
 
 export interface CourseWhereUniqueInput {

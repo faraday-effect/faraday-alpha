@@ -61,7 +61,13 @@ export class DepartmentService {
   }) {}
 
   // Delete
-  async deleteDepartment(where: DepartmentWhereUniqueInput) {}
+  async deleteDepartment(where: DepartmentWhereUniqueInput) {
+    if (where.id) {
+      this.departmentRepository.delete(where.id);
+    } else {
+      throw new Error("No where value");
+    }
+  }
 
   async deleteManyDepartments(where?: DepartmentWhereInput) {}
 }

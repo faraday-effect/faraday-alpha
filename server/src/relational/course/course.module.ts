@@ -4,9 +4,10 @@ import { Department } from "../department/department.entity";
 import { Course } from "./course.entity";
 import { CourseResolver } from "./course.resolver";
 import { CourseService } from "./course.service";
+import { Prefix } from "../prefix/prefix.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course, Department])],
+  imports: [TypeOrmModule.forFeature([Course, Department, Prefix])],
   providers: [CourseService, CourseResolver],
   exports: [CourseService, CourseResolver]
 })

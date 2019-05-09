@@ -3,91 +3,113 @@ import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ormConfig } from "../../../../orm.config";
 import { truncateTable } from "../../../utils/db-helpers";
-import { Department } from "../../department/department.entity";
+import {
+  Department,
+  DepartmentCreateInput
+} from "../../department/department.entity";
 import { DepartmentModule } from "../../department/department.module";
 import { Course, CourseCreateInput } from "../course.entity";
 import { CourseModule } from "../course.module";
 import { CourseService } from "../course.service";
+import { Prefix, PrefixCreateInput } from "../../prefix/prefix.entity";
+import { PrefixModule } from "../../prefix/prefix.module";
+import { DepartmentService } from "../../department/department.service";
+
+function _createDepartment(departmentRepository: Repository<Department>) {
+  const data: DepartmentCreateInput = { name: "Underwater Handicrafts" };
+  return departmentRepository.save(departmentRepository.create(data));
+}
+
+function _createPrefix(prefixRepository: Repository<Prefix>) {
+  const data: PrefixCreateInput = { value: "UWH" };
+  return prefixRepository.save(prefixRepository.create(data));
+}
 
 describe("CourseService", () => {
   let module: TestingModule;
   let courseService: CourseService;
   let courseRepository: Repository<Course>;
   let departmentRepository: Repository<Department>;
+  let prefixRepository: Repository<Prefix>;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(ormConfig),
         CourseModule,
-        DepartmentModule
+        DepartmentModule,
+        PrefixModule
       ]
     }).compile();
 
     courseService = module.get<CourseService>(CourseService);
     courseRepository = module.get(getRepositoryToken(Course));
     departmentRepository = module.get(getRepositoryToken(Department));
+    prefixRepository = module.get(getRepositoryToken(Prefix));
   });
 
   afterAll(() => {
     return module.close();
   });
 
-  beforeEach(async () => {
-    return await truncateTable(courseRepository, "courses");
+  beforeEach(() => {
+    truncateTable(courseRepository, "courses");
   });
 
   it("should be defined", () => {
     expect(courseService).toBeDefined();
   });
 
-  it("can create a new course without a department", async () => {
-    // WHEN adding a course with no department
-    const courseInput: CourseCreateInput = {
-      number: "UWH 101",
-      title: "Introduction to Underwater Basket Weaving"
-    };
-    const newCourse = await courseService.create(courseInput);
+  describe("when creating a new course", () => {
+    it("requires a valid department", async () => {
+      const newPrefix = await _createPrefix(prefixRepository);
 
-    // AND fetching back the course and related entities
-    const fetchedCourse = await courseRepository.findOne(newCourse.id, {
-      relations: ["department"]
-    });
-    if (!fetchedCourse) {
-      throw Error(`Failed to fetch course '${newCourse.id}'`);
-    }
+      // Create a new department and then delete it immediately,
+      // ensuring that it will not exist for the test.
+      const doomedDepartment = await _createDepartment(departmentRepository);
+      await departmentRepository.delete(doomedDepartment.id);
 
-    // THEN the new course should exist
-    expect(fetchedCourse).toHaveProperty("number", courseInput.number);
-    expect(fetchedCourse).toHaveProperty("title", courseInput.title);
-    expect(fetchedCourse.id).toBeGreaterThan(0);
-    // AND not have a department
-    expect(fetchedCourse.department).toBeNull();
-  });
+      const courseInput: CourseCreateInput = {
+        number: "UWH 101",
+        title: "Introduction to Underwater Basket Weaving",
+        departmentId: doomedDepartment.id,
+        prefixId: newPrefix.id
+      };
 
-  it("can create a new course with a department", async () => {
-    // GIVEN an existing department
-    const newDepartment = await departmentRepository.save(
-      departmentRepository.create({ name: "Underwater Handicrafts" })
-    );
-
-    // WHEN adding a new course in that department
-    const courseInput: CourseCreateInput = {
-      number: "UWH 433",
-      title: "Underwater Basket Weaving Practicum",
-      departmentId: newDepartment.id
-    };
-    const newCourse = await courseService.create(courseInput);
-
-    // AND fetching back the course and related entities
-    const fetchedCourse = await courseRepository.findOne(newCourse.id, {
-      relations: ["department"]
+      await expect(courseService.create(courseInput)).rejects.toThrow();
     });
 
-    // THEN the new course should exist
-    expect(fetchedCourse).toHaveProperty("number", courseInput.number);
-    expect(fetchedCourse).toHaveProperty("title", courseInput.title);
-    // AND be associated with the department
-    expect(fetchedCourse).toHaveProperty("department.id", newDepartment.id);
+    it("sets the department and prefix properly", async () => {
+      const newDepartment: Department = await _createDepartment(
+        departmentRepository
+      );
+      const newPrefix = await _createPrefix(prefixRepository);
+
+      // WHEN creating a course in that department.
+      const courseInput: CourseCreateInput = {
+        number: "UWH 433",
+        title: "Underwater Basket Weaving Practicum",
+        departmentId: newDepartment.id,
+        prefixId: newPrefix.id
+      };
+
+      const newCourse = await courseService.create(courseInput);
+
+      // AND fetching it back from the database.
+      const fetchedCourse = await courseRepository.findOne(newCourse.id, {
+        relations: ["department", "prefix"]
+      });
+
+      // THEN the course is correct
+      expect(fetchedCourse).toHaveProperty("number", courseInput.number);
+      expect(fetchedCourse).toHaveProperty("title", courseInput.title);
+
+      // AND is associated with the department and a prefix
+      expect(fetchedCourse).toHaveProperty(
+        "department.name",
+        newDepartment.name
+      );
+      expect(fetchedCourse).toHaveProperty("prefix.value", newPrefix.value);
+    });
   });
 });

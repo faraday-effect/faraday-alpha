@@ -12,6 +12,7 @@ import {
   CourseUpdateInput
 } from "./course.entity";
 import { Department } from "../department/department.entity";
+import { Prefix } from "../prefix/prefix.entity";
 
 @Injectable()
 export class CourseService {
@@ -19,34 +20,26 @@ export class CourseService {
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
     @InjectRepository(Department)
-    private readonly departmentRepository: Repository<Department>
+    private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(Prefix)
+    private readonly prefixRepository: Repository<Prefix>
   ) {}
 
   // Create
   async create(data: CourseCreateInput) {
+    // Fetch the actual department and prefix
+    const department = await this.departmentRepository.findOneOrFail(
+      data.departmentId
+    );
+    const prefix = await this.prefixRepository.findOneOrFail(data.prefixId);
+
     // Create initial course with required fields.
     const newCourse = this.courseRepository.create({
       title: data.title,
-      number: data.number
+      number: data.number,
+      department,
+      prefix
     });
-
-    // Handle optional department.
-    if (data.departmentId) {
-      const existingDepartment = await this.departmentRepository.findOne(
-        data.departmentId
-      );
-      if (existingDepartment) {
-        // Add the requested department to the new course.
-        newCourse.department = existingDepartment;
-      } else {
-        // No such department.
-        throw new Error(
-          `No department with ID ${data.departmentId} while creating course ${
-            data.title
-          }`
-        );
-      }
-    }
 
     // Save everything.
     return await this.courseRepository.save(newCourse);
