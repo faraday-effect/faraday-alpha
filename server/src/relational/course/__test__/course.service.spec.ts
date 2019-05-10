@@ -48,20 +48,16 @@ describe("CourseService", () => {
     prefixRepository = module.get(getRepositoryToken(Prefix));
   });
 
-  afterAll(() => {
-    return module.close();
-  });
+  afterAll(() => module.close());
 
-  beforeEach(() => {
-    truncateTable(courseRepository, "courses");
-  });
+  beforeEach(() => truncateTable(courseRepository, "courses"));
 
   it("should be defined", () => {
     expect(courseService).toBeDefined();
   });
 
-  describe("when creating a new course", () => {
-    it("requires a valid department", async () => {
+  describe("when creating a wcourse", () => {
+    it("checks for missing department", async () => {
       const newPrefix = await _createPrefix(prefixRepository);
 
       // Create a new department and then delete it immediately,
@@ -79,7 +75,25 @@ describe("CourseService", () => {
       await expect(courseService.create(courseInput)).rejects.toThrow();
     });
 
-    it("sets the department and prefix properly", async () => {
+    it("checks for missing prefix", async () => {
+      const newDepartment = await _createDepartment(departmentRepository);
+
+      // Create a new prefix and then delete it immediately,
+      // ensuring that it will not exist for the test.
+      const newPrefix = await _createPrefix(prefixRepository);
+      await prefixRepository.delete(newPrefix.id);
+
+      const courseInput: CourseCreateInput = {
+        number: "UWH 101",
+        title: "Introduction to Underwater Basket Weaving",
+        departmentId: newDepartment.id,
+        prefixId: newPrefix.id
+      };
+
+      await expect(courseService.create(courseInput)).rejects.toThrow();
+    });
+
+    it("works with valid department and prefix", async () => {
       const newDepartment: Department = await _createDepartment(
         departmentRepository
       );

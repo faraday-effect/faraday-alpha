@@ -4,7 +4,7 @@ import { ormConfig } from "../orm.config";
 import { CourseModule } from "../src/relational/course/course.module";
 import { CourseResolver } from "../src/relational/course/course.resolver";
 
-describe("CourseResolver", () => {
+describe("Course (e2e)", () => {
   let resolver: CourseResolver;
 
   beforeEach(async () => {
