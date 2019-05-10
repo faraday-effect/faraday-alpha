@@ -1,0 +1,62 @@
+type Course {
+  id: Int! @id
+  number: String!
+  title: String!
+  prefix: Prefix!
+  department: Department!
+  sections: [Section!]!
+}
+
+type Department {
+  id: Int! @id
+  name: String!
+  courses: [Course!]!
+}
+
+type Holiday {
+  id: Int! @id
+  title: String!
+  startDate: DateTime!
+  endDate: DateTime!
+  term: Term!
+}
+
+type Prefix {
+  id: Int! @id
+  value: String!
+  courses: [Course!]!
+}
+
+type Role {
+  id: Int! @id
+  title: String!
+  description: String!
+}
+
+type Section {
+  id: Int! @id
+  title: String!
+  regNumber: String!
+  creditHours: Int!
+  term: Term!
+  course: Course!
+}
+
+type Term {
+  id: Int! @id
+  name: String!
+  startDate: DateTime!
+  endDate: DateTime!
+  holidays: [Holiday!]!
+  sections: [Section!]!
+}
+
+type User {
+  id: Int! @id
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  officePhone: String!
+  mobilePhone: String!
+}
