@@ -12,3 +12,4 @@ foo-*
 foo.*
 foo[0-9]*
 server/schema.gql
+server/src/generated

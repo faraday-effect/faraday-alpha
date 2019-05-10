@@ -4,13 +4,13 @@ type Course {
   title: String!
   prefix: Prefix!
   department: Department!
-  sections: [Section!]!
+  sections: [Section!]
 }
 
 type Department {
   id: Int! @id
   name: String!
-  courses: [Course!]!
+  courses: [Course!]
 }
 
 type Holiday {
@@ -24,13 +24,14 @@ type Holiday {
 type Prefix {
   id: Int! @id
   value: String!
-  courses: [Course!]!
+  courses: [Course!]
 }
 
 type Role {
   id: Int! @id
   title: String!
   description: String!
+  users: [User!]
 }
 
 type Section {
@@ -47,7 +48,7 @@ type Term {
   name: String!
   startDate: DateTime!
   endDate: DateTime!
-  holidays: [Holiday!]!
+  holidays: [Holiday!]
   sections: [Section!]!
 }
 
@@ -57,6 +58,7 @@ type User {
   password: String!
   firstName: String!
   lastName: String!
-  officePhone: String!
-  mobilePhone: String!
+  officePhone: String
+  mobilePhone: String
+  roles: [Role!]
 }
