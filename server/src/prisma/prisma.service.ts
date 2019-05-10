@@ -8,7 +8,7 @@ export class PrismaService {
   constructor() {
     this.client = new Prisma({
       endpoint: "http://localhost:4466",
-      debug: true
+      debug: false
     });
   }
 }

@@ -1,26 +1,28 @@
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
 import request from "supertest";
-import { Repository } from "typeorm";
 import { AppModule } from "../src/app.module";
-import { Department } from "../src/relational/department/department.entity";
-import { DepartmentService } from "../src/relational/department/department.service";
+import { Department } from "../src/generated/prisma-client";
+import { PrismaModule } from "../src/prisma/prisma.module";
+import { PrismaService } from "../src/prisma/prisma.service";
 
 describe("Department (e2e)", () => {
   let module: TestingModule;
   let app: INestApplication;
   let httpServer: HttpServer;
   let newDepartments: Department[];
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule]
+      imports: [AppModule, PrismaModule]
     }).compile();
 
     app = module.createNestApplication();
     await app.init();
     httpServer = app.getHttpServer();
+
+    prisma = module.get(PrismaService);
   });
 
   afterAll(async () => {
@@ -29,22 +31,19 @@ describe("Department (e2e)", () => {
 
   beforeEach(async () => {
     const deptNames = ["CS&E", "Physics", "English", "Music"];
-    const deptService: DepartmentService = module.get(DepartmentService);
-    const deptRepository: Repository<Department> = module.get(
-      getRepositoryToken(Department)
-    );
 
-    // TODO - FIX ME to use db-helper function.
-    // Clear relevant database content.
-    await deptRepository.query("TRUNCATE TABLE departments CASCADE");
+    await prisma.client.deleteManySections();
+    await prisma.client.deleteManyCourses();
+    await prisma.client.deleteManyDepartments();
 
-    // Seed database.
     newDepartments = await Promise.all(
-      deptNames.map(name => deptService.create({ name }))
+      deptNames.map(name => prisma.client.createDepartment({ name }))
     );
   });
 
   it("can fetch all departments", async () => {
+    expect.assertions(1);
+
     return request(httpServer)
       .post("/graphql")
       .send({
@@ -64,13 +63,15 @@ describe("Department (e2e)", () => {
   });
 
   it("can fetch each department", async () => {
+    expect.assertions(2 * newDepartments.length);
+
     for (let newDept of newDepartments) {
       await request(httpServer)
         .post("/graphql")
         .send({
           query: /* GraphQL */ `
-            query oneDept($deptId: Int!) {
-              department(id: $deptId) {
+            query oneDepartment($deptId: Int) {
+              department(where: { id: $deptId }) {
                 id
                 name
               }
@@ -78,6 +79,7 @@ describe("Department (e2e)", () => {
           `,
           variables: { deptId: newDept.id }
         })
+        .expect(200)
         .then(response => {
           const dept = response.body.data.department;
           expect(dept.id).toBe(newDept.id);

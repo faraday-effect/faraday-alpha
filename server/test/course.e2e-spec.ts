@@ -1,22 +1,20 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ormConfig } from "../orm.config";
-import { CourseModule } from "../src/relational/course/course.module";
-import { CourseResolver } from "../src/relational/course/course.resolver";
+import { PrismaModule } from "../src/prisma/prisma.module";
+import { PrismaService } from "../src/prisma/prisma.service";
 
 describe("Course (e2e)", () => {
-  let resolver: CourseResolver;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(ormConfig), CourseModule]
+      imports: [PrismaModule]
     }).compile();
 
-    resolver = module.get(CourseResolver);
+    prisma = module.get(PrismaService);
   });
 
   it("should be defined", () => {
-    expect(resolver).toBeDefined();
+    expect(prisma).toBeDefined();
   });
 
   // TODO Write many more tests.
