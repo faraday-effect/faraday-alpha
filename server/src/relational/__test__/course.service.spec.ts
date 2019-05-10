@@ -1,19 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ormConfig } from "../../../../orm.config";
 import { truncateTable } from "../../../utils/db-helpers";
-import {
-  Department,
-  DepartmentCreateInput
-} from "../../department/department.entity";
+import { Department, DepartmentCreateInput } from "../../department/department.entity";
 import { DepartmentModule } from "../../department/department.module";
-import { Course, CourseCreateInput } from "../course.entity";
-import { CourseModule } from "../course.module";
-import { CourseService } from "../course.service";
 import { Prefix, PrefixCreateInput } from "../../prefix/prefix.entity";
 import { PrefixModule } from "../../prefix/prefix.module";
-import { DepartmentService } from "../../department/department.service";
+import { Course, CourseCreateInput } from "../course.entity";
+import { CourseModule } from "../course.module";
 
 function _createDepartment(departmentRepository: Repository<Department>) {
   const data: DepartmentCreateInput = { name: "Underwater Handicrafts" };
@@ -34,12 +28,7 @@ describe("CourseService", () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(ormConfig),
-        CourseModule,
-        DepartmentModule,
-        PrefixModule
-      ]
+      imports: [CourseModule, DepartmentModule, PrefixModule]
     }).compile();
 
     courseService = module.get<CourseService>(CourseService);

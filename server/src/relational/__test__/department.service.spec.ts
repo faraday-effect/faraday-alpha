@@ -1,9 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Department } from "../department.entity";
-import { DepartmentService } from "../department.service";
-import { ormConfig } from "../../../../orm.config";
 import { truncateTable } from "../../../utils/db-helpers";
 import { DepartmentModule } from "../department.module";
 
@@ -14,7 +11,7 @@ describe("DepartmentService", () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(ormConfig), DepartmentModule]
+      imports: [DepartmentModule]
     }).compile();
 
     deptService = module.get(DepartmentService);
