@@ -17,8 +17,10 @@
   </p>
 </template>
 
-<script>
-export default {
+<script lang="ts" lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "MultipleDropdowns",
   props: ["details"],
   data() {
@@ -55,7 +57,7 @@ export default {
       return result;
     }
   }
-};
+});
 </script>
 
 <style scoped>

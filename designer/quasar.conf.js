@@ -15,6 +15,11 @@ module.exports = function(ctx) {
       // 'eva-icons'
     ],
 
+    sourceFiles: {
+      router: "src/router/index.ts",
+      store: "src/store/index.ts"
+    },
+
     // framework: 'all', // --- includes everything; for dev only!
     framework: {
       components: [

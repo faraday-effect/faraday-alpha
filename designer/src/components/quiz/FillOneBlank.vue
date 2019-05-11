@@ -4,8 +4,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts" lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "FillOneBlank",
   props: ["details"],
   data() {
@@ -13,5 +15,5 @@ export default {
       response: null
     };
   }
-};
+});
 </script>

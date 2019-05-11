@@ -1,4 +1,4 @@
-const routes = [
+import { RouteConfig } from 'vue-router'import { RouteConfig } from 'vue-router'const routes: RouteConfig[] = [
   {
     path: "/",
     component: () => import("layouts/MyLayout.vue"),

@@ -6,8 +6,10 @@
 
 <style></style>
 
-<script>
-export default {
+<script lang="ts" lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "PageIndex"
-};
+});
 </script>

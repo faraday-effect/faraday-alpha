@@ -3,13 +3,7 @@
     <div class="col-2">
       <div class="text-h6 text-center">Topic</div>
       <q-list separator>
-        <q-item
-          clickable
-          padding
-          v-ripple
-          v-for="topic in topics"
-          v-bind:key="topic.id"
-        >
+        <q-item clickable padding v-ripple v-for="topic in topics" v-bind:key="topic.id">
           <q-item-section avatar>
             <q-icon v-bind:name="`fas fa-${topic.icon}`"></q-icon>
           </q-item-section>
@@ -20,17 +14,17 @@
 
     <div class="col-5">
       <div class="text-h6 text-center">Markdown Editor</div>
-      <textarea ref="codemirror" />
+      <textarea ref="codemirror"/>
     </div>
 
     <div class="col-5">
       <div class="text-h6 text-center">Preview</div>
-      <Preview v-bind:content="renderedMarkdown" />
+      <Preview v-bind:content="renderedMarkdown"/>
     </div>
   </q-page>
 </template>
 
-<script>
+<script lang="ts" lang="ts">
 import unified from "unified";
 import markdown from "remark-parse";
 import remark2rehype from "remark-rehype";
@@ -45,7 +39,9 @@ import "codemirror/theme/solarized.css";
 import "highlight.js/styles/solarized-light.css";
 import Preview from "./Preview";
 
-export default {
+import Vue from "vue";
+
+export default Vue.extend({
   name: "PageIndex",
   components: { Preview },
   data() {
@@ -79,7 +75,7 @@ export default {
       return processor.processSync(this.text).toString();
     }
   }
-};
+});
 </script>
 
 <style>

@@ -91,10 +91,12 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts" lang="ts">
 import { required } from "vuelidate/lib/validators";
 
-export default {
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "QuizDesigner",
   created() {
     this.quizTypes = [
@@ -140,5 +142,5 @@ export default {
       }
     }
   }
-};
+});
 </script>

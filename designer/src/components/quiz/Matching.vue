@@ -20,8 +20,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts" lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "Matching",
   props: ["details"],
   data() {
@@ -34,5 +36,5 @@ export default {
       return this.details.pairs.map(pair => pair[1]);
     }
   }
-};
+});
 </script>

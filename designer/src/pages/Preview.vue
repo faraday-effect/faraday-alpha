@@ -2,11 +2,13 @@
   <div v-html="content"></div>
 </template>
 
-<script>
-export default {
+<script lang="ts" lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "Preview",
   props: ["content"]
-};
+});
 </script>
 
 <style scoped lang="stylus">

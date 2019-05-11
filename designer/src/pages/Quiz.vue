@@ -40,7 +40,7 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts" lang="ts">
 import TrueFalseQuestion from "components/quiz/TrueFalse";
 import MultipleChoiceQuestion from "components/quiz/MultipleChoice";
 import FillTheBlankQuestion from "components/quiz/FillOneBlank";
@@ -58,7 +58,9 @@ const questionTypeMap = {
   "multiple-dropdowns": "MultipleDropdowns"
 };
 
-export default {
+import Vue from 'vue'
+
+export default Vue.extend({
   name: "QuizPage",
   components: {
     Keys,
@@ -112,5 +114,5 @@ export default {
       }
     }
   }
-};
+});
 </script>
