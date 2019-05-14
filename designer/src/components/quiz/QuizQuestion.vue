@@ -8,15 +8,20 @@
 
     <q-separator />
 
-    <slot v-bind:details="details"></slot>
+    <slot :details="details"></slot>
   </q-card>
 </template>
 
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
 
 export default Vue.extend({
   name: "QuizQuestion",
-  props: ["questionNumber", "title", "text", "details"]
+  props: {
+    questionNumber: Number,
+    title: String,
+    text: String,
+    details: Object
+  }
 });
 </script>

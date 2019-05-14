@@ -4,12 +4,12 @@
   </div>
 </template>
 
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
 
 export default Vue.extend({
   name: "FillOneBlank",
-  props: ["details"],
+  props: { details: Object },
   data() {
     return {
       response: null

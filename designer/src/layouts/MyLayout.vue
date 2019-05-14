@@ -6,15 +6,13 @@
           flat
           dense
           round
-          @click="leftDrawerOpen = !leftDrawerOpen"
           aria-label="Menu"
+          @click="leftDrawerOpen = !leftDrawerOpen"
         >
           <q-icon name="menu" />
         </q-btn>
 
-        <q-toolbar-title>
-          Faraday Designer
-        </q-toolbar-title>
+        <q-toolbar-title>Faraday Designer</q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -100,10 +98,10 @@
   </q-layout>
 </template>
 
-<script lang="ts" lang="ts">
+<script lang="ts">
 import { openURL } from "quasar";
 
-import Vue from 'vue'
+import Vue from "vue";
 
 export default Vue.extend({
   name: "MyLayout",

@@ -1,24 +1,16 @@
 <template>
   <div class="q-pa-lg">
-    <q-option-group v-model="response" v-bind:options="choices" />
+    <q-option-group v-model="response" :options="choices" />
   </div>
 </template>
 
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
 
-export default Vue.extend({
-  name: "TrueFalse",
-  created() {
-    this.choices = [
-      { label: "True", value: true },
-      { label: "False", value: false }
-    ];
-  },
-  data() {
-    return {
-      response: null
-    };
-  }
-});
+@Component
+class TrueFalseComponent extends Vue {
+  choices: [{ label: "True"; value: true }, { label: "False"; value: false }];
+  response: null;
+}
 </script>

@@ -1,33 +1,26 @@
 <template>
   <p class="q-pa-lg">
     <template v-for="(item, idx) in parseTemplate(details.template)">
-      <span v-if="item.type === 'text'" v-bind:key="idx">
-        {{ item.content }}
-      </span>
+      <span v-if="item.type === 'text'" :key="idx">{{ item.content }}</span>
       <q-select
+        v-else
+        :key="idx"
+        v-model="response[item.label]"
         outlined
         dense
-        v-else
+        :options="details.choices[item.label]"
         class="inline-select"
-        v-bind:key="idx"
-        v-model="response[item.label]"
-        v-bind:options="details.choices[item.label]"
       ></q-select>
     </template>
   </p>
 </template>
 
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
 
-export default Vue.extend({
-  name: "MultipleDropdowns",
+@Component({
   props: ["details"],
-  data() {
-    return {
-      response: []
-    };
-  },
   methods: {
     parseTemplate(template) {
       // Find the dropdowns.
@@ -57,7 +50,10 @@ export default Vue.extend({
       return result;
     }
   }
-});
+})
+export default class MultipleDropdowns extends Vue {
+  response: [];
+}
 </script>
 
 <style scoped>

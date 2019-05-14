@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import MultipleDropdowns from "../MultipleDropdowns";
+import MultipleDropdowns from "../MultipleDropdowns.vue";
 
 describe("MultipleDropdowns question", () => {
   test("sanity check", () => {

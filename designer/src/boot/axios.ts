@@ -1,3 +1,4 @@
+import Vue from "vue";
 import axios from "axios";
 
 // Create instance with our base URL.

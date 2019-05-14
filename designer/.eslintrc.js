@@ -1,38 +1,26 @@
 module.exports = {
+  // Don't look in parent folders.
   root: true,
 
-  parserOptions: {
-    parser: "babel-eslint",
-    sourceType: "module"
-  },
-
+  // Predefine sets of global variables
   env: {
-    browser: true,
-    jest: true,
-    node: true
+    browser: true
   },
 
-  // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
-  // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-  extends: ["plugin:vue/essential", "@vue/prettier"],
+  extends: [
+    // Official ESLint plugin for Vue.
+    "plugin:vue/recommended",
 
-  // required to lint *.vue files
-  plugins: ["vue"],
+    // Extend for Prettier
+    "@vue/prettier",
 
-  globals: {
-    ga: true, // Google Analytics
-    cordova: true,
-    __statics: true,
-    process: true
-  },
+    // Extend for TypeScript
+    "@vue/typescript"
+  ],
 
   // add your custom rules here
   rules: {
-    "prefer-promise-reject-errors": "off",
-
-    // allow console.log during development only
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    // allow debugger during development only
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off"
+    "no-console": "off",
+    "no-debugger": "off"
   }
 };

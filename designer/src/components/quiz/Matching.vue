@@ -1,31 +1,24 @@
 <template>
   <div class="q-pa-lg">
     <div
-      class="row items-center justify-start"
       v-for="(pair, idx) in details.pairs"
-      v-bind:key="idx"
+      :key="idx"
+      class="row items-center justify-start"
     >
-      <div class="col-2">
-        {{ pair[0] }}
-      </div>
+      <div class="col-2">{{ pair[0] }}</div>
       <div class="col-2 q-py-xs">
-        <q-select
-          outlined
-          dense
-          v-model="response[idx]"
-          v-bind:options="choices()"
-        />
+        <q-select v-model="response[idx]" outlined dense :options="choices()" />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
 
 export default Vue.extend({
   name: "Matching",
-  props: ["details"],
+  props: { details: Object },
   data() {
     return {
       response: []

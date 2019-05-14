@@ -1,12 +1,14 @@
-import { RouteConfig } from 'vue-router'import { RouteConfig } from 'vue-router'const routes: RouteConfig[] = [
+import { RouteConfig } from "vue-router";
+
+const routes: RouteConfig[] = [
   {
     path: "/",
     component: () => import("layouts/MyLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/Index") },
-      { path: "design", component: () => import("pages/Designer") },
-      { path: "quiz", component: () => import("pages/Quiz") },
-      { path: "quiz-designer", component: () => import("pages/QuizDesigner") }
+      { path: "", component: () => import("pages/Index.vue") },
+      { path: "design", component: () => import("pages/Designer.vue") },
+      { path: "quiz", component: () => import("pages/Quiz.vue") },
+      { path: "quiz-designer", component: () => import("pages/QuizDesigner.vue") }
     ]
   }
 ];

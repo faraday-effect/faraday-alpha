@@ -1,9 +1,9 @@
-<script lang="ts" lang="ts">
-import Vue from 'vue'
+<script lang="ts">
+import Vue from "vue";
 
 export default Vue.extend({
   name: "Keys",
-  props: ["content"],
+  props: { content: String },
   render(h) {
     const elts = this.content.split(/\s+/);
     return h("span", elts.map(elt => h("kbd", elt)));
