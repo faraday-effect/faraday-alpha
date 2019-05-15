@@ -51,7 +51,9 @@ import QuizQuestion from "components/quiz/QuizQuestion.vue";
 import Keys from "components/Keys.vue";
 import Mousetrap from "mousetrap";
 
-const questionTypeMap = {
+const questionTypeMap: {
+  [questionType: string]: string;
+} = {
   "true-false": "TrueFalseQuestion",
   "multiple-choice": "MultipleChoiceQuestion",
   "fill-the-blank": "FillTheBlankQuestion",
@@ -110,7 +112,7 @@ export default Vue.extend({
   },
 
   methods: {
-    componentForQuestionType(questionType) {
+    componentForQuestionType(questionType: string) {
       if (questionType in questionTypeMap) {
         return questionTypeMap[questionType];
       }

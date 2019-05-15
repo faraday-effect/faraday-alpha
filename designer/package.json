@@ -1,24 +1,23 @@
 {
   "name": "designer",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "description": "Design application for Faraday",
+  "productName": "Faraday Designer",
   "cordovaId": "org.cordova.quasar.app",
   "author": "Tom Nurkkala <tnurkkala@cse.taylor.edu>",
   "private": true,
   "scripts": {
+    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\"",
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
-    "test:unit": "jest --updateSnapshot",
+    "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
+    "test:e2e:CI": "cypress run",
+    "test:e2e": "cypress open",
     "test:unit:coverage": "jest --coverage",
+    "test:unit:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --no-cache --runInBand",
+    "test:unit:ui": "majestic",
     "test:unit:watch": "jest --watch",
     "test:unit:watchAll": "jest --watchAll",
-    "test:unit:debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --no-cache --runInBand",
-    "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
-    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\"",
-    "test:e2e": "cypress open",
-    "test:e2e:CI": "cypress run",
-    "test:unit:ui": "majestic"
+    "test:unit": "jest"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -33,6 +32,7 @@
     "remark-parse": "^6.0.3",
     "remark-rehype": "^4.0.0",
     "unified": "^7.1.0",
+    "vue-property-decorator": "^8.1.1",
     "vuelidate": "^0.7.4"
   },
   "devDependencies": {
@@ -54,10 +54,10 @@
     "eslint-loader": "^2.1.1",
     "eslint-plugin-vue": "^5.0.0",
     "jest": "^24.1.0",
+    "majestic": "^1.2.24",
     "prettier": "^1.16.4",
     "strip-ansi": "=3.0.1",
-    "ts-jest": "^24.0.2",
-    "majestic": "^1.2.24"
+    "ts-jest": "^24.0.2"
   },
   "config": {
     "commitizen": {

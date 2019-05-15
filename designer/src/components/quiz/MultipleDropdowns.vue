@@ -16,18 +16,19 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import {
+  MultipleDropdownsQuestionDetails,
+  MultipleDropdownsElement
+} from "./quiz.types";
 
-@Component({
-  props: {
-    details: Object
-  }
-})
+@Component
 export default class MultipleDropdowns extends Vue {
+  @Prop(Object) details!: MultipleDropdownsQuestionDetails;
+
   response: Object[] = [];
 
-  parseTemplate(template: string) {
+  parseTemplate(template: string): MultipleDropdownsElement[] {
     // Find the dropdowns.
     const ddRe = /\[[\w-]+]/g;
     let ddLabels = [];
@@ -40,7 +41,7 @@ export default class MultipleDropdowns extends Vue {
     let textData = template.split(ddRe);
 
     // Stitch together the two lists.
-    let result = [];
+    let result: MultipleDropdownsElement[] = [];
     let labelIdx = 0;
     for (let txt of textData) {
       txt = txt.trim().replace(/\s+/, " ");
