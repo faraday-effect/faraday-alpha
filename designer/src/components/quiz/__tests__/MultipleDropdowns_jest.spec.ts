@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { mount, Wrapper } from "@vue/test-utils";
 import MultipleDropdowns from "../MultipleDropdowns.vue";
 
 describe("MultipleDropdowns question", () => {

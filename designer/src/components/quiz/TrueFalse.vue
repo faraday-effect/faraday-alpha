@@ -8,9 +8,17 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
+interface TrueFalseChoice {
+  label: string;
+  value: boolean;
+}
+
 @Component
 class TrueFalseComponent extends Vue {
-  choices: [{ label: "True"; value: true }, { label: "False"; value: false }];
-  response: null;
+  choices: TrueFalseChoice[] = [
+    { label: "True", value: true },
+    { label: "False", value: false }
+  ];
+  response: TrueFalseChoice | null = null;
 }
 </script>

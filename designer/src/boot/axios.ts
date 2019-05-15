@@ -1,5 +1,5 @@
-import Vue from "vue";
 import axios from "axios";
+import Vue from "vue";
 
 // Create instance with our base URL.
 const axiosInstance = axios.create({

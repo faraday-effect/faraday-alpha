@@ -1,19 +1,20 @@
 module.exports = {
+  // Global variables available in all test environments.
   globals: {
     __DEV__: true
   },
+  // Modules that configure or set up the testing framework before each test.
   setupFilesAfterEnv: ["<rootDir>/test/jest/jest.setup.js"],
-  noStackTrace: true,
-  bail: true,
-  cache: false,
-  verbose: true,
-  collectCoverage: true,
-  coverageDirectory: "<rootDir>/test/jest/coverage",
+  noStackTrace: true, // Disable stack trace in test output.
+  bail: true, // Stop running tests after a failure.
+  cache: false, // Disables caching - TODO is there a reason for this?
+  verbose: true, // Display individual test results.
+  collectCoverage: true, // Collect coverage information?
+  coverageDirectory: "<rootDir>/test/jest/coverage", // Where to store coverage files
   collectCoverageFrom: [
     "<rootDir>/src/**/*.vue",
     "<rootDir>/src/**/*.js",
-    "<rootDir>/src/**/*.ts",
-    "<rootDir>/src/**/*.jsx"
+    "<rootDir>/src/**/*.ts"
   ],
   coverageThreshold: {
     global: {
@@ -23,12 +24,18 @@ module.exports = {
       //  statements: 50
     }
   },
+  // Glob patterns used to detect test files
   testMatch: [
-    "<rootDir>/test/jest/__tests__/**/*.spec.js",
-    "<rootDir>/test/jest/__tests__/**/*.test.js",
-    "<rootDir>/src/**/__tests__/*_jest.spec.js"
+    "<rootDir>/test/jest/__tests__/**/*.spec.[jt]s",
+    "<rootDir>/test/jest/__tests__/**/*.test.[jt]s",
+    "<rootDir>/src/**/__tests__/*_jest.spec.[jt]s"
   ],
-  moduleFileExtensions: ["vue", "js", "jsx", "json", "ts", "tsx"],
+  // File extensions for modules. When requiring modules without a file extension,
+  // Jest looks for these (left-to-right order).
+  moduleFileExtensions: ["ts", "js", "json", "vue"],
+  // Stub out resources (e.g., images or styles) with a single module.
+  // Allows regex backreference substitution.
+  // Usually should use `^...$` boundaries.
   moduleNameMapper: {
     "^vue$": "<rootDir>/node_modules/vue/dist/vue.common.js",
     "^test-utils$":
@@ -38,12 +45,12 @@ module.exports = {
     "^src/(.*)$": "<rootDir>/src/$1",
     ".*css$": "<rootDir>/test/jest/utils/stub.css"
   },
+  // Map path regexp to transformer (module that provides
+  // a synchronous function for transforming source files).
   transform: {
-    ".*\\.vue$": "vue-jest",
-    ".*\\.js$": "babel-jest"
-    // use these if NPM is being flaky
-    // '.*\\.vue$': '<rootDir>/node_modules/@quasar/quasar-app-extension-testing-unit-jest/node_modules/vue-jest',
-    // '.*\\.js$': '<rootDir>/node_modules/@quasar/quasar-app-extension-testing-unit-jest/node_modules/babel-jest'
+    "^.+\\.ts$": "ts-jest",
+    "^.+\\.js$": "babel-jest",
+    "^.+\\.vue$": "vue-jest"
   },
   snapshotSerializers: ["<rootDir>/node_modules/jest-serializer-vue"]
 };

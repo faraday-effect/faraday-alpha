@@ -25,6 +25,7 @@
     "codemirror": "^5.43.0",
     "mousetrap": "^1.6.2",
     "quasar": "^1.0.0-beta.0",
+    "reflect-metadata": "^0.1.13",
     "rehype-format": "^2.3.1",
     "rehype-highlight": "^2.2.1",
     "rehype-stringify": "^5.0.0",
@@ -53,7 +54,8 @@
     "eslint-plugin-vue": "^5.0.0",
     "jest": "^24.1.0",
     "prettier": "^1.16.4",
-    "strip-ansi": "=3.0.1"
+    "strip-ansi": "=3.0.1",
+    "ts-jest": "^24.0.2"
   },
   "config": {
     "commitizen": {

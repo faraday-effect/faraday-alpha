@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import "reflect-metadata";
 
 export default Vue.extend({
   name: "App"
