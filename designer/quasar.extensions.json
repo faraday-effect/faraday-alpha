@@ -1,18 +1,19 @@
 {
+  "@quasar/typescript": {
+    "webpack": "plugin",
+    "rename": true
+  },
   "@quasar/testing-unit-jest": {
     "babel": "babelrc",
     "options": [
-      "scripts"
+      "scripts",
+      "SFC",
+      "majestic"
     ]
   },
   "@quasar/testing": {
     "harnesses": [
-      "unit-jest",
-      "e2e-cypress"
+      "unit-jest"
     ]
-  },
-  "@quasar/typescript": {
-    "webpack": "plugin",
-    "rename": true
   }
 }

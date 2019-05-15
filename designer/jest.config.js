@@ -5,12 +5,9 @@ module.exports = {
   },
   // Modules that configure or set up the testing framework before each test.
   setupFilesAfterEnv: ["<rootDir>/test/jest/jest.setup.js"],
-  noStackTrace: true, // Disable stack trace in test output.
-  bail: true, // Stop running tests after a failure.
-  cache: false, // Disables caching - TODO is there a reason for this?
-  verbose: true, // Display individual test results.
-  collectCoverage: true, // Collect coverage information?
-  coverageDirectory: "<rootDir>/test/jest/coverage", // Where to store coverage files
+  verbose: true,
+  collectCoverage: true,
+  coverageDirectory: "<rootDir>/test/jest/coverage",
   collectCoverageFrom: [
     "<rootDir>/src/**/*.vue",
     "<rootDir>/src/**/*.js",
@@ -32,7 +29,7 @@ module.exports = {
   ],
   // File extensions for modules. When requiring modules without a file extension,
   // Jest looks for these (left-to-right order).
-  moduleFileExtensions: ["ts", "js", "json", "vue"],
+  moduleFileExtensions: ["vue", "js", "json", "ts"],
   // Stub out resources (e.g., images or styles) with a single module.
   // Allows regex backreference substitution.
   // Usually should use `^...$` boundaries.
@@ -48,9 +45,12 @@ module.exports = {
   // Map path regexp to transformer (module that provides
   // a synchronous function for transforming source files).
   transform: {
-    "^.+\\.ts$": "ts-jest",
+    "^.+\\.vue$": "vue-jest",
     "^.+\\.js$": "babel-jest",
-    "^.+\\.vue$": "vue-jest"
+    "^.+\\.ts$": "ts-jest",
+    ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$":
+      "jest-transform-stub"
   },
+  transformIgnorePatterns: ["<rootDir>/node_modules/(?!quasar/lang)"],
   snapshotSerializers: ["<rootDir>/node_modules/jest-serializer-vue"]
 };
