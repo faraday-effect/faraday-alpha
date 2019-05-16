@@ -95,12 +95,10 @@ export default class QuizPage extends Vue {
     Mousetrap.bind(["E", "e"], () => console.log("Edit Quiz"));
     Mousetrap.bind(["D", "d"], () => console.log("Delete Quiz"));
 
-    (this.$axios as AxiosStatic)
-      .get("/api/quizzes/1")
-      .then((resp: AxiosResponse<Quiz>) => {
-        this.title = resp.data.title;
-        this.questions = resp.data.questions;
-      });
+    this.$axios.get("/api/quizzes/1").then((resp: AxiosResponse<Quiz>) => {
+      this.title = resp.data.title;
+      this.questions = resp.data.questions;
+    });
   }
 
   componentForQuestionType(questionType: string) {
