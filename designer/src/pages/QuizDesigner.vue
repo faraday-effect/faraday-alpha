@@ -91,31 +91,11 @@
 <script lang="ts">
 import { required } from "vuelidate/lib/validators";
 
-import Vue from "vue";
+import { Vue, Component } from "vue-property-decorator";
+import { validationMixin } from "vuelidate";
 
-export default Vue.extend({
-  name: "QuizDesigner",
-  data() {
-    return {
-      quiz: {
-        title: "",
-        description: "",
-        type: null
-      },
-      choices: [],
-      correctChoice: undefined
-    };
-  },
-  created() {
-    this.quizTypes = [
-      { value: "true-false", label: "True-False" },
-      { value: "multiple-choice", label: "Multiple Choice" },
-      { value: "multiple-dropdowns", label: "Multiple Dropdowns" },
-      { value: "matching", label: "Matching" },
-      { value: "fill-the-blank", label: "Fill in the Blank" }
-    ];
-  },
-
+@Component({
+  mixins: [validationMixin],
   validations: {
     quiz: {
       title: {
@@ -128,17 +108,33 @@ export default Vue.extend({
         required
       }
     }
-  },
-  methods: {
-    isType: function(type) {
-      return this.quiz.type && this.quiz.type.validator === type;
-    },
-    submitMe() {
-      this.$v.$touch();
-      if (this.$v.$invalid) {
-        console.log("INVALID");
-      }
+  }
+})
+export default class QuizDesigner extends Vue {
+  quiz = {
+    title: "",
+    description: "",
+    type: null
+  };
+  choices = [];
+  correctChoice = undefined;
+  quizTypes = [
+    { value: "true-false", label: "True-False" },
+    { value: "multiple-choice", label: "Multiple Choice" },
+    { value: "multiple-dropdowns", label: "Multiple Dropdowns" },
+    { value: "matching", label: "Matching" },
+    { value: "fill-the-blank", label: "Fill in the Blank" }
+  ];
+
+  isType(type: string) {
+    return this.quiz.type && this.quiz.type.validator === type;
+  }
+
+  submitMe() {
+    this.$v.$touch();
+    if (this.$v.$invalid) {
+      console.log("INVALID");
     }
   }
-});
+}
 </script>

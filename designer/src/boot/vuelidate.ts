@@ -1,6 +1,8 @@
-import Vue from "vue";
 import Vuelidate from "vuelidate";
+import { BootFunction } from "./boot.types";
 
-export default async ({ Vue }) => {
+const bootFunction: BootFunction = async ({ Vue }) => {
   Vue.use(Vuelidate);
 };
+
+export default bootFunction;

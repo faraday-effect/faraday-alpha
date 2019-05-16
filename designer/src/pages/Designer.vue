@@ -45,33 +45,36 @@ import "codemirror/theme/solarized.css";
 import "highlight.js/styles/solarized-light.css";
 import Preview from "./Preview.vue";
 
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
 
-export default Vue.extend({
-  name: "PageIndex",
-  components: { Preview },
-  data() {
-    return {
-      text: "# Fred\n* Lives in Peru.\n* Married to Zelda.",
-      topics: [
-        { id: 1, icon: "file-code", name: "Promises" },
-        { id: 2, icon: "check", name: "Promises Quiz" },
-        { id: 3, icon: "file-code", name: "Async Await" }
-      ]
-    };
-  },
-  computed: {
-    renderedMarkdown(): string {
-      var processor = unified()
-        .use(markdown)
-        .use(remark2rehype)
-        .use(highlight)
-        .use(format)
-        .use(html);
+@Component({
+  components: { Preview }
+})
+export default class DesignerPage extends Vue {
+  @Prop() text = "# Fred\n* Lives in Peru.\n* Married to Zelda.";
+  @Prop() topics = [
+    { id: 1, icon: "file-code", name: "Promises" },
+    { id: 2, icon: "check", name: "Promises Quiz" },
+    { id: 3, icon: "file-code", name: "Async Await" }
+  ];
 
-      return processor.processSync(this.text).toString();
-    }
-  },
+  $refs!: {
+    codemirror: HTMLTextAreaElement;
+  };
+
+  editor!: CodeMirror.EditorFromTextArea;
+
+  get renderedMarkdown(): string {
+    var processor = unified()
+      .use(markdown)
+      .use(remark2rehype)
+      .use(highlight)
+      .use(format)
+      .use(html);
+
+    return processor.processSync(this.text).toString();
+  }
+
   mounted() {
     this.editor = CodeMirror.fromTextArea(this.$refs.codemirror, {
       mode: "markdown",
@@ -81,7 +84,7 @@ export default Vue.extend({
     this.editor.setValue(this.text);
     this.editor.on("change", cm => (this.text = cm.getValue()));
   }
-});
+}
 </script>
 
 <style>

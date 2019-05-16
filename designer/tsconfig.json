@@ -1,16 +1,14 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
-    "target": "es6",
-    "strict": true,
+    "baseUrl": ".",
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "baseUrl": "."
+    "sourceMap": true,
+    "strict": true,
+    "target": "es5"
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["./src/**/*"]
 }

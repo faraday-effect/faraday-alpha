@@ -99,21 +99,12 @@
 </template>
 
 <script lang="ts">
-import { openURL } from "quasar";
+import { Vue, Component } from "vue-property-decorator";
 
-import Vue from "vue";
-
-export default Vue.extend({
-  name: "MyLayout",
-  data() {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop
-    };
-  },
-  methods: {
-    openURL
-  }
-});
+@Component
+export default class MyLayout extends Vue {
+  leftDrawerOpen = this.$q.platform.is.desktop;
+}
 </script>
 
 <style></style>
