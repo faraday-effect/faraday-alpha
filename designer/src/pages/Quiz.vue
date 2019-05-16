@@ -48,6 +48,9 @@ import MatchingQuestion from "components/quiz/Matching.vue";
 import MultipleDropdowns from "components/quiz/MultipleDropdowns.vue";
 import QuizQuestion from "components/quiz/QuizQuestion.vue";
 
+import { Quiz, Question } from "../components/quiz/quiz.types";
+import { AxiosResponse } from "axios";
+
 import Keys from "components/Keys.vue";
 import Mousetrap from "mousetrap";
 
@@ -61,10 +64,10 @@ const questionTypeMap: {
   "multiple-dropdowns": "MultipleDropdowns"
 };
 
-import Vue from "vue";
+import { AxiosStatic } from "axios";
+import { Vue, Component } from "vue-property-decorator";
 
-export default Vue.extend({
-  name: "QuizPage",
+@Component({
   components: {
     Keys,
     TrueFalseQuestion,
@@ -73,50 +76,37 @@ export default Vue.extend({
     MatchingQuestion,
     MultipleDropdowns,
     QuizQuestion
-  },
-  data() {
-    return {
-      response: null,
-      menuOptions: [
-        {
-          key: "N",
-          label: "New Quiz"
-        },
-        {
-          key: "L",
-          label: "List Quizzes"
-        },
-        {
-          key: "E",
-          label: "Edit Quiz"
-        },
-        {
-          key: "D",
-          label: "Delete Quiz"
-        }
-      ],
-      title: "A Quiz",
-      questions: []
-    };
-  },
+  }
+})
+export default class QuizPage extends Vue {
+  response = null;
+  menuOptions = [
+    { key: "N", label: "New Quiz" },
+    { key: "L", label: "List Quizzes" },
+    { key: "E", label: "Edit Quiz" },
+    { key: "D", label: "Delete Quiz" }
+  ];
+  title = "A Quiz";
+  questions: Question[] = [];
+
   mounted() {
     Mousetrap.bind(["N", "n"], () => console.log("New Quiz"));
     Mousetrap.bind(["L", "l"], () => console.log("List Quizzes"));
     Mousetrap.bind(["E", "e"], () => console.log("Edit Quiz"));
     Mousetrap.bind(["D", "d"], () => console.log("Delete Quiz"));
 
-    this.$axios.get("/api/quizzes/1").then(resp => {
-      this.title = resp.data.title;
-      this.questions = resp.data.questions;
-    });
-  },
+    (this.$axios as AxiosStatic)
+      .get("/api/quizzes/1")
+      .then((resp: AxiosResponse<Quiz>) => {
+        this.title = resp.data.title;
+        this.questions = resp.data.questions;
+      });
+  }
 
-  methods: {
-    componentForQuestionType(questionType: string) {
-      if (questionType in questionTypeMap) {
-        return questionTypeMap[questionType];
-      }
+  componentForQuestionType(questionType: string) {
+    if (questionType in questionTypeMap) {
+      return questionTypeMap[questionType];
     }
   }
-});
+}
 </script>

@@ -7,8 +7,8 @@
   "author": "Tom Nurkkala <tnurkkala@cse.taylor.edu>",
   "private": true,
   "scripts": {
-    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\"",
     "lint": "eslint --ext .js,.vue src",
+    "serve": "quasar dev",
     "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
     "test:e2e:CI": "cypress run",
     "test:e2e": "cypress open",

@@ -127,7 +127,7 @@ export default class QuizDesigner extends Vue {
   ];
 
   isType(type: string) {
-    return this.quiz.type && this.quiz.type.validator === type;
+    return this.quiz.type && this.quiz.type === type;
   }
 
   submitMe() {
