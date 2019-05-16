@@ -5,8 +5,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { Component, Vue } from "vue-property-decorator";
 
 interface TrueFalseChoice {
   label: string;
@@ -15,10 +14,7 @@ interface TrueFalseChoice {
 
 @Component
 class TrueFalseComponent extends Vue {
-  choices: TrueFalseChoice[] = [
-    { label: "True", value: true },
-    { label: "False", value: false }
-  ];
+  choices = [{ label: "True", value: true }, { label: "False", value: false }];
   response: TrueFalseChoice | null = null;
 }
 </script>

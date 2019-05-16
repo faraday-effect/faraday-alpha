@@ -18,13 +18,13 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 import {
-  MultipleDropdownsQuestionDetails,
+  MultipleDropdownsQuestion,
   MultipleDropdownsElement
 } from "./quiz.types";
 
 @Component
 export default class MultipleDropdowns extends Vue {
-  @Prop(Object) details!: MultipleDropdownsQuestionDetails;
+  @Prop(Object) question!: MultipleDropdownsQuestion;
 
   response: Object[] = [];
 

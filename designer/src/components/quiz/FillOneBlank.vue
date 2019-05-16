@@ -5,15 +5,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import { FillOneBlankQuestion } from "./quiz.types";
 
-export default Vue.extend({
-  name: "FillOneBlank",
-  props: { details: Object },
-  data() {
-    return {
-      response: null
-    };
-  }
-});
+@Component
+export default class FillOneBlank extends Vue {
+  @Prop(Object) question!: FillOneBlankQuestion;
+
+  response: Object[] = [];
+}
 </script>

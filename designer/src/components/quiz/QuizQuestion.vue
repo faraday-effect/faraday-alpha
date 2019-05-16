@@ -1,27 +1,22 @@
 <template>
   <q-card bordered style="margin: 2em 0">
     <q-card-section>
-      <p class="text-overline">Question {{ questionNumber + 1 }}</p>
-      <p class="text-h6">{{ title }}</p>
-      <p>{{ text }}</p>
+      <p class="text-overline">Question {{ question.questionNumber + 1 }}</p>
+      <p class="text-h6">{{ question.title }}</p>
+      <p>{{ question.text }}</p>
     </q-card-section>
 
     <q-separator />
 
-    <slot :details="details"></slot>
+    <slot :details="question.details"></slot>
   </q-card>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import { Question } from "./quiz.types";
 
-export default Vue.extend({
-  name: "QuizQuestion",
-  props: {
-    questionNumber: Number,
-    title: String,
-    text: String,
-    details: Object
-  }
-});
+export default class QuizQuestion extends Vue {
+  @Prop(Object) question!: Question;
+}
 </script>

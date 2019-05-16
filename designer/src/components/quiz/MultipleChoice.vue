@@ -5,15 +5,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import { MultipleChoiceQuestion } from "./quiz.types";
 
-export default Vue.extend({
-  name: "MultipleChoice",
-  props: { details: Object },
-  data() {
-    return {
-      response: null
-    };
-  }
-});
+@Component
+export default class MultipleChoice extends Vue {
+  @Prop(Object) question!: MultipleChoiceQuestion;
+
+  response: Object[] = [];
+}
 </script>

@@ -14,20 +14,17 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import { MatchingQuestion } from "./quiz.types";
 
-export default Vue.extend({
-  name: "Matching",
-  props: { details: Object },
-  data() {
-    return {
-      response: []
-    };
-  },
-  methods: {
-    choices() {
-      return this.details.pairs.map(pair => pair[1]);
-    }
+@Component
+export default class Matching extends Vue {
+  @Prop(Object) question!: MatchingQuestion;
+
+  response: Object[] = [];
+
+  choices() {
+    return this.question.details.pairs.map(pair => pair[1]);
   }
-});
+}
 </script>

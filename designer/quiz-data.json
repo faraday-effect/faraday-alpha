@@ -1,0 +1,70 @@
+{
+  "quizzes": [
+    {
+      "id": 1,
+      "title": "All About Pyramids",
+      "questions": [
+        {
+          "id": 1,
+          "type": "true-false",
+          "title": "Pyramid Identity",
+          "text": "The Pyramid of Doom is the same thing as Callback Hell."
+        },
+        {
+          "id": 2,
+          "type": "multiple-dropdowns",
+          "title": "Complete the Sentence",
+          "text": "Choose the proper terms.",
+          "details": {
+            "template": "We've been discussing the [pyramid] of [dooom].",
+            "choices": {
+              "pyramid": ["Pyramid", "Sphere", "Tringle"],
+              "dooom": ["Doom", "Influence", "Love"]
+            }
+          }
+        },
+        {
+          "id": 3,
+          "type": "matching",
+          "title": "Match-O-Matic",
+          "text": "Choose the best match for each term",
+          "details": {
+            "pairs": [
+              ["Pyramid", "Doom"],
+              ["Sphere", "Influence"],
+              ["Love", "Triangle"]
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "type": "fill-the-blank",
+          "title": "The Problem with Doom",
+          "text": "What's so bad about Doom?"
+        },
+        {
+          "id": 5,
+          "type": "multiple-choice",
+          "title": "Our Topic",
+          "text": "What have we been studying of late?",
+          "details": {
+            "choices": [
+              {
+                "label": "Pyramid of Doom",
+                "value": 1
+              },
+              {
+                "label": "Circle of Life",
+                "value": 2
+              },
+              {
+                "label": "Love Triangle",
+                "value": 3
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
