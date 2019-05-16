@@ -98,13 +98,23 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
+<script>
+// TODO: Update this to be TypeScript.
+// I have not been able to switch to `lang="ts"` without
+// losing the type of `this.$q`. It seems to work okay
+// as a JavaScript file.
 
-@Component
-export default class MyLayout extends Vue {
-  leftDrawerOpen = this.$q.platform.is.desktop;
-}
+import { openURL } from "quasar";
+
+export default {
+  name: "MyLayout",
+  data() {
+    return {
+      leftDrawerOpen: this.$q.platform.is.desktop
+    };
+  },
+  methods: {
+    openURL
+  }
+};
 </script>
-
-<style></style>
