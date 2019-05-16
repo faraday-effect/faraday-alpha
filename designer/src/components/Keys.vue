@@ -1,14 +1,16 @@
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
+import { CreateElement } from "vue";
 
-export default Vue.extend({
-  name: "Keys",
-  props: { content: String },
-  render(h) {
+@Component
+export default class Keys extends Vue {
+  @Prop() content!: string;
+
+  render(h: CreateElement) {
     const elts = this.content.split(/\s+/);
     return h("span", elts.map(elt => h("kbd", elt)));
   }
-});
+}
 </script>
 
 <style scoped>

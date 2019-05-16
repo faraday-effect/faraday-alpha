@@ -1,14 +1,15 @@
 <template>
+  <!-- eslint-disable-next-line -->
   <div v-html="content"></div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Prop } from "vue-property-decorator";
 
-export default Vue.extend({
-  name: "Preview",
-  props: { content: String }
-});
+@Component
+export default class Preview extends Vue {
+  @Prop() content!: string;
+}
 </script>
 
 <style scoped lang="stylus">

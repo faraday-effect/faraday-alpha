@@ -13,7 +13,7 @@ interface TrueFalseChoice {
 }
 
 @Component
-class TrueFalseComponent extends Vue {
+export default class TrueFalseComponent extends Vue {
   choices = [{ label: "True", value: true }, { label: "False", value: false }];
   response: TrueFalseChoice | null = null;
 }

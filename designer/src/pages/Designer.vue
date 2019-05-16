@@ -61,7 +61,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    renderedMarkdown() {
+    renderedMarkdown(): string {
       var processor = unified()
         .use(markdown)
         .use(remark2rehype)

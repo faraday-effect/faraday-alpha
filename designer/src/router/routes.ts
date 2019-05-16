@@ -8,7 +8,10 @@ const routes: RouteConfig[] = [
       { path: "", component: () => import("pages/Index.vue") },
       { path: "design", component: () => import("pages/Designer.vue") },
       { path: "quiz", component: () => import("pages/Quiz.vue") },
-      { path: "quiz-designer", component: () => import("pages/QuizDesigner.vue") }
+      {
+        path: "quiz-designer",
+        component: () => import("pages/QuizDesigner.vue")
+      }
     ]
   }
 ];
