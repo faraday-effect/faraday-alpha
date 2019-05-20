@@ -68,7 +68,7 @@ type QuizQuestion {
   type: String!
   title: String!
   text: String!
-  details: Json!
+  details: Json
 }
 
 type QuizResponse {
