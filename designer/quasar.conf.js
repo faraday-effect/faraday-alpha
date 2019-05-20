@@ -1,5 +1,3 @@
-// Configuration for your app
-
 module.exports = function(ctx) {
   return {
     boot: ["vuelidate", "axios"],

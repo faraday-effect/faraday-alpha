@@ -7,15 +7,18 @@ export interface Question {
 
 export interface TrueFalseQuestion extends Question {
   type: "true-false";
+  answer: boolean;
 }
 
 export interface FillOneBlankQuestion extends Question {
   type: "fill-the-blank";
+  answer: string[]; // Matching strings or regular expressions.
 }
 
 export interface MatchingQuestion extends Question {
   type: "matching";
   details: {
+    // These are the proper pairings, mixed up when displaying the question.
     pairs: [[string, string]];
   };
 }
@@ -26,7 +29,8 @@ export interface MultipleChoiceQuestion extends Question {
     choices: [
       {
         label: string;
-        value: string | number;
+        value: string;
+        answer: string; // Proper value for `label`
       }
     ];
   };

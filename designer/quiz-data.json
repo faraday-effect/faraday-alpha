@@ -8,7 +8,11 @@
           "id": 1,
           "type": "true-false",
           "title": "Pyramid Identity",
-          "text": "The Pyramid of Doom is the same thing as Callback Hell."
+          "text": "The Pyramid of Doom is the same thing as Callback Hell.",
+          "details": {
+            "answer": true
+          },
+          "response": true
         },
         {
           "id": 2,
@@ -20,7 +24,15 @@
             "choices": {
               "pyramid": ["Pyramid", "Sphere", "Tringle"],
               "dooom": ["Doom", "Influence", "Love"]
+            },
+            "answer": {
+              "pyramid": "Pyramid",
+              "doom": "Doom"
             }
+          },
+          "response": {
+            "pyramid": "Sphere",
+            "doom": "Love"
           }
         },
         {
@@ -29,18 +41,30 @@
           "title": "Match-O-Matic",
           "text": "Choose the best match for each term",
           "details": {
-            "pairs": [
-              ["Pyramid", "Doom"],
-              ["Sphere", "Influence"],
-              ["Love", "Triangle"]
-            ]
+            "pairs": {
+              "Pyramid": "Doom",
+              "Sphere": "Influence",
+              "Love": "Triangle"
+            }
+          },
+          "response": {
+            "Pyramid": "Influence",
+            "Sphere": "Influence",
+            "Love": "Doom"
           }
         },
         {
           "id": 4,
           "type": "fill-the-blank",
           "title": "The Problem with Doom",
-          "text": "What's so bad about Doom?"
+          "text": "What's so bad about Doom?",
+          "details": {
+            "answer": {
+              "text": ["nothing", "deadly"],
+              "regexp": ["ab+c", "4[234]"]
+            }
+          },
+          "response": "Zip face"
         },
         {
           "id": 5,
@@ -61,8 +85,10 @@
                 "label": "Love Triangle",
                 "value": 3
               }
-            ]
-          }
+            ],
+            "answer": 1
+          },
+          "response": 3
         }
       ]
     }

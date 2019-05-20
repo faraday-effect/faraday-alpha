@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { GqlModuleOptions, GqlOptionsFactory } from "@nestjs/graphql";
-import { makePrismaSchema, prismaObjectType } from "nexus-prisma";
+import {
+  makePrismaSchema,
+  prismaObjectType,
+  prismaExtendType
+} from "nexus-prisma";
 import path from "path";
 import datamodelInfo from "../generated/nexus-prisma";
 import { prisma } from "../generated/prisma-client";

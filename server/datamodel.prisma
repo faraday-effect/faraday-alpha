@@ -62,3 +62,17 @@ type User {
   mobilePhone: String
   roles: [Role!]
 }
+
+type QuizQuestion {
+  id: Int! @id
+  type: String!
+  title: String!
+  text: String!
+  details: Json!
+}
+
+type QuizResponse {
+  id: Int! @id
+  question: QuizQuestion!
+  response: Json!
+}

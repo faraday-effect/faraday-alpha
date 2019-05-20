@@ -102,9 +102,7 @@
 // TODO: Update this to be TypeScript.
 // I have not been able to switch to `lang="ts"` without
 // losing the type of `this.$q`. It seems to work okay
-// as a JavaScript file.
-
-import { openURL } from "quasar";
+// as JavaScript.
 
 export default {
   name: "MyLayout",
@@ -112,9 +110,6 @@ export default {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop
     };
-  },
-  methods: {
-    openURL
   }
 };
 </script>
