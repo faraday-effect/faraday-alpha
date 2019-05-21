@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { KeysToOneValue } from "../../../../shared/types/quiz.types";
+import { KeysToOneValue } from "./quiz.types";
 
 @Component
 export default class TrueFalseComponent extends Vue {

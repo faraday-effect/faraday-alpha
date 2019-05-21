@@ -20,7 +20,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import {
   MultipleDropdownsQuestion,
   MultipleDropdownsElement
-} from "../../../../shared/types/quiz.types";
+} from "./quiz.types";
 
 @Component
 export default class MultipleDropdowns extends Vue {

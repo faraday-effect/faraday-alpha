@@ -1,55 +1,14 @@
 {
+  "extends": "../shared/tsconfig.json",
+
   "compilerOptions": {
-    // Enable incremental builds
-    "incremental": true,
-
-    // This appears to be necessary for Apollo server (https://github.com/apollographql/apollo-server/issues/2025)
-    "allowSyntheticDefaultImports": true,
-
-    // Necessary for decorator reflection
-    "emitDecoratorMetadata": true,
-
-    // Enable decorators.
-    "experimentalDecorators": true,
-
-    // Use CommonJS (Node-style) module linkage
+    // Module code generation
     "module": "commonjs",
 
-    // Build directory for .js and .map files
-    "outDir": "build",
-
-    // Include source maps for debugging
-    "sourceMap": true,
-
-    // JavaScript target
+    // ECMAScript target version.
     "target": "es2017",
 
-    // Warn on expressions and declarations with an implied 'any' type.
-    "noImplicitAny": false, // TODO: Set to `true`
-
-    // Enable strict null checks. Requires TypeScript version 2.0 or later.
-    "strictNullChecks": true,
-
-    // Disable bivariant parameter checking for function types.
-    "strictFunctionTypes": true,
-
-    // Raise error on 'this' expressions with an implied any type.
-    "noImplicitThis": true,
-
-    // Report errors on unused locals.
-    "noUnusedLocals": false, // TODO: Set to `true`
-
-    // Report errors on unused parameters.
-    "noUnusedParameters": false, // TODO: Set to `true`
-
-    // Report error when not all code paths in function return a value.
-    "noImplicitReturns": true,
-
-    // Report errors for fallthrough cases in switch statement.
-    "noFallthroughCasesInSwitch": true,
-
-    // Emit '__importStar' and '__importDefault' helpers for runtime babel ecosystem compatibility 
-    // and enable '--allowSyntheticDefaultImports' for typesystem compatibility.
-    "esModuleInterop": true
+    // Build directory.
+    "outDir": "build"
   }
 }

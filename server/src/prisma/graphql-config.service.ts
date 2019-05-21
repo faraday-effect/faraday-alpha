@@ -9,7 +9,7 @@ import {
   QuestionType,
   TrueFalseQuestion,
   FillOneBlankQuestion
-} from "../../../shared/types/quiz.types";
+} from "../../../designer/src/components/quiz/quiz.types";
 
 @Injectable()
 export class GraphQLConfigService implements GqlOptionsFactory {

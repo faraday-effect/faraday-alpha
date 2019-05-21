@@ -1,8 +1,8 @@
 {
   "folders": [
-    { "path": "server" },
-    { "path": "designer" },
-    { "path": "shared" }
+    { "path": "server", "name": "Faraday Server" },
+    { "path": "designer", "name": "Faraday Designer" },
+    { "path": "shared", "name": "Shared Files" }
   ],
   "settings": {
     "vetur.format.defaultFormatter.html": "prettier"

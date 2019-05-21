@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { MatchingQuestion } from "../../../../shared/types/quiz.types";
+import { MatchingQuestion } from "./quiz.types";
 
 @Component
 export default class Matching extends Vue {

@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { MultipleChoiceQuestion } from "../../../../shared/types/quiz.types";
+import { MultipleChoiceQuestion } from "./quiz.types";
 
 @Component
 export default class MultipleChoice extends Vue {

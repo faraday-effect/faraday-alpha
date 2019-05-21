@@ -1,4 +1,4 @@
-import { MultipleDropdownsElement } from "../../../../../shared/types/quiz.types";
+import { MultipleDropdownsElement } from "../quiz.types";
 import MultipleDropdowns from "../MultipleDropdowns.vue";
 
 describe("MultipleDropdowns question", () => {
