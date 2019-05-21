@@ -12,7 +12,12 @@
           "details": {
             "answer": true
           },
-          "response": true
+          "response": [
+            {
+              "value": true,
+              "correct": true
+            }
+          ]
         },
         {
           "id": 2,
@@ -30,10 +35,16 @@
               "doom": "Doom"
             }
           },
-          "response": {
-            "pyramid": "Sphere",
-            "doom": "Love"
-          }
+          "response": [
+            {
+              "value": { "pyramid": "Sphere" },
+              "correct": true
+            },
+            {
+              "value": { "doom": "Love" },
+              "correct": true
+            }
+          ]
         },
         {
           "id": 3,
@@ -47,15 +58,15 @@
               "Love": "Triangle"
             }
           },
-          "response": {
-            "Pyramid": "Influence",
-            "Sphere": "Influence",
-            "Love": "Doom"
-          }
+          "response": [
+            { "value": { "Pyramid": "Influence" }, "correct": false },
+            { "value": { "Sphere": "Influence" }, "correct": true },
+            { "value": { "Love": "Doom" }, "correct": true }
+          ]
         },
         {
           "id": 4,
-          "type": "fill-the-blank",
+          "type": "fill-one-blank",
           "title": "The Problem with Doom",
           "text": "What's so bad about Doom?",
           "details": {
@@ -64,7 +75,12 @@
               "regexp": ["ab+c", "4[234]"]
             }
           },
-          "response": "Zip face"
+          "response": [
+            {
+              "value": "Zip face",
+              "correct": false
+            }
+          ]
         },
         {
           "id": 5,
@@ -88,7 +104,7 @@
             ],
             "answer": 1
           },
-          "response": 3
+          "response": [{ "value": 3, "correct": false }]
         }
       ]
     }

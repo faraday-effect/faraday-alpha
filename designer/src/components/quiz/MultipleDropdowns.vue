@@ -20,7 +20,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import {
   MultipleDropdownsQuestion,
   MultipleDropdownsElement
-} from "./quiz.types";
+} from "../../../../shared/types/quiz.types";
 
 @Component
 export default class MultipleDropdowns extends Vue {
@@ -31,8 +31,8 @@ export default class MultipleDropdowns extends Vue {
   parseTemplate(template: string): MultipleDropdownsElement[] {
     // Find the dropdowns.
     const ddRe = /\[[\w-]+]/g;
-    let ddLabels = [];
-    let match = null;
+    let ddLabels: string[] = [];
+    let match: RegExpExecArray | null;
     while ((match = ddRe.exec(template)) !== null) {
       ddLabels.push(match[0].slice(1, -1));
     }

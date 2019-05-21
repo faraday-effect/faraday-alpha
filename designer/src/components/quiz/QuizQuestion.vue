@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { Question } from "./quiz.types";
+import { Question } from "../../../../shared/types/quiz.types";
 
 export default class QuizQuestion extends Vue {
   @Prop(Object) question!: Question;

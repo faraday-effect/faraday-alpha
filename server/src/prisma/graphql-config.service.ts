@@ -1,10 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { GqlModuleOptions, GqlOptionsFactory } from "@nestjs/graphql";
-import { stringArg } from "nexus";
+import { stringArg, booleanArg } from "nexus";
 import { makePrismaSchema, prismaObjectType } from "nexus-prisma";
 import path from "path";
 import datamodelInfo from "../generated/nexus-prisma";
 import { prisma } from "../generated/prisma-client";
+import {
+  QuestionType,
+  TrueFalseQuestion,
+  FillOneBlankQuestion
+} from "../../../shared/types/quiz.types";
 
 @Injectable()
 export class GraphQLConfigService implements GqlOptionsFactory {
@@ -23,15 +28,41 @@ export class GraphQLConfigService implements GqlOptionsFactory {
           type: "QuizQuestion",
           args: {
             title: stringArg({ required: true }),
-            text: stringArg({ required: true })
+            text: stringArg({ required: true }),
+            answer: booleanArg({ required: true })
           },
-          resolve: (_obj, { title, text }, ctx) => {
-            return ctx.prisma.createQuizQuestion({
-              type: "true-false",
+          resolve: (_obj, { title, text, answer }, ctx) => {
+            const q: TrueFalseQuestion = {
+              type: QuestionType.TrueFalse,
               title,
               text,
-              details: { alpha: 17 }
-            });
+              details: { answer }
+            };
+            return ctx.prisma.createQuizQuestion(q);
+          }
+        });
+
+        t.field("createFillOneBlankQuestion", {
+          type: "QuizQuestion",
+          args: {
+            title: stringArg({ required: true }),
+            text: stringArg({ required: true }),
+            textAnswers: stringArg({ required: false, list: true }),
+            regexpAnswers: stringArg({ required: false, list: true })
+          },
+          resolve: (_obj, { title, text, textAnswers, regexpAnswers }, ctx) => {
+            const q: FillOneBlankQuestion = {
+              type: QuestionType.FillOneBlank,
+              title,
+              text,
+              details: {
+                answer: {
+                  text: textAnswers,
+                  regexp: regexpAnswers
+                }
+              }
+            };
+            return ctx.prisma.createQuizQuestion(q);
           }
         });
       }

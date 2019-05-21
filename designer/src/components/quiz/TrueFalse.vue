@@ -1,20 +1,18 @@
 <template>
   <div class="q-pa-lg">
-    <q-option-group v-model="response" :options="choices" />
+    <q-option-group v-model="response" :options="choices"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-
-interface TrueFalseChoice {
-  label: string;
-  value: boolean;
-}
+import { KeysToOneValue } from "../../../../shared/types/quiz.types";
 
 @Component
 export default class TrueFalseComponent extends Vue {
-  choices = [{ label: "True", value: true }, { label: "False", value: false }];
-  response: TrueFalseChoice | null = null;
+  choices: KeysToOneValue<Boolean> = {
+    True: true,
+    False: false
+  };
 }
 </script>

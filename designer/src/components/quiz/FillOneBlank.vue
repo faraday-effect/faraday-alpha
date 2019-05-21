@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { FillOneBlankQuestion } from "./quiz.types";
+import { FillOneBlankQuestion } from "../../../../shared/types/quiz.types";
 
 @Component
 export default class FillOneBlank extends Vue {
