@@ -1,13 +1,10 @@
 {
-	"folders": [
-		{
-			"path": "server"
-		},
-		{
-			"path": "designer"
-		},
-		{
-			"path": "shared"
-		}
-	]
+  "folders": [
+    { "path": "server" },
+    { "path": "designer" },
+    { "path": "shared" }
+  ],
+  "settings": {
+    "vetur.format.defaultFormatter.html": "prettier"
+  }
 }

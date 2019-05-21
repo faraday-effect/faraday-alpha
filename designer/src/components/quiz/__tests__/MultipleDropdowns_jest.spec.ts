@@ -1,9 +1,5 @@
-import { mount, Wrapper, shallowMount } from "@vue/test-utils";
+import { MultipleDropdownsElement } from "../../../../../shared/types/quiz.types";
 import MultipleDropdowns from "../MultipleDropdowns.vue";
-import {
-  MultipleDropdownsQuestion,
-  MultipleDropdownsElement
-} from "../quiz.types";
 
 describe("MultipleDropdowns question", () => {
   test("sanity check", () => {

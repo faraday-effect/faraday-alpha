@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-lg">
-    <q-option-group v-model="response" :options="choices"/>
+    <q-option-group v-model="response" :options="choices" />
   </div>
 </template>
 
