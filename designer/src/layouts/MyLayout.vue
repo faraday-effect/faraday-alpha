@@ -18,7 +18,10 @@
 
     <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list>
-        <q-item-label header>Essential Links</q-item-label>
+        <q-item-label header>Navigate</q-item-label>
+
+        <router-link :to="{ name: 'designer' }">Designer</router-link>
+
         <q-item
           clickable
           tag="a"
@@ -33,6 +36,7 @@
             <q-item-label caption>v1.quasar-framework.org</q-item-label>
           </q-item-section>
         </q-item>
+
         <q-item
           clickable
           tag="a"
@@ -47,6 +51,7 @@
             <q-item-label caption>github.com/quasarframework</q-item-label>
           </q-item-section>
         </q-item>
+
         <q-item
           clickable
           tag="a"
@@ -61,6 +66,7 @@
             <q-item-label caption>chat.quasar-framework.org</q-item-label>
           </q-item-section>
         </q-item>
+
         <q-item
           clickable
           tag="a"
@@ -75,6 +81,7 @@
             <q-item-label caption>forum.quasar-framework.org</q-item-label>
           </q-item-section>
         </q-item>
+
         <q-item
           clickable
           tag="a"

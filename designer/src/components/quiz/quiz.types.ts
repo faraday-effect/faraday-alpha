@@ -1,11 +1,12 @@
 export interface Question {
   questionNumber?: number;
-  type: QuestionType,
+  type: QuestionType;
   title: string;
   text: string;
 }
 
-export enum QuestionType {
+// TODO: Exporting this enum (`export enum ...`) causes a bunch of warnings. Why?
+const enum QuestionType {
   TrueFalse = "True-False",
   FillOneBlank = "Fill One",
   Matching = "Matching",
@@ -24,14 +25,14 @@ export interface KeysToMultipleValues<T = string> {
 }
 
 export interface TrueFalseQuestion extends Question {
-  type: QuestionType.TrueFalse,
+  type: QuestionType.TrueFalse;
   details: {
     answer: boolean;
   };
 }
 
 export interface FillOneBlankQuestion extends Question {
-  type: QuestionType.FillOneBlank,
+  type: QuestionType.FillOneBlank;
   details: {
     answer: {
       text?: string[] | null;
@@ -41,7 +42,7 @@ export interface FillOneBlankQuestion extends Question {
 }
 
 export interface MatchingQuestion extends Question {
-  type: QuestionType.Matching,
+  type: QuestionType.Matching;
   details: {
     // These are the proper pairings, mixed up when displaying the question.
     pairs: KeysToOneValue<string>;
@@ -49,7 +50,7 @@ export interface MatchingQuestion extends Question {
 }
 
 export interface MultipleChoiceQuestion extends Question {
-  type: QuestionType.MultipleChoice,
+  type: QuestionType.MultipleChoice;
   details: {
     choices: KeysToMultipleValues<string>;
     answer: string; // Proper value for `label`
@@ -57,7 +58,7 @@ export interface MultipleChoiceQuestion extends Question {
 }
 
 export interface MultipleDropdownsQuestion extends Question {
-  type: QuestionType.MultipleDropdowns,
+  type: QuestionType.MultipleDropdowns;
   template: string;
   details: {
     choices: KeysToMultipleValues<string>;
