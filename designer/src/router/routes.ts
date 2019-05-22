@@ -5,14 +5,23 @@ const routes: RouteConfig[] = [
     path: "/",
     component: () => import("layouts/MyLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/Index.vue") },
       {
-        name: "designer",
-        path: "design",
+        name: "home",
+        path: "",
+        component: () => import("pages/Index.vue")
+      },
+      {
+        name: "content-designer",
+        path: "content",
         component: () => import("pages/Designer.vue")
       },
-      { path: "quiz", component: () => import("pages/Quiz.vue") },
       {
+        name: "quiz",
+        path: "quiz",
+        component: () => import("pages/Quiz.vue")
+      },
+      {
+        name: "quiz-designer",
         path: "quiz-designer",
         component: () => import("pages/QuizDesigner.vue")
       }

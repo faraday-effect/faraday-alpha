@@ -18,84 +18,25 @@
 
     <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list>
-        <q-item-label header>Navigate</q-item-label>
-
-        <router-link :to="{ name: 'designer' }">Designer</router-link>
-
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="http://v1.quasar-framework.org"
-        >
-          <q-item-section avatar>
-            <q-icon name="school" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Docs</q-item-label>
-            <q-item-label caption>v1.quasar-framework.org</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://github.com/quasarframework/"
-        >
-          <q-item-section avatar>
-            <q-icon name="code" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Github</q-item-label>
-            <q-item-label caption>github.com/quasarframework</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="http://chat.quasar-framework.org"
-        >
-          <q-item-section avatar>
-            <q-icon name="chat" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Discord Chat Channel</q-item-label>
-            <q-item-label caption>chat.quasar-framework.org</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://forum.quasar-framework.org"
-        >
-          <q-item-section avatar>
-            <q-icon name="record_voice_over" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Forum</q-item-label>
-            <q-item-label caption>forum.quasar-framework.org</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://twitter.com/quasarframework"
-        >
-          <q-item-section avatar>
-            <q-icon name="rss_feed" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Twitter</q-item-label>
-            <q-item-label caption>@quasarframework</q-item-label>
-          </q-item-section>
-        </q-item>
+        <q-item-label header>Navigation</q-item-label>
+        <DrawerItem
+          link_name="content-designer"
+          icon_name="edit"
+          label="Content Designer"
+          caption="Add or update content"
+        />
+        <DrawerItem
+          link_name="quiz-designer"
+          icon_name="check"
+          label="Quiz Designer"
+          caption="Add or update a quiz"
+        />
+        <DrawerItem
+          link_name="quiz"
+          icon_name="check_box"
+          label="Quiz Tester"
+          caption="Try out a quiz"
+        />
       </q-list>
     </q-drawer>
 
@@ -110,9 +51,13 @@
 // I have not been able to switch to `lang="ts"` without
 // losing the type of `this.$q`. It seems to work okay
 // as JavaScript.
+import DrawerItem from "../layouts/DrawerItem.vue";
 
 export default {
   name: "MyLayout",
+  components: {
+    DrawerItem
+  },
   data() {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop
