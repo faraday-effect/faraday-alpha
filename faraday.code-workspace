@@ -1,7 +1,8 @@
 {
   "folders": [
     { "path": "server", "name": "Faraday Server" },
-    { "path": "designer", "name": "Faraday Designer" },
+    { "path": "designer", "name": "Designer (Quasar)" },
+    { "path": "designer2", "name": "Designer (Vuetify)" },
     { "path": "shared", "name": "Shared Files" }
   ],
   "settings": {
