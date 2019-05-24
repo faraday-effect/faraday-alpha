@@ -15,7 +15,9 @@ import { NavItemType } from "./layout.types";
   components: { NavItem }
 })
 export default class NavDrawer extends Vue {
-  @Prop({ default: false }) drawerVisible!: boolean;
+  @Prop({ default: false }) initialVisibility!: boolean;
+
+  drawerVisible: boolean = this.initialVisibility;
 
   get menuItems(): NavItemType[] {
     return [
