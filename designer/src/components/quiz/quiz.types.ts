@@ -6,7 +6,7 @@ export interface Question {
 }
 
 // TODO: Exporting this enum (`export enum ...`) causes a bunch of warnings. Why?
-const enum QuestionType {
+export const enum QuestionType {
   TrueFalse = "True-False",
   FillOneBlank = "Fill One",
   Matching = "Matching",

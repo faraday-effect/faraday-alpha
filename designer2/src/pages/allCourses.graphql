@@ -1,0 +1,13 @@
+query allCourses {
+  courses {
+    id
+    number
+    title
+    department {
+      name
+    }
+    prefix {
+      value
+    }
+  }
+}
