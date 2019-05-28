@@ -1,0 +1,9 @@
+query allQuestions {
+  quizQuestions {
+    id
+    type
+    title
+    text
+    details
+  }
+}

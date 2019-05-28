@@ -12,54 +12,12 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 import gql from "graphql-tag";
-// import { ApolloProvider } from "vue-apollo";
-
-const quizQuery = gql`
-  query allQuestions {
-    quizQuestions {
-      id
-      type
-      title
-      text
-      details
-    }
-  }
-`;
-
-const courseQuery = gql`
-  query allCourses {
-    courses {
-      id
-      number
-      title
-      department {
-        name
-      }
-      prefix {
-        value
-      }
-    }
-  }
-`;
-
-const deptQuery = gql`
-  query allDepartments {
-    departments {
-      id
-      name
-      courses {
-        title
-        number
-      }
-    }
-  }
-`;
 
 @Component({
   apollo: {
-    courses: courseQuery,
-    departments: deptQuery,
-    quizQuestions: quizQuery
+    courses: require("../graphql/allCourses.gql"),
+    departments: require("../graphql/allDepartments.gql"),
+    quizQuestions: require("../graphql/allQuestions.gql")
   }
 })
 export default class Quiz extends Vue {

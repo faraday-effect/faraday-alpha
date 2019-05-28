@@ -1,0 +1,10 @@
+query allDepartments {
+  departments {
+    id
+    name
+    courses {
+      title
+      number
+    }
+  }
+}
