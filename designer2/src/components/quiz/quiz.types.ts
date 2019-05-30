@@ -5,7 +5,6 @@ export interface Question {
   text: string;
 }
 
-// TODO: Exporting this enum (`export enum ...`) causes a bunch of warnings. Why?
 export enum QuestionType {
   FillOneBlank = "Fill One",
   Matching = "Matching",
@@ -29,6 +28,10 @@ export interface TrueFalseQuestion extends Question {
   details: {
     answer: boolean;
   };
+}
+
+export interface TrueFalseResponse {
+  response: boolean;
 }
 
 export interface FillOneBlankQuestion extends Question {

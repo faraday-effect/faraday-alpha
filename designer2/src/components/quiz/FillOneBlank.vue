@@ -1,7 +1,5 @@
 <template>
-  <div class="q-pa-lg">
-    <q-input v-model="response" label="Your Answer" />
-  </div>
+  <v-text-field v-model="response" label="Your Answer" />
 </template>
 
 <script lang="ts">
@@ -10,7 +8,7 @@ import { FillOneBlankQuestion } from "./quiz.types";
 
 @Component
 export default class FillOneBlank extends Vue {
-  @Prop(Object) question!: FillOneBlankQuestion;
+  @Prop() details!: object;
 
   response: Object[] = [];
 }

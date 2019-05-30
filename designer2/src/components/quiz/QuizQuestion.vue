@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="my-3 pa-2">
     <v-card-title>
       <div>
         <h4 class="grey--text">Question {{ questionNumber }} ({{ type }})</h4>
@@ -15,7 +15,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
-import { Question } from "./quiz.types";
 
 @Component
 export default class QuizQuestion extends Vue {
