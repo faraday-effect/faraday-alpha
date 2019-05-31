@@ -19,6 +19,12 @@ export default new Router({
       component: () => import("./pages/Quiz.vue")
     },
     {
+      path: "/quiz-designer",
+      name: "quiz-designer",
+      component: () => import("./pages/QuizDesigner.vue")
+    },
+
+    {
       path: "/about",
       name: "about",
       component: () => import("./pages/About.vue")

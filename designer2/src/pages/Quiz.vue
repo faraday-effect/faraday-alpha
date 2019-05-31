@@ -34,6 +34,15 @@ import MultipleChoiceQuestion from "../components/quiz/MultipleChoice.vue";
 import MultipleDropdownsQuestion from "../components/quiz/MultipleDropdowns.vue";
 import TrueFalseQuestion from "../components/quiz/TrueFalse.vue";
 
+/** Map question type to the appropriate class. */
+const questionTypeMap = {
+  [QuestionType.FillOneBlank]: FillOneBlankQuestion,
+  [QuestionType.Matching]: MatchingQuestion,
+  [QuestionType.MultipleChoice]: MultipleChoiceQuestion,
+  [QuestionType.MultipleDropdowns]: MultipleDropdownsQuestion,
+  [QuestionType.TrueFalse]: TrueFalseQuestion
+};
+
 @Component({
   apollo: {
     quizQuestions: require("../graphql/allQuestions.gql")
@@ -46,18 +55,7 @@ export default class Quiz extends Vue {
   quizQuestions: any = null;
 
   componentForQuestionType(type: QuestionType) {
-    switch (type) {
-      case QuestionType.FillOneBlank:
-        return FillOneBlankQuestion;
-      case QuestionType.Matching:
-        return MatchingQuestion;
-      case QuestionType.MultipleChoice:
-        return MultipleChoiceQuestion;
-      case QuestionType.MultipleDropdowns:
-        return MultipleDropdownsQuestion;
-      case QuestionType.TrueFalse:
-        return TrueFalseQuestion;
-    }
+    return questionTypeMap[type];
   }
 }
 </script>

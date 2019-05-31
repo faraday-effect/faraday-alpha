@@ -71,6 +71,7 @@ export interface MultipleDropdownsQuestion extends Question {
 
 export interface Quiz {
   title: string;
+  description: string;
   questions: Question[];
 }
 

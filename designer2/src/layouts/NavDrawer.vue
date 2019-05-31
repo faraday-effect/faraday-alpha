@@ -34,7 +34,7 @@ export default class NavDrawer extends Vue {
         children: [
           {
             title: "Design",
-            route: "diplomas-admin"
+            route: "quiz-designer"
           },
           {
             title: "Preview",
