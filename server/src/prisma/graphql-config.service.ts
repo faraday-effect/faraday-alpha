@@ -14,6 +14,7 @@ import {
 @Injectable()
 export class GraphQLConfigService implements GqlOptionsFactory {
   async createGqlOptions(): Promise<GqlModuleOptions> {
+    // @ts-ignore: Expression produces a union type that is too complex to represent.
     const Query = prismaObjectType({
       name: "Query",
       definition: t => t.prismaFields(["*"])

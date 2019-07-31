@@ -11,6 +11,7 @@ type Department {
   id: Int! @id
   name: String!
   courses: [Course!]
+  prefixes: [Prefix!]
 }
 
 type Holiday {

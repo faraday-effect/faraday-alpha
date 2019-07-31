@@ -6,11 +6,11 @@ export interface Question {
 }
 
 export enum QuestionType {
-  FillOneBlank = "Fill One",
+  FillOneBlank = "FillOneBlank",
   Matching = "Matching",
-  MultipleChoice = "Multiple Choice",
-  MultipleDropdowns = "Multiple Dropdown",
-  TrueFalse = "True-False"
+  MultipleChoice = "MultipleChoice",
+  MultipleDropdowns = "MultipleDropdowns",
+  TrueFalse = "TrueFalse"
 }
 
 /** Map string keys to a single value of type T. */

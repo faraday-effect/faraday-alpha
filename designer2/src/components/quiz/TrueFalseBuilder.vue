@@ -11,11 +11,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
+import QuestionBuilder from "./QuestionBuilder.vue";
 
 @Component
-export default class TrueFalseComponent extends Vue {
-  @Prop() details!: object;
+export default class TrueFalseBuilder extends QuestionBuilder {
   choices = [{ label: "True", value: true }, { label: "False", value: false }];
-  response: boolean | null = null;
 }
 </script>

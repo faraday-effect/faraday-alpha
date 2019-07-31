@@ -2,19 +2,12 @@
   <div>
     <h1 class="headline">A Quiz</h1>
     <quiz-question
-      v-for="(question, idx) in quizQuestions"
+      v-for="question in quizQuestions"
       :key="question.id"
-      :type="question.type"
-      :question-number="idx + 1"
-      :title="question.title"
-      :text="question.text"
-      :details="question.details"
+      :question="question"
     >
-      <template v-slot="{ details }">
-        <component
-          :is="componentForQuestionType(question.type)"
-          :details="question.details"
-        />
+      <template>
+        <component :is="component(question.type)" />
       </template>
     </quiz-question>
     <pre>{{ quizQuestions }}</pre>
@@ -25,37 +18,18 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 import gql from "graphql-tag";
 
-import { QuestionType, Question } from "../components/quiz/quiz.types";
-
-import QuizQuestion from "../components/quiz/QuizQuestion.vue";
-import FillOneBlankQuestion from "../components/quiz/FillOneBlank.vue";
-import MatchingQuestion from "../components/quiz/Matching.vue";
-import MultipleChoiceQuestion from "../components/quiz/MultipleChoice.vue";
-import MultipleDropdownsQuestion from "../components/quiz/MultipleDropdowns.vue";
-import TrueFalseQuestion from "../components/quiz/TrueFalse.vue";
-
-/** Map question type to the appropriate class. */
-const questionTypeMap = {
-  [QuestionType.FillOneBlank]: FillOneBlankQuestion,
-  [QuestionType.Matching]: MatchingQuestion,
-  [QuestionType.MultipleChoice]: MultipleChoiceQuestion,
-  [QuestionType.MultipleDropdowns]: MultipleDropdownsQuestion,
-  [QuestionType.TrueFalse]: TrueFalseQuestion
-};
+import { Question, QuestionType } from "@/components/quiz/quiz.types";
+import QuestionAsker from "@/components/quiz/QuestionAsker.vue";
 
 @Component({
   apollo: {
-    quizQuestions: require("../graphql/allQuestions.gql")
+    quizQuestions: require("@/graphql/allQuestions.gql")
   },
   components: {
-    QuizQuestion
+    QuestionAsker
   }
 })
 export default class Quiz extends Vue {
-  quizQuestions: any = null;
-
-  componentForQuestionType(type: QuestionType) {
-    return questionTypeMap[type];
-  }
+  quizQuestions: Question[] = [];
 }
 </script>
