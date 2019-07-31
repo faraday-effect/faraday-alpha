@@ -1,3 +1,5 @@
 <template>
-  <p>Hello</p>
+  <v-container>
+    <p>Hello</p>
+  </v-container>
 </template>

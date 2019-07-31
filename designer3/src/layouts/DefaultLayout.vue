@@ -1,19 +1,19 @@
 <template>
-  <v-app-bar app>
-    <ToolBar />
+  <v-app>
+    <AppBar />
 
     <v-content>
       <router-view></router-view>
     </v-content>
-  </v-app-bar>
+  </v-app>
 </template>
 
 <script>
-import ToolBar from "./ToolBar.vue";
+import AppBar from "@/layouts/AppBar";
 
 export default {
   components: {
-    ToolBar
+    AppBar
   }
 };
 </script>
