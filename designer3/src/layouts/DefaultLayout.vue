@@ -8,12 +8,13 @@
   </v-app>
 </template>
 
-<script>
-import AppBar from "@/layouts/AppBar";
+<script lang="ts">
+import Vue from "vue";
+import AppBar from "@/layouts/AppBar.vue";
 
-export default {
+export default Vue.extend({
   components: {
     AppBar
   }
-};
+});
 </script>

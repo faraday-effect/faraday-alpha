@@ -16,7 +16,7 @@
 
     <v-list v-for="item in navItems" :key="item.route" dense nav>
       <!-- No children -->
-      <v-list-item v-if="!item.children" :to="item.route">
+      <v-list-item v-if="!item.children" :to="{ name: item.route }">
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -33,7 +33,7 @@
         <v-list-item
           v-for="child in item.children"
           :key="child.route"
-          :to="child.route"
+          :to="{ name: child.route }"
         >
           <v-list-item-icon>
             <v-icon>{{ child.icon }}</v-icon>
@@ -47,8 +47,21 @@
   </v-navigation-drawer>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+
+interface NavChild {
+  title: string;
+  route: string;
+  icon: string;
+}
+
+interface NavItem extends NavChild {
+  divider?: boolean;
+  children?: NavChild[];
+}
+
+export default Vue.extend({
   props: {
     initialVisibility: {
       type: Boolean,
@@ -56,43 +69,44 @@ export default {
     }
   },
   data: function() {
+    let navItems: NavItem[] = [
+      {
+        title: "Home",
+        route: "home",
+        icon: "mdi-home",
+        divider: true
+      },
+      {
+        title: "Calendar",
+        route: "calendar",
+        icon: "mdi-calendar"
+      },
+      {
+        title: "Quizzes",
+        route: "quizzes",
+        icon: "mdi-check",
+        children: [
+          {
+            title: "Design",
+            route: "quiz-designer",
+            icon: "mdi-pencil"
+          },
+          {
+            title: "Preview",
+            route: "quiz-preview",
+            icon: "mdi-glasses"
+          }
+        ]
+      },
+      {
+        title: "About",
+        route: "about",
+        icon: "mdi-school"
+      }
+    ];
     return {
       drawerVisible: this.initialVisibility,
-      navItems: [
-        {
-          title: "Home",
-          route: "home",
-          icon: "mdi-home",
-          divider: true
-        },
-        {
-          title: "Calendar",
-          route: "calendar",
-          icon: "mdi-calendar"
-        },
-        {
-          title: "Quizzes",
-          route: "quizzes",
-          icon: "mdi-check",
-          children: [
-            {
-              title: "Design",
-              route: "quiz-designer",
-              icon: "mdi-pencil"
-            },
-            {
-              title: "Preview",
-              route: "quiz-preview",
-              icon: "mdi-glasses"
-            }
-          ]
-        },
-        {
-          title: "About Faraday",
-          route: "about",
-          icon: "mdi-school"
-        }
-      ]
+      navItems
     };
   },
 
@@ -101,5 +115,5 @@ export default {
       this.drawerVisible = !this.drawerVisible;
     }
   }
-};
+});
 </script>

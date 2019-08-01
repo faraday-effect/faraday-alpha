@@ -2,12 +2,13 @@
   <DefaultLayout />
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 
-export default {
+export default Vue.extend({
   components: {
     DefaultLayout
   }
-};
+});
 </script>

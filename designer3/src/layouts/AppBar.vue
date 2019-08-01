@@ -23,17 +23,19 @@
   </div>
 </template>
 
-<script>
-import NavDrawer from "./NavDrawer";
+<script lang="ts">
+import Vue from "vue";
+import NavDrawer from "./NavDrawer.vue";
 
-export default {
+export default Vue.extend({
   components: {
     NavDrawer
   },
+
   methods: {
     toggleNavDrawer() {
-      this.$refs.drawer.toggle();
+      (this.$refs.drawer as Vue & { toggle: () => void }).toggle();
     }
   }
-};
+});
 </script>
