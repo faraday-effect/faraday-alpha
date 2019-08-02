@@ -1,15 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Calendar, CalendarUpdateInput } from "./calendar.entities";
+import { Calendar, CalendarUpdateInput } from "./entities/calendar";
 import { Repository } from "typeorm";
+import { Term, TermCreateInput } from "./entities/Term";
 
 @Injectable()
 export class CalendarService {
   constructor(
     @InjectRepository(Calendar)
-    private readonly calendarRepository: Repository<Calendar>
+    private readonly calendarRepository: Repository<Calendar>,
+    @InjectRepository(Term)
+    private readonly termRepository: Repository<Term>
   ) {}
 
+  // Term
+  createTerm(term: TermCreateInput) {
+    const newTerm = this.termRepository.create({ ...term });
+    return this.termRepository.save(newTerm);
+  }
+
+  // Calendar
   createCalendar(name: string) {
     const newCalendar = this.calendarRepository.create({ name });
     return this.calendarRepository.save(newCalendar);

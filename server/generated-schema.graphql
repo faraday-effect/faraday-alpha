@@ -17,12 +17,20 @@ input CalendarUpdateInput {
   isFrozen: Boolean
 }
 
+type DateRange {
+  id: Int!
+  title: String!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
 scalar DateTime
 
 type Mutation {
+  createTerm(termCreateInput: TermCreateInput!): Term!
   createCalendar(name: String!): Calendar!
   updateCalendar(calendarData: CalendarUpdateInput!): Calendar!
   deleteCalendar(id: Int!): Int!
@@ -31,4 +39,17 @@ type Mutation {
 type Query {
   calendars: [Calendar!]!
   calendar(id: Int!): Calendar!
+}
+
+type Term {
+  id: Int!
+  name: String!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input TermCreateInput {
+  name: String!
+  startDate: DateTime!
+  endDate: DateTime!
 }
