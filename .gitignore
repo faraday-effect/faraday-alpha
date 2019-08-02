@@ -1,15 +1,14 @@
 .DS_Store
-node_modules
+.idea/
 
-.idea
-
-
+node_modules/
 build/
 dist/
 coverage/
 
+.env
+
+
 foo-*
 foo.*
 foo[0-9]*
-server/schema.gql
-server/src/generated

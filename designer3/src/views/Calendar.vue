@@ -19,10 +19,19 @@
 
 <script lang="ts">
 import Vue from "vue";
+import gql from "graphql-tag";
 
 export default Vue.extend({
+  apollo: {
+    calendar: gql`
+      query {
+        calendar
+      }
+    `
+  },
   data: function() {
     return {
+      calendar: {},
       start: "2019-08-26",
       end: "2019-12-12",
       events: [

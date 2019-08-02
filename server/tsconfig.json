@@ -1,14 +1,16 @@
 {
-  "extends": "../shared/tsconfig.json",
-
   "compilerOptions": {
-    // Module code generation
     "module": "commonjs",
-
-    // ECMAScript target version.
-    "target": "es2017",
-
-    // Build directory.
-    "outDir": "build"
-  }
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es6",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules"]
 }

@@ -1,32 +1,12 @@
-version: '3'
+version: "3.4"
 
 services:
-  prisma:
-    image: prismagraphql/prisma:1.33
-    restart: always
-    ports:
-      - '4466:4466'
+  pg:
+    image: postgres:11
+    container_name: faraday-db
     environment:
-      PRISMA_CONFIG: |
-        port: 4466
-        databases:
-          default:
-            connector: postgres
-            host: postgres
-            port: 5432
-            user: prisma
-            password: prisma
-
-  postgres:
-    image: postgres:10.3
-    restart: always
+      POSTGRES_DB: faraday
+      POSTGRES_USER: faraday
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: prisma
-      POSTGRES_PASSWORD: prisma
-    volumes:
-      - postgres:/var/lib/postgresql/data
-
-volumes:
-  postgres: ~
