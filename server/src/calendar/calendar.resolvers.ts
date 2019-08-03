@@ -4,6 +4,11 @@ import { CalendarService } from "./calendar.service";
 import { Int } from "type-graphql";
 import { DeleteResult } from "typeorm";
 import { Term, TermCreateInput } from "./entities/Term";
+import {
+  DateRange,
+  DateRangeCreateInput,
+  DateRangeCreateInstance
+} from "./entities/DateRange";
 
 @Resolver(of => Calendar)
 export class CalendarResolver {
@@ -13,6 +18,26 @@ export class CalendarResolver {
   @Mutation(returns => Term)
   async createTerm(@Args("termCreateInput") termCreateInput: TermCreateInput) {
     return await this.calendarService.createTerm(termCreateInput);
+  }
+
+  @Query(returns => [Term])
+  async terms() {
+    return await this.calendarService.terms();
+  }
+
+  // DateRange
+  @Mutation(returns => DateRange)
+  async addToTerm(
+    @Args("dateRangeCreateInput") dateRangeCreateInput: DateRangeCreateInput
+  ) {
+    const term: Term = await this.calendarService.term(
+      dateRangeCreateInput.termId
+    );
+    const dateRangeCreateInstance: DateRangeCreateInstance = {
+      ...dateRangeCreateInput,
+      term
+    };
+    return await this.calendarService.createDateRange(dateRangeCreateInstance);
   }
 
   // Calendar

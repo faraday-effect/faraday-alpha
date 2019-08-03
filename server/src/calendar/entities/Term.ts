@@ -23,6 +23,7 @@ export class Term {
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   @OneToMany(type => DateRange, dateRange => dateRange.term)
+  @Field(type => [DateRange])
   dateRanges: DateRange[];
 }
 
