@@ -37,6 +37,12 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+input ExplicitDateRange {
+  title: String!
+  startDate: DateTime!
+  endDate: DateTime
+}
+
 type Mutation {
   createTerm(termCreateInput: TermCreateInput!): Term!
   addToTerm(dateRangeCreateInput: DateRangeCreateInput!): DateRange!
@@ -63,4 +69,5 @@ input TermCreateInput {
   name: String!
   startDate: DateTime!
   endDate: DateTime!
+  dateRanges: [ExplicitDateRange!]
 }

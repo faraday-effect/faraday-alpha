@@ -9,17 +9,9 @@ export class Term {
   @Field(type => Int)
   id: number;
 
-  @Column()
-  @Field()
-  name: string;
-
-  @Column()
-  @Field()
-  startDate: Date;
-
-  @Column()
-  @Field()
-  endDate: Date;
+  @Column() @Field() name: string;
+  @Column() @Field() startDate: Date;
+  @Column() @Field() endDate: Date;
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   @OneToMany(type => DateRange, dateRange => dateRange.term)
@@ -28,8 +20,18 @@ export class Term {
 }
 
 @InputType()
+class ExplicitDateRange {
+  @Field() title: string;
+  @Field() startDate: Date;
+  @Field({ nullable: true }) endDate?: Date;
+}
+
+@InputType()
 export class TermCreateInput {
   @Field() name: string;
   @Field() startDate: Date;
   @Field() endDate: Date;
+
+  @Field(type => [ExplicitDateRange], { nullable: true })
+  dateRanges: ExplicitDateRange[];
 }

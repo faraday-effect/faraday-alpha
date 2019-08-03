@@ -5,11 +5,9 @@
 
 import { printSchema } from "graphql";
 import { buildSchema, buildTypeDefsAndResolvers } from "type-graphql";
-import { DepartmentResolver } from "../relational/department/department.resolver";
-import { TermResolver } from "../relational/term/term.resolver";
-import { CourseResolver } from "../relational/course/course.resolver";
+import { CalendarResolver } from "../calendar/calendar.resolvers";
 
-const resolvers = [DepartmentResolver, TermResolver, CourseResolver];
+const resolvers = [CalendarResolver];
 
 function createSchema() {
   return buildSchema({

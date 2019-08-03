@@ -21,13 +21,13 @@ export class CalendarService {
   ) {}
 
   // Term
-  createTerm(term: TermCreateInput) {
-    const newTerm = this.termRepository.create({ ...term });
+  createTerm(termCreateInput: TermCreateInput) {
+    const newTerm = this.termRepository.create(termCreateInput);
     return this.termRepository.save(newTerm);
   }
 
   term(id: number) {
-    return this.termRepository.findOne(id);
+    return this.termRepository.findOne(id, { relations: ["dateRanges"] });
   }
 
   terms() {

@@ -17,7 +17,14 @@ export class CalendarResolver {
   // Term
   @Mutation(returns => Term)
   async createTerm(@Args("termCreateInput") termCreateInput: TermCreateInput) {
-    return await this.calendarService.createTerm(termCreateInput);
+    const newTerm = await this.calendarService.createTerm(termCreateInput);
+    for (const dateRange of termCreateInput.dateRanges) {
+      await this.calendarService.createDateRange({
+        ...dateRange,
+        term: newTerm
+      });
+    }
+    return this.calendarService.term(newTerm.id);
   }
 
   @Query(returns => [Term])
