@@ -9,9 +9,17 @@ export class Term {
   @Field(type => Int)
   id: number;
 
-  @Column() @Field() name: string;
-  @Column() @Field() startDate: Date;
-  @Column() @Field() endDate: Date;
+  @Column()
+  @Field()
+  name: string;
+
+  @Column()
+  @Field()
+  startDate: Date;
+
+  @Column()
+  @Field()
+  endDate: Date;
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   @OneToMany(type => DateRange, dateRange => dateRange.term)

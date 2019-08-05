@@ -53,6 +53,7 @@ type Mutation {
 
 type Query {
   terms: [Term!]!
+  term(id: Int!): Term!
   calendars: [Calendar!]!
   calendar(id: Int!): Calendar!
 }

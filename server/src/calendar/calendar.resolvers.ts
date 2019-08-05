@@ -32,6 +32,12 @@ export class CalendarResolver {
     return await this.calendarService.terms();
   }
 
+  @Query(returns => Term)
+  async term(@Args({ name: "id", type: () => Int }) id: number) {
+    const theTerm = await this.calendarService.term(id);
+    return theTerm;
+  }
+
   // DateRange
   @Mutation(returns => DateRange)
   async addToTerm(
@@ -40,11 +46,10 @@ export class CalendarResolver {
     const term: Term = await this.calendarService.term(
       dateRangeCreateInput.termId
     );
-    const dateRangeCreateInstance: DateRangeCreateInstance = {
+    return await this.calendarService.createDateRange({
       ...dateRangeCreateInput,
       term
-    };
-    return await this.calendarService.createDateRange(dateRangeCreateInstance);
+    });
   }
 
   // Calendar
