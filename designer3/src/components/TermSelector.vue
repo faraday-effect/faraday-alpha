@@ -1,13 +1,119 @@
 <template>
-    $END$
+  <v-select
+    label="Choose a term"
+    :items="selections"
+    :loading="isLoading"
+    v-model="selectedTermId"
+    @change="onTermChanged"
+  ></v-select>
 </template>
 
-<script>
-    export default {
-        name: "TermSelector"
+<script lang="ts">
+import Vue from "vue";
+import { DateTime } from "luxon";
+import gql from "graphql-tag";
+
+interface TermsGqlResponse {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Selection {
+  text: string;
+  value: number;
+}
+
+/**
+ * Return the ID of the term nearest the current date.
+ *
+ * @param terms - list of terms from GraphQL
+ */
+function idOfNearestTerm(terms: TermsGqlResponse[]) {
+  interface TermDates {
+    id: number;
+    startDate: DateTime;
+    endDate: DateTime;
+  }
+
+  // Map date strings from GQL to Luxon objects.
+  const termDates: TermDates[] = terms.map(term => ({
+    id: term.id,
+    startDate: DateTime.fromISO(term.startDate),
+    endDate: DateTime.fromISO(term.endDate)
+  }));
+
+  // It's today!
+  const today = DateTime.local();
+
+  // If we're in any of the known terms, return that one.
+  for (let term of termDates) {
+    if (today >= term.startDate && today <= term.endDate) {
+      console.log("In term", term.id);
+      return term.id;
     }
+  }
+
+  // We're not in a term; look for the one we're closest to.
+  let nearestTerm: number = -1;
+  let smallestDelta: number = Infinity;
+  for (let term of termDates) {
+    const delta = Math.min(
+      Math.abs(today.diff(term.startDate).as("days")),
+      Math.abs(today.diff(term.endDate).as("days"))
+    );
+    if (delta < smallestDelta) {
+      nearestTerm = term.id;
+      smallestDelta = delta;
+    }
+  }
+  return nearestTerm;
+}
+
+export default Vue.extend({
+  name: "TermSelector",
+  apollo: {
+    terms: {
+      query: gql`
+        query {
+          terms {
+            id
+            name
+            startDate
+            endDate
+          }
+        }
+      `,
+      result() {
+        this.isLoading = false;
+        this.selectedTermId = idOfNearestTerm(this.terms);
+        this.onTermChanged();
+      }
+    }
+  },
+  data() {
+    const defaultTerms: TermsGqlResponse[] = [
+      { id: 0, name: "", startDate: "", endDate: "" }
+    ];
+    return {
+      isLoading: true,
+      terms: defaultTerms,
+      selectedTermId: -1
+    };
+  },
+  computed: {
+    selections(): Selection[] {
+      return this.terms.map(term => ({
+        text: term.name,
+        value: term.id
+      }));
+    }
+  },
+  methods: {
+    onTermChanged() {
+      this.$emit("term-changed", this.selectedTermId);
+    }
+  }
+});
 </script>
-
-<style scoped>
-
-</style>

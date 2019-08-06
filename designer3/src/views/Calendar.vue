@@ -1,6 +1,10 @@
 <template>
   <v-container>
-    <h1 v-if="$apollo.loading">Loading ...</h1>
+    <TermSelector @term-changed="onTermChanged" />
+    <v-progress-circular
+      v-if="$apollo.loading || !validTermId"
+      indeterminate
+    ></v-progress-circular>
     <div v-else>
       <h1>{{ term.name }}</h1>
       <v-layout>
@@ -24,6 +28,7 @@
 import Vue from "vue";
 import gql from "graphql-tag";
 import { DateTime } from "luxon";
+import TermSelector from "@/components/TermSelector.vue";
 
 interface Term {
   name: string;
@@ -49,6 +54,7 @@ function extractIsoDate(isoString: string) {
 }
 
 export default Vue.extend({
+  components: { TermSelector },
   apollo: {
     term: {
       query: gql`
@@ -65,8 +71,13 @@ export default Vue.extend({
           }
         }
       `,
-      variables: {
-        termId: 1
+      variables() {
+        return {
+          termId: this.selectedTermId
+        };
+      },
+      skip() {
+        return !this.validTermId;
       }
     }
   },
@@ -78,7 +89,8 @@ export default Vue.extend({
       dateRanges: []
     };
     return {
-      term: defaultTerm
+      term: defaultTerm,
+      selectedTermId: -1
     };
   },
   computed: {
@@ -94,6 +106,14 @@ export default Vue.extend({
         start: extractIsoDate(dateRange.startDate),
         end: extractIsoDate(dateRange.endDate || dateRange.startDate)
       }));
+    },
+    validTermId(): boolean {
+      return this.selectedTermId >= 1;
+    }
+  },
+  methods: {
+    onTermChanged(newTerm: number) {
+      this.selectedTermId = newTerm;
     }
   }
 });

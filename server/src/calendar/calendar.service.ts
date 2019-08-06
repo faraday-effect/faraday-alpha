@@ -31,7 +31,11 @@ export class CalendarService {
   }
 
   terms() {
-    return this.termRepository.find({ relations: ["dateRanges"] });
+    return this.termRepository
+      .createQueryBuilder("term")
+      .leftJoinAndSelect("term.dateRanges", "dateRange")
+      .orderBy("term.startDate")
+      .getMany();
   }
 
   // DateRange

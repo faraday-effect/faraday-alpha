@@ -19,7 +19,8 @@ import { Term } from "./calendar/entities/Term";
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       entities: [Calendar, Term, DateRange],
-      synchronize: true
+      synchronize: true,
+      logging: true
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: "generated-schema.graphql"
