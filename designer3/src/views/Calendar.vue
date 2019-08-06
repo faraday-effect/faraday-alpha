@@ -1,14 +1,14 @@
 <template>
   <v-container>
     <TermSelector @term-changed="onTermChanged" />
-    <v-progress-circular
-      v-if="$apollo.loading || !validTermId"
-      indeterminate
-    ></v-progress-circular>
-    <div v-else>
-      <h1>{{ term.name }}</h1>
-      <v-layout>
-        <v-flex>
+    <v-layout>
+      <v-flex>
+        <v-progress-circular
+          v-if="$apollo.loading || !validTermId"
+          indeterminate
+        ></v-progress-circular>
+        <div v-else>
+          <h1>{{ term.name }}</h1>
           <v-sheet height="1200">
             <v-calendar
               type="custom-weekly"
@@ -18,9 +18,9 @@
               event-color="primary"
             ></v-calendar>
           </v-sheet>
-        </v-flex>
-      </v-layout>
-    </div>
+        </div>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -30,26 +30,31 @@ import gql from "graphql-tag";
 import { DateTime } from "luxon";
 import TermSelector from "@/components/TermSelector.vue";
 
-interface Term {
+interface TermGql {
   name: string;
   startDate: string;
   endDate: string;
-  dateRanges: DateRange[];
+  dateRanges: DateRangeGql[];
 }
 
-interface DateRange {
+interface DateRangeGql {
   title: string;
   startDate: string;
   endDate?: string;
 }
 
+// Details of a VCalendar event.
 interface CalendarEvent {
   name: string;
   start: string;
   end: string;
 }
 
-function extractIsoDate(isoString: string) {
+/**
+ * Convert a GQL string containing an ISO date into a Luxon object.
+ * @param isoString - string to convert
+ */
+function asIsoDate(isoString: string) {
   return DateTime.fromISO(isoString).toISODate();
 }
 
@@ -72,17 +77,19 @@ export default Vue.extend({
         }
       `,
       variables() {
+        // Make query reactive per term id.
         return {
           termId: this.selectedTermId
         };
       },
       skip() {
+        // Don't run query unless we have a valid term.
         return !this.validTermId;
       }
     }
   },
   data: function() {
-    const defaultTerm: Term = {
+    const defaultTerm: TermGql = {
       name: "",
       startDate: "",
       endDate: "",
@@ -95,24 +102,25 @@ export default Vue.extend({
   },
   computed: {
     startDate(): string {
-      return extractIsoDate(this.term.startDate);
+      return asIsoDate(this.term.startDate);
     },
     endDate(): string {
-      return extractIsoDate(this.term.endDate);
+      return asIsoDate(this.term.endDate);
     },
     calendarEvents: function(): CalendarEvent[] {
       return this.term.dateRanges.map(dateRange => ({
         name: dateRange.title,
-        start: extractIsoDate(dateRange.startDate),
-        end: extractIsoDate(dateRange.endDate || dateRange.startDate)
+        start: asIsoDate(dateRange.startDate),
+        end: asIsoDate(dateRange.endDate || dateRange.startDate)
       }));
     },
+    // Do we have a valid term?
     validTermId(): boolean {
       return this.selectedTermId >= 1;
     }
   },
   methods: {
-    onTermChanged(newTerm: number) {
+    onTermChanged(newTerm: number): void {
       this.selectedTermId = newTerm;
     }
   }

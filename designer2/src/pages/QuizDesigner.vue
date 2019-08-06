@@ -92,7 +92,7 @@ export default class QuizDesigner extends Vue {
   addBuilder(builder: QuestionBuilder) {
     console.log(`Add ${builder} question`);
     builder.questionTitle = "My Title";
-    builder.questionText = "Description of this question."
+    builder.questionText = "Description of this question.";
     this.questionBuilders.push(builder);
     console.log("BUILDERS", this.questionBuilders);
   }

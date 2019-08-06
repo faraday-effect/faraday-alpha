@@ -1,11 +1,19 @@
 <template>
-  <v-select
-    label="Choose a term"
-    :items="selections"
-    :loading="isLoading"
-    v-model="selectedTermId"
-    @change="onTermChanged"
-  ></v-select>
+  <v-layout justify-space-around row>
+    <v-flex sm12 md6>
+      <v-select
+        label="Choose a term"
+        :items="selections"
+        :loading="isLoading"
+        v-model="selectedTermId"
+        @change="onTermChanged"
+      ></v-select>
+    </v-flex>
+    <v-flex sm12 md6>
+      <v-btn>Add</v-btn>
+      <v-btn>Edit</v-btn>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -13,7 +21,7 @@ import Vue from "vue";
 import { DateTime } from "luxon";
 import gql from "graphql-tag";
 
-interface TermsGqlResponse {
+interface TermsGql {
   id: number;
   name: string;
   startDate: string;
@@ -30,7 +38,7 @@ interface Selection {
  *
  * @param terms - list of terms from GraphQL
  */
-function idOfNearestTerm(terms: TermsGqlResponse[]) {
+function idOfNearestTerm(terms: TermsGql[]) {
   interface TermDates {
     id: number;
     startDate: DateTime;
@@ -93,7 +101,7 @@ export default Vue.extend({
     }
   },
   data() {
-    const defaultTerms: TermsGqlResponse[] = [
+    const defaultTerms: TermsGql[] = [
       { id: 0, name: "", startDate: "", endDate: "" }
     ];
     return {
