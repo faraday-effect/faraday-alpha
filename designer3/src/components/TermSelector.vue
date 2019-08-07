@@ -20,7 +20,7 @@
 import Vue from "vue";
 import { DateTime } from "luxon";
 import TermSettings from "@/components/TermSettings.vue";
-import {ALL_TERMS_QUERY} from "@/graphql/calendar.graphql";
+import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
 
 interface TermsGql {
   id: number;
@@ -37,18 +37,12 @@ interface Selection {
 /**
  * Return the ID of the term nearest the current date.
  *
- * @param terms - list of terms from GraphQL
+ * @param gqlTerms - list of terms from GraphQL
  */
-function idOfNearestTerm(terms: TermsGql[]) {
-  interface TermDates {
-    id: number;
-    startDate: DateTime;
-    endDate: DateTime;
-  }
-
-  // Map date strings from GQL to Luxon objects.
-  const termDates: TermDates[] = terms.map(term => ({
-    id: term.id,
+function idOfNearestTerm(gqlTerms: TermsGql[]) {
+  // Rework dates as Luxon objects.
+  const terms = gqlTerms.map(term => ({
+    ...term,
     startDate: DateTime.fromISO(term.startDate),
     endDate: DateTime.fromISO(term.endDate)
   }));
@@ -57,7 +51,7 @@ function idOfNearestTerm(terms: TermsGql[]) {
   const today = DateTime.local();
 
   // If we're in any of the known terms, return that one.
-  for (let term of termDates) {
+  for (let term of terms) {
     if (today >= term.startDate && today <= term.endDate) {
       console.log("In term", term.id);
       return term.id;
@@ -67,7 +61,7 @@ function idOfNearestTerm(terms: TermsGql[]) {
   // We're not in a term; look for the one we're closest to.
   let nearestTerm: number = -1;
   let smallestDelta: number = Infinity;
-  for (let term of termDates) {
+  for (let term of terms) {
     const delta = Math.min(
       Math.abs(today.diff(term.startDate).as("days")),
       Math.abs(today.diff(term.endDate).as("days"))
@@ -94,12 +88,9 @@ export default Vue.extend({
     }
   },
   data() {
-    const defaultTerms: TermsGql[] = [
-      { id: 0, name: "", startDate: "", endDate: "" }
-    ];
     return {
       isLoading: true,
-      terms: defaultTerms,
+      terms: [] as TermsGql[],
       selectedTermId: -1
     };
   },

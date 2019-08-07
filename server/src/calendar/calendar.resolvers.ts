@@ -9,6 +9,7 @@ import {
   DateRangeCreateInput,
   DateRangeCreateInstance
 } from "./entities/DateRange";
+import { inspect } from "util";
 
 @Resolver(of => Calendar)
 export class CalendarResolver {
@@ -29,7 +30,9 @@ export class CalendarResolver {
 
   @Query(returns => [Term])
   async terms() {
-    return await this.calendarService.terms();
+    const terms = await this.calendarService.terms();
+    console.log(inspect(terms, { depth: null }));
+    return terms;
   }
 
   @Query(returns => Term)

@@ -17,7 +17,7 @@
         href="https://github.com/faraday-effect/faraday"
         target="_blank"
       >
-        <span class="mr-2">GitHub</span>
+        <v-icon color="grey">mdi-github-circle</v-icon>
       </v-btn>
     </v-app-bar>
   </div>

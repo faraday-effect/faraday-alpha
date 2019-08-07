@@ -1,0 +1,61 @@
+<!--
+Some of the functionality here is from the `returnable` mixin.
+  - `return-value` prop - value to return if save() isn't called
+  - `save` method - update return value
+Cf. https://www.youtube.com/watch?v=YUf7lPzYljw
+-->
+
+<template>
+  <v-menu
+    ref="menu"
+    v-model="isVisible"
+    :close-on-content-click="false"
+    :return-value.sync="date"
+    transition="scale-transition"
+    offset-y
+    full-width
+    min-width="290px"
+  >
+    <template v-slot:activator="{ on }">
+      <v-text-field
+        v-model="date"
+        v-on="on"
+        :label="label"
+        prepend-icon="mdi-calendar"
+        readonly
+      ></v-text-field>
+    </template>
+    <v-date-picker v-model="date">
+      <v-spacer></v-spacer>
+      <v-btn text color="primary" @click="isVisible = false">Cancel</v-btn>
+      <v-btn text color="primary" @click="setDate">OK</v-btn>
+    </v-date-picker>
+  </v-menu>
+</template>
+
+<script>
+import Vue from "vue";
+
+export default Vue.extend({
+  name: "FormDatePicker",
+  props: {
+    value: String,
+    label: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      date: this.value,
+      isVisible: false
+    };
+  },
+  methods: {
+    setDate() {
+      this.$refs.menu.save(this.date);
+      this.$emit("input", this.date);
+    }
+  }
+});
+</script>

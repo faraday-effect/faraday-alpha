@@ -20,16 +20,16 @@ input CalendarUpdateInput {
 type DateRange {
   id: Int!
   title: String!
-  startDate: DateTime!
-  endDate: DateTime
+  startDate: String!
+  endDate: String
   term: [Term!]!
 }
 
 input DateRangeCreateInput {
   termId: Int!
   title: String!
-  startDate: DateTime!
-  endDate: DateTime
+  startDate: String!
+  endDate: String
 }
 
 """
@@ -39,8 +39,8 @@ scalar DateTime
 
 input ExplicitDateRange {
   title: String!
-  startDate: DateTime!
-  endDate: DateTime
+  startDate: String!
+  endDate: String
 }
 
 type Mutation {
@@ -61,14 +61,14 @@ type Query {
 type Term {
   id: Int!
   name: String!
-  startDate: DateTime!
-  endDate: DateTime!
+  startDate: String!
+  endDate: String!
   dateRanges: [DateRange!]!
 }
 
 input TermCreateInput {
   name: String!
-  startDate: DateTime!
-  endDate: DateTime!
+  startDate: String!
+  endDate: String!
   dateRanges: [ExplicitDateRange!]
 }

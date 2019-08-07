@@ -13,13 +13,13 @@ export class DateRange {
   @Field()
   title: string;
 
-  @Column()
+  @Column({ length: 10 })
   @Field()
-  startDate: Date;
+  startDate: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 10 })
   @Field({ nullable: true })
-  endDate?: Date;
+  endDate?: string;
 
   @ManyToOne(type => Term, term => term.dateRanges, { nullable: false })
   @Field(type => [Term])
@@ -30,8 +30,8 @@ export class DateRange {
 export class DateRangeCreateInput {
   @Field(type => Int) termId: number;
   @Field() title: string;
-  @Field() startDate: Date;
-  @Field({ nullable: true }) endDate?: Date;
+  @Field() startDate: string;
+  @Field({ nullable: true }) endDate?: string;
 }
 
 export type DateRangeCreateInstance = Omit<DateRange, "id">;

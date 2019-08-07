@@ -19,11 +19,10 @@
             </v-list-item-group>
           </v-flex>
           <v-flex xs12 md8>
-            <div v-if="selectedTerm !== null">
-              <p>{{ terms[selectedTerm].name }}</p>
-              <p>{{ terms[selectedTerm].startDate }}</p>
-              <p>{{ terms[selectedTerm].endDate }}</p>
-            </div>
+            <TermForm
+              v-if="selectedTerm !== null"
+              v-model="terms[selectedTerm]"
+            />
             <div v-else>No term selected</div>
           </v-flex>
         </v-layout>
@@ -40,9 +39,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
+import TermForm from "@/components/TermForm.vue";
 
 export default Vue.extend({
   name: "TermSettings",
+  components: { TermForm },
   apollo: {
     terms: {
       query: ALL_TERMS_QUERY
