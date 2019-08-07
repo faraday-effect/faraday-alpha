@@ -7,11 +7,11 @@
         :loading="isLoading"
         v-model="selectedTermId"
         @change="onTermChanged"
-      ></v-select>
-    </v-flex>
-    <v-flex sm12 md6>
-      <v-btn>Add</v-btn>
-      <v-btn>Edit</v-btn>
+      >
+        <template v-slot:append-outer>
+          <TermSettings />
+        </template>
+      </v-select>
     </v-flex>
   </v-layout>
 </template>
@@ -19,7 +19,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { DateTime } from "luxon";
-import gql from "graphql-tag";
+import TermSettings from "@/components/TermSettings.vue";
+import {ALL_TERMS_QUERY} from "@/graphql/calendar.graphql";
 
 interface TermsGql {
   id: number;
@@ -81,18 +82,10 @@ function idOfNearestTerm(terms: TermsGql[]) {
 
 export default Vue.extend({
   name: "TermSelector",
+  components: { TermSettings },
   apollo: {
     terms: {
-      query: gql`
-        query {
-          terms {
-            id
-            name
-            startDate
-            endDate
-          }
-        }
-      `,
+      query: ALL_TERMS_QUERY,
       result() {
         this.isLoading = false;
         this.selectedTermId = idOfNearestTerm(this.terms);

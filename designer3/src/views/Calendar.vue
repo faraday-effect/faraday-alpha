@@ -29,6 +29,7 @@ import Vue from "vue";
 import gql from "graphql-tag";
 import { DateTime } from "luxon";
 import TermSelector from "@/components/TermSelector.vue";
+import { ONE_TERM_QUERY } from "@/graphql/calendar.graphql";
 
 interface TermGql {
   name: string;
@@ -62,20 +63,7 @@ export default Vue.extend({
   components: { TermSelector },
   apollo: {
     term: {
-      query: gql`
-        query oneTerm($termId: Int!) {
-          term(id: $termId) {
-            name
-            startDate
-            endDate
-            dateRanges {
-              startDate
-              endDate
-              title
-            }
-          }
-        }
-      `,
+      query: ONE_TERM_QUERY,
       variables() {
         // Make query reactive per term id.
         return {
