@@ -10,7 +10,7 @@ Cf. https://www.youtube.com/watch?v=YUf7lPzYljw
     ref="menu"
     v-model="isVisible"
     :close-on-content-click="false"
-    :return-value.sync="date"
+    :return-value.sync="value"
     transition="scale-transition"
     offset-y
     full-width
@@ -18,14 +18,14 @@ Cf. https://www.youtube.com/watch?v=YUf7lPzYljw
   >
     <template v-slot:activator="{ on }">
       <v-text-field
-        v-model="date"
+        v-model="value"
         v-on="on"
         :label="label"
         prepend-icon="mdi-calendar"
         readonly
       ></v-text-field>
     </template>
-    <v-date-picker v-model="date">
+    <v-date-picker v-model="value">
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="isVisible = false">Cancel</v-btn>
       <v-btn text color="primary" @click="setDate">OK</v-btn>
@@ -47,14 +47,13 @@ export default Vue.extend({
   },
   data() {
     return {
-      date: this.value,
       isVisible: false
     };
   },
   methods: {
     setDate() {
-      this.$refs.menu.save(this.date);
-      this.$emit("input", this.date);
+      this.$refs.menu.save(this.value);
+      this.$emit("input", this.value);
     }
   }
 });

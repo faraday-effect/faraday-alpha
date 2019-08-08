@@ -10,7 +10,7 @@
       <v-card-text>
         <v-layout row wrap>
           <v-flex xs12 md4>
-            <v-list-item-group v-model="selectedTerm">
+            <v-list-item-group v-model="selectedTermId">
               <v-list-item v-for="term in terms" :key="term.id">
                 <v-list-item-content>
                   <v-list-item-title v-text="term.name"></v-list-item-title>
@@ -19,11 +19,7 @@
             </v-list-item-group>
           </v-flex>
           <v-flex xs12 md8>
-            <TermForm
-              v-if="selectedTerm !== null"
-              v-model="terms[selectedTerm]"
-            />
-            <div v-else>No term selected</div>
+            <TermForm v-model="selectedTerm" />
           </v-flex>
         </v-layout>
       </v-card-text>
@@ -40,6 +36,7 @@
 import Vue from "vue";
 import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
 import TermForm from "@/components/TermForm.vue";
+import { Term } from "@/components/term.types";
 
 export default Vue.extend({
   name: "TermSettings",
@@ -52,8 +49,14 @@ export default Vue.extend({
   data() {
     return {
       isOpen: false,
-      selectedTerm: null
+      selectedTermId: -1,
+      terms: [] as Term[]
     };
+  },
+  computed: {
+    selectedTerm(): Term | null {
+      return this.selectedTermId >= 0 ? this.terms[this.selectedTermId] : null;
+    }
   }
 });
 </script>

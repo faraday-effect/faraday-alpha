@@ -1,12 +1,12 @@
 interface DateRange {
   title: string;
-  startDate: Date;
-  endDate?: Date;
+  startDate: string;
+  endDate?: string;
 }
 
 export interface Term {
   name: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   dateRanges: DateRange[];
 }

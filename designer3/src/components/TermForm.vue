@@ -1,9 +1,18 @@
 <template>
-  <form>
-    <v-text-field label="Name" v-model="term.name" required></v-text-field>
-    <FormDatePicker label="Start date" v-model="term.startDate" />
-    <FormDatePicker label="End date" v-model="term.endDate" />
+  <form v-if="value">
+    <v-text-field
+      label="Name"
+      v-model="value.name"
+      required
+      prepend-icon="mdi-text"
+    ></v-text-field>
+    <FormDatePicker
+      label="Start date"
+      v-model="value.startDate"
+    ></FormDatePicker>
+    <FormDatePicker label="End date" v-model="value.endDate" />
   </form>
+  <div v-else>No term selected.</div>
 </template>
 
 <script>
@@ -15,15 +24,7 @@ export default Vue.extend({
   name: "TermForm",
   components: { FormDatePicker },
   props: {
-    value: {
-      type: Term,
-      required: true
-    }
-  },
-  data() {
-    return {
-      term: this.value
-    };
+    value: Term
   }
 });
 </script>
