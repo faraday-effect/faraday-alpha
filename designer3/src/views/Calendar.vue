@@ -28,8 +28,8 @@
 import Vue from "vue";
 import gql from "graphql-tag";
 import { DateTime } from "luxon";
-import TermSelector from "@/components/TermSelector.vue";
-import { ONE_TERM_QUERY } from "@/graphql/calendar.graphql";
+import TermSelector from "../components/TermSelector.vue";
+import { ONE_TERM_QUERY } from "../graphql/calendar.graphql";
 
 interface TermGql {
   name: string;

@@ -54,9 +54,8 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 export default {
-  name: "AboutPage",
   data: () => ({
     items: [
       { title: "Click Me 1" },
@@ -66,7 +65,7 @@ export default {
     ]
   }),
   methods: {
-    onClick(d) {
+    onClick(d: string) {
       console.log("ON CLICK", d);
     }
   }

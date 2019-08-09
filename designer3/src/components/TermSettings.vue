@@ -34,9 +34,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
-import TermForm from "@/components/TermForm.vue";
-import { Term } from "@/components/term.types";
+import { ALL_TERMS_QUERY } from "../graphql/calendar.graphql";
+import TermForm from "./TermForm.vue";
+import { Term } from "./term.types";
 
 export default Vue.extend({
   name: "TermSettings",

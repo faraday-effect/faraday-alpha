@@ -33,8 +33,10 @@ Cf. https://www.youtube.com/watch?v=YUf7lPzYljw
   </v-menu>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
+
+// import Returnable from "vuetify/lib/mixins/returnable.";
 
 export default Vue.extend({
   name: "FormDatePicker",
@@ -52,7 +54,8 @@ export default Vue.extend({
   },
   methods: {
     setDate() {
-      this.$refs.menu.save(this.value);
+      // FIXME: Remove this type assertion after Vuetify mixins are better supported.
+      (this.$refs.menu as any).save(this.value);
       this.$emit("input", this.value);
     }
   }

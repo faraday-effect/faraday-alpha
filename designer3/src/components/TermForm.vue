@@ -15,16 +15,18 @@
   <div v-else>No term selected.</div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import { Term } from "./term.types";
-import FormDatePicker from "@/components/FormDatePicker";
+import FormDatePicker from "./FormDatePicker.vue";
 
 export default Vue.extend({
   name: "TermForm",
   components: { FormDatePicker },
   props: {
-    value: Term
+    value: {
+      type: Object
+    }
   }
 });
 </script>
