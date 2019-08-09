@@ -51,12 +51,17 @@
         </v-list>
       </v-menu>
     </v-layout>
+
+    <v-layout justify-center>
+      <v-date-picker v-model="picker"></v-date-picker>
+    </v-layout>
   </v-container>
 </template>
 
 <script lang="ts">
 export default {
   data: () => ({
+    picker: "",
     items: [
       { title: "Click Me 1" },
       { title: "Click Me 2" },

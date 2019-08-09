@@ -20,7 +20,7 @@
 import Vue from "vue";
 import { DateTime } from "luxon";
 import TermSettings from "./TermSettings.vue";
-import { ALL_TERMS_QUERY } from "../graphql/calendar.graphql";
+import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
 
 interface TermsGql {
   id: number;

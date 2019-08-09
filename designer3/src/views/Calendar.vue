@@ -4,7 +4,7 @@
     <v-layout>
       <v-flex>
         <v-progress-circular
-          v-if="$apollo.loading || !validTermId"
+          v-if="$apollo.loading || !isTermIdValid"
           indeterminate
         ></v-progress-circular>
         <div v-else>
@@ -26,10 +26,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import gql from "graphql-tag";
 import { DateTime } from "luxon";
-import TermSelector from "../components/TermSelector.vue";
-import { ONE_TERM_QUERY } from "../graphql/calendar.graphql";
+import TermSelector from "@/components/TermSelector.vue";
+import { ONE_TERM_QUERY } from "@/graphql/calendar.graphql";
 
 interface TermGql {
   name: string;
@@ -72,7 +71,7 @@ export default Vue.extend({
       },
       skip() {
         // Don't run query unless we have a valid term.
-        return !this.validTermId;
+        return !this.isTermIdValid;
       }
     }
   },
@@ -103,7 +102,7 @@ export default Vue.extend({
       }));
     },
     // Do we have a valid term?
-    validTermId(): boolean {
+    isTermIdValid(): boolean {
       return this.selectedTermId >= 1;
     }
   },

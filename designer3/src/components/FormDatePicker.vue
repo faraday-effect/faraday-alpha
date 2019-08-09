@@ -1,62 +1,40 @@
-<!--
-Some of the functionality here is from the `returnable` mixin.
-  - `return-value` prop - value to return if save() isn't called
-  - `save` method - update return value
-Cf. https://www.youtube.com/watch?v=YUf7lPzYljw
--->
-
 <template>
-  <v-menu
-    ref="menu"
-    v-model="isVisible"
-    :close-on-content-click="false"
-    :return-value.sync="value"
-    transition="scale-transition"
-    offset-y
-    full-width
-    min-width="290px"
-  >
+  <v-menu>
     <template v-slot:activator="{ on }">
       <v-text-field
-        v-model="value"
         v-on="on"
         :label="label"
+        :value="chosenDate"
         prepend-icon="mdi-calendar"
-        readonly
-      ></v-text-field>
+      />
     </template>
-    <v-date-picker v-model="value">
-      <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="isVisible = false">Cancel</v-btn>
-      <v-btn text color="primary" @click="setDate">OK</v-btn>
-    </v-date-picker>
+    <v-date-picker v-model="chosenDate" reactive v-on:input="clickedADate" />
   </v-menu>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 
-// import Returnable from "vuetify/lib/mixins/returnable.";
-
 export default Vue.extend({
   name: "FormDatePicker",
   props: {
-    value: String,
-    label: {
-      type: String,
-      required: true
-    }
+    label: String,
+    value: String
   },
   data() {
     return {
-      isVisible: false
+      chosenDate: ""
     };
   },
   methods: {
-    setDate() {
-      // FIXME: Remove this type assertion after Vuetify mixins are better supported.
-      (this.$refs.menu as any).save(this.value);
-      this.$emit("input", this.value);
+    clickedADate(arg: any) {
+      console.log("CLICK ARG", arg);
+      this.$emit("input", arg);
+    }
+  },
+  watch: {
+    value() {
+      this.chosenDate = this.value;
     }
   }
 });
