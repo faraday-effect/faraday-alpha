@@ -7,6 +7,11 @@ export const ALL_TERMS_QUERY = gql`
       name
       startDate
       endDate
+      dateRanges {
+        title
+        startDate
+        endDate
+      }
     }
   }
 `;

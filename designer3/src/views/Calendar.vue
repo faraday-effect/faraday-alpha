@@ -9,13 +9,14 @@
         ></v-progress-circular>
         <div v-else>
           <h1>{{ term.name }}</h1>
-          <v-sheet height="1200">
+          <v-sheet height="2000">
             <v-calendar
               type="custom-weekly"
-              :start="startDate"
-              :end="endDate"
+              :start="term.startDate"
+              :end="term.endDate"
               :events="calendarEvents"
-              event-color="primary"
+              :event-margin-bottom="3"
+              :event-color="getEventColor"
             ></v-calendar>
           </v-sheet>
         </div>
@@ -26,37 +27,10 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { DateTime } from "luxon";
 import TermSelector from "@/components/TermSelector.vue";
 import { ONE_TERM_QUERY } from "@/graphql/calendar.graphql";
-
-interface TermGql {
-  name: string;
-  startDate: string;
-  endDate: string;
-  dateRanges: DateRangeGql[];
-}
-
-interface DateRangeGql {
-  title: string;
-  startDate: string;
-  endDate?: string;
-}
-
-// Details of a VCalendar event.
-interface CalendarEvent {
-  name: string;
-  start: string;
-  end: string;
-}
-
-/**
- * Convert a GQL string containing an ISO date into a Luxon object.
- * @param isoString - string to convert
- */
-function asIsoDate(isoString: string) {
-  return DateTime.fromISO(isoString).toISODate();
-}
+import { Term } from "@/components/term.types";
+import { VCalendarEvent } from "@/components/vuetify.types";
 
 export default Vue.extend({
   components: { TermSelector },
@@ -69,6 +43,9 @@ export default Vue.extend({
           termId: this.selectedTermId
         };
       },
+      update(data) {
+        return new Term(data.term);
+      },
       skip() {
         // Don't run query unless we have a valid term.
         return !this.isTermIdValid;
@@ -76,30 +53,32 @@ export default Vue.extend({
     }
   },
   data: function() {
-    const defaultTerm: TermGql = {
-      name: "",
-      startDate: "",
-      endDate: "",
-      dateRanges: []
-    };
     return {
-      term: defaultTerm,
+      term: {} as Term,
       selectedTermId: -1
     };
   },
   computed: {
-    startDate(): string {
-      return asIsoDate(this.term.startDate);
-    },
-    endDate(): string {
-      return asIsoDate(this.term.endDate);
-    },
-    calendarEvents: function(): CalendarEvent[] {
-      return this.term.dateRanges.map(dateRange => ({
-        name: dateRange.title,
-        start: asIsoDate(dateRange.startDate),
-        end: asIsoDate(dateRange.endDate || dateRange.startDate)
-      }));
+    calendarEvents: function(): VCalendarEvent[] {
+      const events = this.term.dateRanges.map(dateRange =>
+        dateRange.asVCalendarEvent()
+      );
+
+      events.push({
+        name: "Semester start",
+        start: this.term.startDate,
+        end: this.term.startDate,
+        color: "green"
+      });
+
+      events.push({
+        name: "Semester end",
+        start: this.term.endDate,
+        end: this.term.endDate,
+        color: "red"
+      });
+
+      return events;
     },
     // Do we have a valid term?
     isTermIdValid(): boolean {
@@ -107,6 +86,9 @@ export default Vue.extend({
     }
   },
   methods: {
+    getEventColor(event: VCalendarEvent) {
+      return event.color || "primary";
+    },
     onTermChanged(newTerm: number): void {
       this.selectedTermId = newTerm;
     }

@@ -1,25 +1,31 @@
 <template>
   <v-dialog v-model="isOpen" width="75vw">
-    <!-- Activate the dialog. -->
     <template v-slot:activator="{ on }">
       <v-btn text v-on="on">
         <v-icon>mdi-settings-outline</v-icon>
       </v-btn>
     </template>
-    <!-- Dialog -->
+
     <v-card>
-      <v-card-title>
-        Term Settings
+      <v-toolbar dark extension-height="24" color="primary">
+        <v-toolbar-title>Term Settings</v-toolbar-title>
         <v-spacer />
         <v-btn icon @click="isOpen = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-      </v-card-title>
+        <template v-slot:extension>
+          <v-btn fab bottom left absolute @click="addBlankTerm">
+            <v-icon>mdi-playlist-plus</v-icon>
+          </v-btn>
+        </template>
+      </v-toolbar>
+
       <v-card-text>
         <v-layout row wrap>
-          <!-- Select a term. -->
-          <v-flex xs12 md4>
+          <!-- List of terms -->
+          <v-flex xs12 md3>
             <v-list-item-group v-model="selectedTermId" mandatory>
+              <v-subheader inset>Terms</v-subheader>
               <v-list-item v-for="term in terms" :key="term.id">
                 <v-list-item-content>
                   <v-list-item-title v-text="term.name"></v-list-item-title>
@@ -27,8 +33,9 @@
               </v-list-item>
             </v-list-item-group>
           </v-flex>
-          <!-- Edit the selected term. -->
-          <v-flex xs12 md8>
+
+          <!-- Form to edit term -->
+          <v-flex xs12 md9>
             <TermForm :initial-term="selectedTerm" @update="onUpdate" />
           </v-flex>
         </v-layout>
@@ -59,13 +66,20 @@ export default Vue.extend({
     };
   },
   methods: {
-    onUpdate(updatedTerm: Term): void {
-      console.log(
-        "UPDATED TERM",
-        updatedTerm.name,
-        updatedTerm.startDate,
-        updatedTerm.endDate
+    addBlankTerm() {
+      this.terms.push(
+        new Term({
+          name: "Term Name",
+          startDate: "",
+          endDate: "",
+          dateRanges: []
+        })
       );
+      this.selectedTermId = this.terms.length - 1;
+    },
+
+    onUpdate(updatedTerm: Term): void {
+      this.$set(this.terms, this.selectedTermId, updatedTerm);
     }
   },
   computed: {

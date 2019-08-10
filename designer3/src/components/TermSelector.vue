@@ -21,13 +21,7 @@ import Vue from "vue";
 import { DateTime } from "luxon";
 import TermSettings from "./TermSettings.vue";
 import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
-
-interface TermsGql {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-}
+import { Term } from "@/components/term.types";
 
 interface Selection {
   text: string;
@@ -37,22 +31,15 @@ interface Selection {
 /**
  * Return the ID of the term nearest the current date.
  *
- * @param gqlTerms - list of terms from GraphQL
+ * @param terms - list of terms from GraphQL
  */
-function idOfNearestTerm(gqlTerms: TermsGql[]) {
-  // Rework dates as Luxon objects.
-  const terms = gqlTerms.map(term => ({
-    ...term,
-    startDate: DateTime.fromISO(term.startDate),
-    endDate: DateTime.fromISO(term.endDate)
-  }));
-
+function idOfNearestTerm(terms: Term[]) {
   // It's today!
   const today = DateTime.local();
 
   // If we're in any of the known terms, return that one.
   for (let term of terms) {
-    if (today >= term.startDate && today <= term.endDate) {
+    if (today >= term.startDateTime && today <= term.endDateTime) {
       console.log("In term", term.id);
       return term.id;
     }
@@ -63,8 +50,8 @@ function idOfNearestTerm(gqlTerms: TermsGql[]) {
   let smallestDelta: number = Infinity;
   for (let term of terms) {
     const delta = Math.min(
-      Math.abs(today.diff(term.startDate).as("days")),
-      Math.abs(today.diff(term.endDate).as("days"))
+      Math.abs(today.diff(term.startDateTime).as("days")),
+      Math.abs(today.diff(term.endDateTime).as("days"))
     );
     if (delta < smallestDelta) {
       nearestTerm = term.id;
@@ -80,6 +67,9 @@ export default Vue.extend({
   apollo: {
     terms: {
       query: ALL_TERMS_QUERY,
+      update(data) {
+        return data.terms.map((term: Term) => new Term(term));
+      },
       result() {
         this.isLoading = false;
         this.selectedTermId = idOfNearestTerm(this.terms);
@@ -90,7 +80,7 @@ export default Vue.extend({
   data() {
     return {
       isLoading: true,
-      terms: [] as TermsGql[],
+      terms: [] as Term[],
       selectedTermId: -1
     };
   },

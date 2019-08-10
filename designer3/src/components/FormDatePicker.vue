@@ -28,7 +28,6 @@ export default Vue.extend({
   },
   methods: {
     clickedADate(arg: any) {
-      console.log("CLICK ARG", arg);
       this.$emit("input", arg);
     }
   },
