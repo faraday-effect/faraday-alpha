@@ -7,6 +7,7 @@
     </template>
 
     <v-card>
+      <!-- Toolbar -->
       <v-toolbar dark extension-height="24" color="primary">
         <v-toolbar-title>Term Settings</v-toolbar-title>
         <v-spacer />
@@ -21,7 +22,7 @@
       </v-toolbar>
 
       <v-card-text>
-        <v-layout row wrap>
+        <v-layout>
           <!-- List of terms -->
           <v-flex xs12 md3>
             <v-list-item-group v-model="selectedTermId" mandatory>
