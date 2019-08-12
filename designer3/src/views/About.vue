@@ -55,20 +55,45 @@
     <v-layout justify-center>
       <v-date-picker v-model="picker"></v-date-picker>
     </v-layout>
+
+    <v-layout>
+      <v-flex>
+        <DatePicker label="Pick You a Date" v-model="theDatePicked" />
+      </v-flex>
+      <v-flex>
+        <div>[{{ theDatePicked }}]</div>
+      </v-flex>
+    </v-layout>
+
+    <!--    <v-layout>-->
+    <!--      <DateRangeEditor title="Hello, Range"  />-->
+    <!--    </v-layout>-->
   </v-container>
 </template>
 
 <script lang="ts">
+import DatePicker from "@/components/DatePicker.vue";
+import DateRangeEditor from "@/components/DateRangeEditor.vue";
+
 export default {
-  data: () => ({
-    picker: "",
-    items: [
-      { title: "Click Me 1" },
-      { title: "Click Me 2" },
-      { title: "Click Me 3" },
-      { title: "Click Me 4" }
-    ]
-  }),
+  name: "AboutPage",
+
+  components: { DatePicker, DateRangeEditor },
+
+  data() {
+    return {
+      theRange: {},
+      theDatePicked: "",
+      picker: "",
+      items: [
+        { title: "Click Me 1" },
+        { title: "Click Me 2" },
+        { title: "Click Me 3" },
+        { title: "Click Me 4" }
+      ]
+    };
+  },
+
   methods: {
     onClick(d: string) {
       console.log("ON CLICK", d);

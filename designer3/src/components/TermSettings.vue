@@ -37,7 +37,7 @@
 
           <!-- Form to edit term -->
           <v-flex xs12 md9>
-            <TermForm :initial-term="selectedTerm" @update="onUpdate" />
+            <TermEditor :initial-term="selectedTerm" @update="onUpdate" />
           </v-flex>
         </v-layout>
       </v-card-text>
@@ -48,12 +48,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
-import TermForm from "./TermForm.vue";
+import TermEditor from "./TermEditor.vue";
 import { Term } from "./term.types";
 
 export default Vue.extend({
   name: "TermSettings",
-  components: { TermForm },
+  components: { TermEditor },
   apollo: {
     terms: {
       query: ALL_TERMS_QUERY

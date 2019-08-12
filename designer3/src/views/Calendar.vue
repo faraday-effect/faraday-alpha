@@ -80,6 +80,7 @@ export default Vue.extend({
 
       return events;
     },
+
     // Do we have a valid term?
     isTermIdValid(): boolean {
       return this.selectedTermId >= 1;

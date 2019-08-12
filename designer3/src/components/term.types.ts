@@ -35,6 +35,8 @@ export class Term {
     }
   }
 
+  // TODO: Cache these Luxon calculations.
+
   get startDateTime() {
     return DateTime.fromISO(this.startDate);
   }
