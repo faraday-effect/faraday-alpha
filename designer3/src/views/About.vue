@@ -65,15 +65,16 @@
       </v-flex>
     </v-layout>
 
-    <!--    <v-layout>-->
-    <!--      <DateRangeEditor title="Hello, Range"  />-->
-    <!--    </v-layout>-->
+    <v-layout>
+      <DateRangeEditor title="Hello, Range" v-model="theRange" />
+    </v-layout>
   </v-container>
 </template>
 
 <script lang="ts">
 import DatePicker from "@/components/DatePicker.vue";
 import DateRangeEditor from "@/components/DateRangeEditor.vue";
+import { DateRange } from "@/components/term.types";
 
 export default {
   name: "AboutPage",
@@ -82,7 +83,11 @@ export default {
 
   data() {
     return {
-      theRange: {},
+      theRange: new DateRange({
+        title: "Foo",
+        startDate: "2020-02-02",
+        endDate: "2020-02-22"
+      }),
       theDatePicked: "",
       picker: "",
       items: [

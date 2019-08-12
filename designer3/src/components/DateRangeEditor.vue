@@ -5,16 +5,19 @@
       <v-layout column>
         <v-text-field
           label="Name"
-          v-model="internalDateRange.title"
+          v-model="internalTitle"
           required
           prepend-icon="mdi-text"
         />
-        <DatePicker label="Start date" v-model="internalDateRange.startDate" />
-        <DatePicker label="End date" v-model="internalDateRange.endDate" />
+        <DatePicker label="Start date" v-model="internalStartDate" />
+        <DatePicker label="End date" v-model="internalEndDate" />
       </v-layout>
     </v-card-text>
     <v-card-actions>
-      <slot name="actions"></slot>
+      <v-spacer />
+      <v-btn icon small disabled="1">
+        <v-icon>mdi-content-save</v-icon>
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -36,33 +39,23 @@ export default Vue.extend({
       type: String,
       required: true
     },
-    value: (null as unknown) as PropType<DateRange>
+    value: (null as any) as PropType<DateRange>
   },
 
   data() {
     return {
-      lazyDateRange: {} as DateRange
+      internalTitle: "",
+      internalStartDate: "",
+      internalEndDate: ""
     };
-  },
-
-  computed: {
-    internalDateRange: {
-      get(): DateRange {
-        console.log("GET");
-        return this.lazyDateRange;
-      },
-      set(newDateRange: DateRange): void {
-        console.log("SET");
-        this.lazyDateRange = newDateRange;
-        this.$emit("input", this.lazyDateRange);
-      }
-    }
   },
 
   watch: {
     value: {
-      handler(val: DateRange): void {
-        this.lazyDateRange = new DateRange(val);
+      handler(newRangeProp: DateRange) {
+        this.internalTitle = newRangeProp.title;
+        this.internalStartDate = newRangeProp.startDate;
+        this.internalEndDate = newRangeProp.endDate || "";
       },
       immediate: true
     }
