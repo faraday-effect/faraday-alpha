@@ -1,75 +1,47 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Calendar, CalendarUpdateInput } from "./entities/calendar";
-import { Repository } from "typeorm";
-import { Term, TermCreateInput } from "./entities/Term";
+import { EntityManager, Repository } from "typeorm";
 import {
   DateRange,
   DateRangeCreateInput,
-  DateRangeCreateInstance
-} from "./entities/DateRange";
+  Term,
+  TermCreateInput
+} from "./entities";
+import { BaseService } from "../shared/base.service";
 
 @Injectable()
-export class CalendarService {
+export class CalendarService extends BaseService {
   constructor(
-    @InjectRepository(Calendar)
-    private readonly calendarRepository: Repository<Calendar>,
+    protected readonly entityManager: EntityManager,
     @InjectRepository(Term)
-    private readonly termRepository: Repository<Term>,
+    private readonly termRepo: Repository<Term>,
     @InjectRepository(DateRange)
-    private readonly dateRangeRepository: Repository<DateRange>
-  ) {}
-
-  // Term
-  createTerm(termCreateInput: TermCreateInput) {
-    const newTerm = this.termRepository.create(termCreateInput);
-    return this.termRepository.save(newTerm);
+    private readonly dateRangeRepo: Repository<DateRange>
+  ) {
+    super(entityManager);
   }
 
-  term(id: number) {
-    return this.termRepository.findOne(id, { relations: ["dateRanges"] });
+  createTerm(createInput: TermCreateInput) {
+    return this.entityManager.transaction(async manager => {
+      const termRepo = manager.getRepository(Term);
+      const dateRangeRepo = manager.getRepository(DateRange);
+
+      const newTerm = await termRepo.save(termRepo.create(createInput));
+
+      for (const dateRange of createInput.dateRanges) {
+        await dateRangeRepo.save(
+          dateRangeRepo.create({
+            ...dateRange,
+            term: newTerm
+          })
+        );
+      }
+
+      return newTerm;
+    });
   }
 
-  terms() {
-    return this.termRepository
-      .createQueryBuilder("term")
-      .leftJoinAndSelect("term.dateRanges", "dateRange")
-      .orderBy("term.startDate")
-      .getMany();
-  }
-
-  // DateRange
-  async createDateRange(dateRange: DateRangeCreateInstance) {
-    const newDateRange = this.dateRangeRepository.create(dateRange);
-    return this.dateRangeRepository.save(newDateRange);
-  }
-
-  // Calendar
-  createCalendar(name: string) {
-    const newCalendar = this.calendarRepository.create({ name });
-    return this.calendarRepository.save(newCalendar);
-  }
-
-  calendar(id: number) {
-    return this.calendarRepository.findOne(id);
-  }
-
-  calendars() {
-    return this.calendarRepository.find();
-  }
-
-  async updateCalendar(calendarData: CalendarUpdateInput) {
-    const calendar = await this.calendarRepository.findOne(calendarData.id);
-    if (calendarData.isFrozen !== undefined) {
-      calendar.isFrozen = calendarData.isFrozen;
-    }
-    if (calendarData.name !== undefined) {
-      calendar.name = calendarData.name;
-    }
-    return this.calendarRepository.save(calendar);
-  }
-
-  deleteCalendar(id: number) {
-    return this.calendarRepository.delete(id);
+  createDateRange(dateRange: DateRangeCreateInput) {
+    return this.dateRangeRepo.save(this.dateRangeRepo.create(dateRange));
   }
 }

@@ -1,14 +1,11 @@
 import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Term } from "./Term";
+import { AbstractEntity } from "../../shared/abstract-entity";
 
 @Entity()
 @ObjectType()
-export class DateRange {
-  @PrimaryGeneratedColumn()
-  @Field(type => Int)
-  id: number;
-
+export class DateRange extends AbstractEntity {
   @Column()
   @Field()
   title: string;
@@ -28,10 +25,7 @@ export class DateRange {
 
 @InputType()
 export class DateRangeCreateInput {
-  @Field(type => Int) termId: number;
   @Field() title: string;
   @Field() startDate: string;
   @Field({ nullable: true }) endDate?: string;
 }
-
-export type DateRangeCreateInstance = Omit<DateRange, "id">;

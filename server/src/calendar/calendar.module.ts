@@ -1,13 +1,11 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Calendar } from "./entities/calendar";
-import { CalendarResolver } from "./calendar.resolvers";
+import { TermResolver } from "./calendar.resolvers";
 import { CalendarService } from "./calendar.service";
-import { DateRange } from "./entities/DateRange";
-import { Term } from "./entities/Term";
+import { DateRange, Term } from "./entities";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Calendar, Term, DateRange])],
-  providers: [CalendarService, CalendarResolver]
+  imports: [TypeOrmModule.forFeature([Term, DateRange])],
+  providers: [CalendarService, TermResolver]
 })
 export class CalendarModule {}

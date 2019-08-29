@@ -3,7 +3,7 @@ import { FixtureMutation } from "./fixture.types";
 
 const CREATE_TERM = gql`
   mutation CreateTerm($data: TermCreateInput!) {
-    createTerm(termCreateInput: $data) {
+    createTerm(createInput: $data) {
       id
       name
       startDate

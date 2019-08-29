@@ -3,21 +3,13 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type Calendar {
+type AbstractEntity {
+  """Unique ID for this entity"""
   id: Int!
-  name: String!
-  created: DateTime!
-  updated: DateTime!
-  isFrozen: Boolean!
-}
-
-input CalendarUpdateInput {
-  id: Int!
-  name: String
-  isFrozen: Boolean
 }
 
 type DateRange {
+  """Unique ID for this entity"""
   id: Int!
   title: String!
   startDate: String!
@@ -26,39 +18,24 @@ type DateRange {
 }
 
 input DateRangeCreateInput {
-  termId: Int!
-  title: String!
-  startDate: String!
-  endDate: String
-}
-
-"""
-The javascript `Date` as string. Type represents date and time as the ISO Date string.
-"""
-scalar DateTime
-
-input ExplicitDateRange {
   title: String!
   startDate: String!
   endDate: String
 }
 
 type Mutation {
-  createTerm(termCreateInput: TermCreateInput!): Term!
-  addToTerm(dateRangeCreateInput: DateRangeCreateInput!): DateRange!
-  createCalendar(name: String!): Calendar!
-  updateCalendar(calendarData: CalendarUpdateInput!): Calendar!
-  deleteCalendar(id: Int!): Int!
+  createTerm(createInput: TermCreateInput!): Term!
+  createUnit(createInput: UnitCreateInput!): Unit!
 }
 
 type Query {
-  terms: [Term!]!
   term(id: Int!): Term!
-  calendars: [Calendar!]!
-  calendar(id: Int!): Calendar!
+  terms: [Term!]!
+  units: [Unit!]!
 }
 
 type Term {
+  """Unique ID for this entity"""
   id: Int!
   name: String!
   startDate: String!
@@ -70,5 +47,32 @@ input TermCreateInput {
   name: String!
   startDate: String!
   endDate: String!
-  dateRanges: [ExplicitDateRange!]
+  dateRanges: [DateRangeCreateInput!]
+}
+
+type Topic {
+  """Unique ID for this entity"""
+  id: Int!
+  title: String!
+  description: String!
+  unit: Unit!
+}
+
+input TopicCreateInput {
+  title: String!
+  description: String!
+}
+
+type Unit {
+  """Unique ID for this entity"""
+  id: Int!
+  title: String!
+  description: String!
+  topics: [Topic!]!
+}
+
+input UnitCreateInput {
+  title: String!
+  description: String!
+  topics: [TopicCreateInput!]
 }

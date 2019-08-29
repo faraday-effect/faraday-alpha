@@ -1,26 +1,11 @@
-import { Field, InputType, Int, ObjectType } from "type-graphql";
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  ValueTransformer
-} from "typeorm";
-import { DateRange } from "./DateRange";
-import { DateTime } from "luxon";
-
-const dateTransformer: ValueTransformer = {
-  to: (entityValue: DateTime) => entityValue.toISODate(),
-  from: (databaseValue: string) => DateTime.fromISO(databaseValue)
-};
+import { Field, InputType, ObjectType } from "type-graphql";
+import { Column, Entity, OneToMany } from "typeorm";
+import { DateRange, DateRangeCreateInput } from "./DateRange";
+import { AbstractEntity } from "../../shared/abstract-entity";
 
 @Entity()
 @ObjectType()
-export class Term {
-  @PrimaryGeneratedColumn()
-  @Field(type => Int)
-  id: number;
-
+export class Term extends AbstractEntity {
   @Column()
   @Field()
   name: string;
@@ -33,17 +18,9 @@ export class Term {
   @Field()
   endDate: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   @OneToMany(type => DateRange, dateRange => dateRange.term)
   @Field(type => [DateRange])
   dateRanges: DateRange[];
-}
-
-@InputType()
-class ExplicitDateRange {
-  @Field() title: string;
-  @Field() startDate: string;
-  @Field({ nullable: true }) endDate?: string;
 }
 
 @InputType()
@@ -52,6 +29,6 @@ export class TermCreateInput {
   @Field() startDate: string;
   @Field() endDate: string;
 
-  @Field(type => [ExplicitDateRange], { nullable: true })
-  dateRanges: ExplicitDateRange[];
+  @Field(type => [DateRangeCreateInput], { nullable: true })
+  dateRanges: DateRangeCreateInput[];
 }

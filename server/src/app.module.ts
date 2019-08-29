@@ -6,9 +6,9 @@ import { AppController } from "./app.controller";
 
 import { TelemetryModule } from "./telemetry/telemetry.module";
 import { CalendarModule } from "./calendar/calendar.module";
-import { Calendar } from "./calendar/entities/calendar";
-import { DateRange } from "./calendar/entities/DateRange";
-import { Term } from "./calendar/entities/Term";
+import { DateRange, Term } from "./calendar/entities";
+import { Topic, Unit } from "./syllabus/entities";
+import { SyllabusModule } from "./syllabus/syllabus.module";
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { Term } from "./calendar/entities/Term";
       database: process.env.PG_DATABASE,
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
-      entities: [Calendar, Term, DateRange],
+      entities: [Term, DateRange, Topic, Unit],
       synchronize: true,
       logging: true
     }),
@@ -26,7 +26,8 @@ import { Term } from "./calendar/entities/Term";
       autoSchemaFile: "generated-schema.graphql"
     }),
     TelemetryModule,
-    CalendarModule
+    CalendarModule,
+    SyllabusModule
   ],
   controllers: [AppController]
 })
