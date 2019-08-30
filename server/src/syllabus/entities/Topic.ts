@@ -1,4 +1,4 @@
-import {Field, InputType, ObjectType} from "type-graphql";
+import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne } from "typeorm";
 import { AbstractEntity } from "../../shared/abstract-entity";
 import { Unit } from "./Unit";
@@ -14,6 +14,8 @@ export class Topic extends AbstractEntity {
   @Field()
   description: string;
 
+  @Column("int")
+  unitId: number;
   @ManyToOne(type => Unit, unit => unit.topics)
   @Field(type => Unit)
   unit: Unit;
@@ -21,6 +23,11 @@ export class Topic extends AbstractEntity {
 
 @InputType()
 export class TopicCreateInput {
+  @Field(type => Int, {
+    description: "PK of the Unit that contains this Topic"
+  })
+  unitId: number;
+
   @Field() title: string;
   @Field() description: string;
 }

@@ -26,12 +26,16 @@ input DateRangeCreateInput {
 type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
+  createTopic(createInput: TopicCreateInput!): Topic!
 }
 
 type Query {
   term(id: Int!): Term!
   terms: [Term!]!
+  unit(id: Int!): Unit!
   units: [Unit!]!
+  topic(id: Int!): Topic!
+  topics: [Topic!]!
 }
 
 type Term {
@@ -59,6 +63,8 @@ type Topic {
 }
 
 input TopicCreateInput {
+  """PK of the Unit that contains this Topic"""
+  unitId: Int!
   title: String!
   description: String!
 }

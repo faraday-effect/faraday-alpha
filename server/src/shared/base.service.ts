@@ -12,6 +12,14 @@ export class BaseService {
     return this.entityManager.find(entity);
   }
 
+  findOne<Entity>(entityClass: ObjectType<Entity>, id: number) {
+    return this.entityManager.findOne(entityClass, id);
+  }
+
+  findOneOrFail<Entity>(entityClass: ObjectType<Entity>, id: number) {
+    return this.entityManager.findOneOrFail(entityClass, id);
+  }
+
   find<Entity>(
     entityClass: ObjectType<Entity>,
     conditions: FindConditions<Entity>

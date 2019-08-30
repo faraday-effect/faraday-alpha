@@ -10,7 +10,7 @@ export class Unit extends AbstractEntity {
   @Field()
   title: string;
 
-  @Column()
+  @Column("text")
   @Field()
   description: string;
 
