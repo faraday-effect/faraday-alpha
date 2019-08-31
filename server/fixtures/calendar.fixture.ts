@@ -1,5 +1,5 @@
 import { gql } from "apollo-boost";
-import { FixtureMutation } from "./fixture.types";
+import { Fixture } from "./fixture.types";
 
 const CREATE_TERM = gql`
   mutation CreateTerm($data: TermCreateInput!) {
@@ -24,7 +24,10 @@ const terms = [
     startDate: "2019-08-26",
     endDate: "2019-12-11",
     dateRanges: [
-      { title: "Labor Day", startDate: "2019-09-02" },
+      {
+        title: "Labor Day",
+        startDate: "2019-09-02"
+      },
       {
         title: "Fall Break",
         startDate: "2019-10-11",
@@ -39,12 +42,13 @@ const terms = [
   }
 ];
 
-const details: FixtureMutation = {
-  graphQL: CREATE_TERM,
-  paramName: "data",
-  data: terms,
-  description: "term data",
-  idPath: "name"
+const details: Fixture = {
+  uniqueName: "terms",
+  description: "terms with various date ranges",
+  graphQlMutation: CREATE_TERM,
+  graphQlData: terms,
+  idPath: "name",
+  tablesToTruncate: ["term", "date_range"]
 };
 
 export default details;

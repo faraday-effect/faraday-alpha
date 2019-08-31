@@ -1,7 +1,8 @@
-export interface FixtureMutation {
-  graphQL: any; // GraphQL mutation
-  paramName: string; // Parameter name (e.g., "data")
-  data: object[]; // Array of objects, one per mutation
+export interface Fixture {
+  uniqueName: string;
   description: string; // Description for human consumption
+  graphQlMutation: any; // GraphQL mutation
+  graphQlData: object[];
   idPath: string; // Lodash object path to printable identifier
+  tablesToTruncate: string[];
 }

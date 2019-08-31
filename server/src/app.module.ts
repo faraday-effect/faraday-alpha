@@ -6,19 +6,13 @@ import { AppController } from "./app.controller";
 
 import { TelemetryModule } from "./telemetry/telemetry.module";
 import { CalendarModule } from "./calendar/calendar.module";
-import { DateRange, Term } from "./calendar/entities";
-import { Topic, Unit } from "./syllabus/entities";
 import { SyllabusModule } from "./syllabus/syllabus.module";
+import typeORMConfig from "./typeorm-config";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "postgres",
-      host: process.env.PG_HOST,
-      database: process.env.PG_DATABASE,
-      username: process.env.PG_USERNAME,
-      password: process.env.PG_PASSWORD,
-      entities: [Term, DateRange, Topic, Unit],
+      ...typeORMConfig,
       synchronize: true,
       logging: true
     }),
