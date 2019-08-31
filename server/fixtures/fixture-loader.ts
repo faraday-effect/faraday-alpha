@@ -2,6 +2,7 @@ import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
 import { Fixture } from "./fixture.types";
 import termDetails from "./calendar.fixture";
+import topicDetails from "./topic.fixture";
 import get from "lodash/get";
 import commander from "commander";
 import DbDirect from "./db-direct";
@@ -60,19 +61,21 @@ function validateFixtureArguments(fixtures: Fixture[], args: string[]) {
   const bogusArgs = args.filter(arg => !fixtureNames.has(arg));
   if (bogusArgs.length) {
     console.error(`Bogus fixture names: ${bogusArgs.join(", ")}`);
+    process.exit(1);
   }
 }
 
 async function main(argv) {
-  const allFixtures: Fixture[] = [termDetails];
+  const allFixtures: Fixture[] = [termDetails, topicDetails];
   validateUniqueFixtureNames(allFixtures);
 
   const program = new commander.Command();
   program
     .version("0.1")
     .usage("[options] <fixtureName ...>")
-    .option("-t, --truncate", "truncate tables before loading fixture")
     .option("-l, --list-fixtures", "list available fixtures")
+    .option("-a, --all-fixtures", "load all fixtures")
+    .option("-t, --truncate", "truncate tables before loading fixture")
     .parse(argv);
 
   validateFixtureArguments(allFixtures, program.args);
@@ -85,7 +88,7 @@ async function main(argv) {
     process.exit(0);
   }
 
-  if (!program.args.length) {
+  if (!(program.args.length || program.allFixtures)) {
     console.error("No fixtures provided");
     process.exit(1);
   }
@@ -104,7 +107,7 @@ async function main(argv) {
   const args = new Set(program.args);
   // Check each fixture.
   for (let fixture of allFixtures) {
-    if (args.has(fixture.uniqueName)) {
+    if (program.allFixtures || args.has(fixture.uniqueName)) {
       // Run this one.
       if (program.truncate) {
         // Truncate tables.

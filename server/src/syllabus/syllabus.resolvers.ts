@@ -19,10 +19,10 @@ export class UnitResolver {
     return this.syllabusService.createUnit(createInput);
   }
 
-  @Mutation(returns => Topic)
-  createTopic(@Args("createInput") createInput: TopicCreateInput) {
-    return this.syllabusService.createTopic(createInput);
-  }
+  // @Mutation(returns => Topic)
+  // createTopic(@Args("createInput") createInput: TopicCreateInput) {
+  //   return this.syllabusService.createTopic(createInput);
+  // }
 
   @Query(returns => Unit)
   unit(@Args({ name: "id", type: () => Int }) id: number) {
