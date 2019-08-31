@@ -1,8 +1,8 @@
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
 import { Fixture } from "./fixture.types";
-import termDetails from "./calendar.fixture";
-import topicDetails from "./topic.fixture";
+import termDetails from "./calendar.fixtures";
+import topicDetails from "./syllabus.fixtures";
 import get from "lodash/get";
 import commander from "commander";
 import DbDirect from "./db-direct";
@@ -75,7 +75,11 @@ async function main(argv) {
     .usage("[options] <fixtureName ...>")
     .option("-l, --list-fixtures", "list available fixtures")
     .option("-a, --all-fixtures", "load all fixtures")
-    .option("-t, --truncate", "truncate tables before loading fixture")
+    .option("-t, --truncate", "truncate tables before loading fixtures")
+    .option(
+      "-n, --nuclear",
+      "nuke and reload everything (same as '--all-fixtures --truncate')"
+    )
     .parse(argv);
 
   validateFixtureArguments(allFixtures, program.args);
@@ -86,6 +90,11 @@ async function main(argv) {
       console.log(`${fixture.uniqueName} - ${fixture.description}`)
     );
     process.exit(0);
+  }
+
+  // Interpret the nuclear option.
+  if (program.nuclear) {
+    program.allFixtures = program.truncate = true;
   }
 
   if (!(program.args.length || program.allFixtures)) {

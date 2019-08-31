@@ -70,40 +70,21 @@ export default Vue.extend({
   },
   data: function() {
     let navItems: NavItem[] = [
-      {
-        title: "Home",
-        route: "home",
-        icon: "mdi-home",
-        divider: true
-      },
-      {
-        title: "Calendar",
-        route: "calendar",
-        icon: "mdi-calendar"
-      },
+      { title: "Home", route: "home", icon: "mdi-home", divider: true },
+      { title: "Calendar", route: "calendar", icon: "mdi-calendar-month" },
+      { title: "Schedule", route: "schedule", icon: "mdi-calendar" },
       {
         title: "Quizzes",
         route: "quizzes",
-        icon: "mdi-check",
+        icon: "mdi-help-circle-outline",
         children: [
-          {
-            title: "Design",
-            route: "quiz-designer",
-            icon: "mdi-pencil"
-          },
-          {
-            title: "Preview",
-            route: "quiz-preview",
-            icon: "mdi-glasses"
-          }
+          { title: "Design", route: "quiz-designer", icon: "mdi-pencil" },
+          { title: "Preview", route: "quiz-preview", icon: "mdi-glasses" }
         ]
       },
-      {
-        title: "About",
-        route: "about",
-        icon: "mdi-school"
-      }
+      { title: "About", route: "about", icon: "mdi-school" }
     ];
+
     return {
       drawerVisible: this.initialVisibility,
       navItems
