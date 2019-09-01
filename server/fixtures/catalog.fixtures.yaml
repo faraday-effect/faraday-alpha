@@ -1,0 +1,8 @@
+fixtures:
+  - table: course
+    rows:
+      cos-243:
+        number: 243
+        title: Multi-tier Web Application Development
+        prefix: ^prefix.cos
+        department: ^department.cos

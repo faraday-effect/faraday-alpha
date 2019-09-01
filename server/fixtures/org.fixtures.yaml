@@ -1,0 +1,15 @@
+fixtures:
+  - table: prefix
+    rows:
+      cos:
+        name: COS
+        description: Computer Science
+      phy:
+        name: PHY
+        description: Physics
+  - table: department
+    rows:
+      cos:
+        name: Computer Science & Engineering
+      phy:
+        name: Physics & Engineering
