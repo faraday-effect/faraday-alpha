@@ -8,14 +8,14 @@ fixtures:
   - table: topic
     rows:
       async-js-callbacks:
-        unit: ^async-js
+        unit: ^unit.async-js
         title: Callbacks
         description: The worst way to do it
       async-js-promises:
-        unit: ^async-js
+        unit: ^unit.async-js
         title: Promises
         description: Somewhat better
       async-js-async-await:
-        unit: ^async-js
+        unit: ^unit.async-js
         title: Async/Await
         description: Almost like synchronous code
