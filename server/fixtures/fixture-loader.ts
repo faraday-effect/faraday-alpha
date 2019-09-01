@@ -3,28 +3,33 @@ import fetch from "node-fetch";
 import { Fixture } from "./fixture.types";
 import get from "lodash/get";
 import commander from "commander";
-import DbDirect from "./db-direct";
+import typeOrmConfig from "../src/typeorm-config";
 
 import termFixtures from "./calendar.fixtures";
 import topicFixtures from "./syllabus.fixtures";
 import prefixFixtures from "./org.fixtures";
+import catalogFixtures from "./catalog.fixtures";
+import { createConnection, getConnection, getManager } from "typeorm";
+import { AbstractEntity } from "src/shared/abstract-entity";
+import {truncateTable} from "./db-helpers";
 const allFixtures: Fixture[] = [
   ...termFixtures,
   ...topicFixtures,
-  ...prefixFixtures
+  ...prefixFixtures,
+  ...catalogFixtures
 ];
 
 /**
- * Use `client` to run the mutation configured in `fixture`.
- * @param client - GraphQL client
+ * Use `gqlClient` to run the mutation configured in `fixture`.
+ * @param gqlClient - GraphQL gqlClient
  * @param fixture - Fixture structure.
  */
-async function mutate(client, fixture: Fixture) {
+async function mutate(gqlClient, fixture: Fixture) {
   console.log(`Loading ${fixture.description}`);
   for (const datum of fixture.graphQlData) {
     console.log("  ", get(datum, fixture.idPath));
     try {
-      const result = await client.mutate({
+      const result = await gqlClient.mutate({
         mutation: fixture.graphQlMutation,
         variables: {
           data: datum
@@ -108,16 +113,17 @@ async function main(argv) {
     process.exit(1);
   }
 
-  // Set up the connection.
-  const client = new ApolloClient({
+  // Set up the GraphQL client.
+  const gqlClient = new ApolloClient({
     uri: "http://localhost:3000/graphql",
     fetch: fetch
   });
 
-  // Open the direct database connection so we can manipulate tables
-  // outside of GraphQL queries.
-  const dbDirect = new DbDirect();
-  await dbDirect.openConnection();
+  // Set up the database direct connection.
+  await createConnection({
+    ...typeOrmConfig
+    // logging: true
+  });
 
   const args = new Set(program.args);
   // Check each fixture.
@@ -128,15 +134,16 @@ async function main(argv) {
         // Truncate tables.
         for (const tableName of fixture.tablesToTruncate) {
           console.log(`Truncating table '${tableName}'`);
-          await dbDirect.truncateTable(tableName);
+          await truncateTable(tableName);
         }
       }
       // Run the mutation.
-      await mutate(client, fixture);
+      await mutate(gqlClient, fixture);
     }
   }
 
-  await dbDirect.closeConnection();
+  // Close the connection to the database.
+  await getConnection().close();
 }
 
 main(process.argv);

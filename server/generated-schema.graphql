@@ -32,6 +32,13 @@ type Course {
   offerings: [Offering!]!
 }
 
+input CourseCreateInput {
+  number: String!
+  title: String!
+  prefixId: Int!
+  departmentId: Int!
+}
+
 type DateRange {
   """Unique ID for this entity"""
   id: Int!
@@ -61,6 +68,7 @@ input DepartmentCreateInput {
 type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
+  createCourse(createInput: CourseCreateInput!): Course!
   createDepartment(createInput: DepartmentCreateInput!): Department!
   createPrefix(createInput: PrefixCreateInput!): Prefix!
 }
@@ -93,6 +101,7 @@ type Query {
   units: [Unit!]!
   topic(id: Int!): Topic!
   topics: [Topic!]!
+  courses: [Course!]!
   departments: [Department!]!
   prefixes: [Prefix!]!
 }

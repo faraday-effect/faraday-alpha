@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "../../shared/abstract-entity";
 import { Department, Prefix } from "../../org/entities";
@@ -15,15 +15,27 @@ export class Course extends AbstractEntity {
   @Field()
   title: string;
 
-  @ManyToOne(type => Prefix, prefix => prefix.courses)
+  @Column("int") prefixId: number;
+  @ManyToOne(type => Prefix, prefix => prefix.courses, { nullable: false })
   @Field(type => Prefix)
   prefix: Prefix;
 
-  @ManyToOne(type => Department, department => department.courses)
+  @Column("int") departmentId: number;
+  @ManyToOne(type => Department, department => department.courses, {
+    nullable: false
+  })
   @Field(type => Department)
   department: Department;
 
   @OneToMany(type => Offering, offering => offering.course)
   @Field(type => [Offering])
   offerings: Offering[];
+}
+
+@InputType()
+export class CourseCreateInput {
+  @Field() number: string;
+  @Field() title: string;
+  @Field(type => Int) prefixId: number;
+  @Field(type => Int) departmentId: number;
 }
