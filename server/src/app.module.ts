@@ -3,11 +3,13 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AppController } from "./app.controller";
+import typeORMConfig from "./typeorm-config";
 
 import { TelemetryModule } from "./telemetry/telemetry.module";
 import { CalendarModule } from "./calendar/calendar.module";
 import { SyllabusModule } from "./syllabus/syllabus.module";
-import typeORMConfig from "./typeorm-config";
+import { CatalogModule } from "./catalog/catalog.module";
+import { OrgModule } from "./org/org.module";
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import typeORMConfig from "./typeorm-config";
     }),
     TelemetryModule,
     CalendarModule,
-    SyllabusModule
+    SyllabusModule,
+    CatalogModule,
+    OrgModule
   ],
   controllers: [AppController]
 })

@@ -1,11 +1,18 @@
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
 import { Fixture } from "./fixture.types";
-import termDetails from "./calendar.fixtures";
-import topicDetails from "./syllabus.fixtures";
 import get from "lodash/get";
 import commander from "commander";
 import DbDirect from "./db-direct";
+
+import termFixtures from "./calendar.fixtures";
+import topicFixtures from "./syllabus.fixtures";
+import prefixFixtures from "./org.fixtures";
+const allFixtures: Fixture[] = [
+  ...termFixtures,
+  ...topicFixtures,
+  ...prefixFixtures
+];
 
 /**
  * Use `client` to run the mutation configured in `fixture`.
@@ -66,7 +73,6 @@ function validateFixtureArguments(fixtures: Fixture[], args: string[]) {
 }
 
 async function main(argv) {
-  const allFixtures: Fixture[] = [termDetails, topicDetails];
   validateUniqueFixtureNames(allFixtures);
 
   const program = new commander.Command();

@@ -19,4 +19,8 @@ export class Activity extends AbstractEntity {
 }
 
 @InputType()
-export class ActivityCreateInput {}
+export class ActivityCreateInput {
+  @Field() sequence: number;
+  @Field() description: string;
+  @Field() duration: number;
+}

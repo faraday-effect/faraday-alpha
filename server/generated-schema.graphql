@@ -8,6 +8,30 @@ type AbstractEntity {
   id: Int!
 }
 
+type Activity {
+  """Unique ID for this entity"""
+  id: Int!
+  sequence: Int
+  description: String!
+  duration: Float!
+}
+
+input ActivityCreateInput {
+  sequence: Float!
+  description: String!
+  duration: Float!
+}
+
+type Course {
+  """Unique ID for this entity"""
+  id: Int!
+  number: String!
+  title: String!
+  prefix: Prefix!
+  department: Department!
+  offerings: [Offering!]!
+}
+
 type DateRange {
   """Unique ID for this entity"""
   id: Int!
@@ -23,9 +47,43 @@ input DateRangeCreateInput {
   endDate: String
 }
 
+type Department {
+  """Unique ID for this entity"""
+  id: Int!
+  name: String!
+  courses: [Course!]!
+}
+
+input DepartmentCreateInput {
+  name: String!
+}
+
 type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
+  createDepartment(createInput: DepartmentCreateInput!): Department!
+  createPrefix(createInput: PrefixCreateInput!): Prefix!
+}
+
+type Offering {
+  """Unique ID for this entity"""
+  id: Int!
+  title: String!
+  course: Course!
+  units: [Unit!]!
+}
+
+type Prefix {
+  """Unique ID for this entity"""
+  id: Int!
+  name: String!
+  description: String!
+  courses: [Course!]!
+}
+
+input PrefixCreateInput {
+  name: String!
+  description: String!
 }
 
 type Query {
@@ -35,6 +93,8 @@ type Query {
   units: [Unit!]!
   topic(id: Int!): Topic!
   topics: [Topic!]!
+  departments: [Department!]!
+  prefixes: [Prefix!]!
 }
 
 type Term {
@@ -72,6 +132,7 @@ type Unit {
   title: String!
   description: String!
   topics: [Topic!]!
+  offering: Offering!
 }
 
 input UnitCreateInput {

@@ -42,13 +42,15 @@ const terms = [
   }
 ];
 
-const details: Fixture = {
-  uniqueName: "terms",
-  description: "terms with various date ranges",
-  graphQlMutation: CREATE_TERM,
-  graphQlData: terms,
-  idPath: "name",
-  tablesToTruncate: ["term", "date_range"]
-};
+const fixtures: Fixture[] = [
+  {
+    uniqueName: "terms",
+    description: "terms with various date ranges",
+    graphQlMutation: CREATE_TERM,
+    graphQlData: terms,
+    idPath: "name",
+    tablesToTruncate: ["term", "date_range"]
+  }
+];
 
-export default details;
+export default fixtures;

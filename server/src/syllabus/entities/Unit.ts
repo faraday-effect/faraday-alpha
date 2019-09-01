@@ -1,7 +1,8 @@
 import { Field, InputType, ObjectType } from "type-graphql";
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "../../shared/abstract-entity";
 import { Topic, TopicCreateInput } from "./Topic";
+import { Offering } from "../../catalog/entities";
 
 @Entity()
 @ObjectType()
@@ -17,6 +18,10 @@ export class Unit extends AbstractEntity {
   @OneToMany(type => Topic, topic => topic.unit)
   @Field(type => [Topic])
   topics: Topic[];
+
+  @ManyToOne(type => Offering, offering => offering.units)
+  @Field(type => Offering)
+  offering: Offering;
 }
 
 @InputType()

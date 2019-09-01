@@ -37,13 +37,15 @@ const units = [
   }
 ];
 
-const details: Fixture = {
-  uniqueName: "units",
-  description: "units with topics",
-  graphQlMutation: CREATE_UNIT,
-  graphQlData: units,
-  idPath: "title",
-  tablesToTruncate: ["unit"]
-};
+const fixtures: Fixture[] = [
+  {
+    uniqueName: "units",
+    description: "units with topics",
+    graphQlMutation: CREATE_UNIT,
+    graphQlData: units,
+    idPath: "title",
+    tablesToTruncate: ["unit"]
+  }
+];
 
-export default details;
+export default fixtures;
