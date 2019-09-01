@@ -1,11 +1,17 @@
 import typeOrmConfig from "../src/typeorm-config";
 import * as commander from "commander";
-import { createConnection, getManager, getRepository } from "typeorm";
+import {
+  createConnection,
+  getManager,
+  getRepository,
+  ObjectType
+} from "typeorm";
 
 import FixtureRegistry from "./fixture-registry";
 import EntityMetadataRegistry from "./entity-metadata";
 
 import Debug from "debug";
+import { Course } from "../src/catalog/entities";
 const debug = Debug("fixture-loader");
 
 /**
@@ -68,28 +74,65 @@ async function main(argv) {
   const argsSet = new Set(program.args);
 
   // Iterate over all fixtures and execute the one(s) requested.
-  for (let [tableName, fixture] of fixtureRegistry.allFixtures()) {
-    if (program.allFixtures || argsSet.has(tableName)) {
-      // Run this fixture.
+  // Fixtures returned by `allFixtures` are in topographic order
+  // according to dependencies between tables.
+  for (const fixture of fixtureRegistry.allFixturesInOrder()) {
+    if (program.allFixtures || argsSet.has(fixture.tableName)) {
+      // Load this fixture.
 
       if (program.truncate) {
         // Truncate table.
-        console.log(`Truncating table '${tableName}'`);
-        await truncateTable(tableName);
+        console.log(`Truncating table '${fixture.tableName}'`);
+        await truncateTable(fixture.tableName);
       }
 
-      const entityName = metadataRegistry.lookUpEntityName(tableName);
-      const repository = getRepository(entityName);
+      const entityMetadata = metadataRegistry.findEntityMetadata(
+        fixture.tableName
+      );
+      debug(
+        "Table %s for entity %s",
+        fixture.tableName,
+        entityMetadata.entityName
+      );
 
-      debug("Table %s for entity %s", tableName, entityName);
+      // Because we're fetching a repository for this entity at run time,
+      // it's too late for the type system to make use of the `Entity` type
+      // throughout this portion of code. Essentially, we end up with a
+      // repository of type `Repository<unknown>`.
+      const repository = getRepository(entityMetadata.target);
 
-      for (const row of fixture.rows) {
+      for (const fixtureRow of fixture.rows) {
         const newEntity = repository.create();
-        for (const column of row.columns) {
-          newEntity[column.name] = column.value;
+
+        for (const fixtureColumn of fixtureRow.columns) {
+          if (entityMetadata.hasColumn(fixtureColumn.name)) {
+            if (fixtureColumn.isForeignKey()) {
+              // Column is a foreign key
+              // TODO: Implement me.
+            } else {
+              // Column is a normal value.
+              let columnValue = fixtureColumn.value;
+              const columnType = entityMetadata.columnType(fixtureColumn.name);
+
+              if (typeof columnValue === "string") {
+                if (columnType === "number") {
+                  columnValue = parseInt(columnValue);
+                }
+              }
+
+              newEntity[fixtureColumn.name] = columnValue;
+            }
+          } else {
+            throw new Error(
+              `No column called '${fixtureColumn.name}' in '${entityMetadata.entityName}'`
+            );
+          }
         }
-        debug("entityName %O", newEntity);
-        await repository.save(newEntity);
+
+        // We're left with a returned value of type `unknown`. :-(
+        // TODO: Is there a way around this? See comment above.
+        const dbValue = await repository.save(newEntity);
+        fixtureRow.databaseId = (dbValue as any).id;
       }
     }
   }

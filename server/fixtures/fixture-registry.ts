@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import { safeLoad } from "js-yaml";
 import * as path from "path";
-import { flatMap, uniqBy, uniq, difference } from "lodash";
+import { difference, flatMap, uniq } from "lodash";
 
 import Debug from "debug";
 import toposort = require("toposort");
+
 const debug = Debug("fixture-registry");
 
 type tableName = string;
@@ -19,7 +20,7 @@ class FixtureColumn {
       !FixtureColumn.foreignKeyRegex.test(value)
     ) {
       throw Error(
-        `Do you intend '${value}' to be a foreign key? It doesn't match the pattern`
+        `Do you intend '${value}' to be a foreign key? It doesn't match the pattern.`
       );
     }
   }
@@ -38,8 +39,6 @@ class FixtureColumn {
 
     if (typeof this.value === "string") {
       const result = FixtureColumn.foreignKeyRegex.exec(this.value);
-      debug("VALUE %O", this.value);
-      debug("RESULT %O", result);
       return {
         tableName: result[1],
         rowName: result[2]
@@ -51,12 +50,33 @@ class FixtureColumn {
 }
 
 class FixtureRow {
+  private _dbId: number = -1;
+
   constructor(public rowName: string, public columns: FixtureColumn[]) {}
 
   listForeignKeys() {
     return this.columns
       .filter(column => column.isForeignKey())
       .map(column => column.decodeForeignKey());
+  }
+
+  listColumnNames() {
+    return this.columns.map(column => column.name);
+  }
+
+  get databaseId() {
+    if (this._dbId <= 0) {
+      throw new Error(`No database ID for '${this.rowName}'`);
+    }
+    return this._dbId;
+  }
+
+  set databaseId(value: number) {
+    if (this._dbId > 0) {
+      throw new Error(`Already have a database ID for '${this.rowName}'`);
+    }
+    this._dbId = value;
+    debug(`Set DB ID to ${value} on ${this.rowName}`);
   }
 }
 
@@ -69,6 +89,16 @@ class Fixture {
 
   listForeignTableNames() {
     return uniq(this.listForeignKeys().map(fk => fk.tableName));
+  }
+
+  findRow(rowName: string) {
+    const row = this.rows.find(row => row.rowName == rowName);
+    if (!row) {
+      throw new Error(
+        `No row called '${rowName}' in '${this.tableName}' fixture `
+      );
+    }
+    return row;
   }
 }
 
@@ -107,8 +137,26 @@ export default class FixtureRegistry {
     this.fixtureCreationOrder();
   }
 
-  allFixtures() {
-    return this.registry.entries();
+  findFixture(tableName: string): Fixture {
+    const fixture = this.registry.get(tableName);
+    if (fixture) {
+      return fixture;
+    }
+    throw new Error(`Can't find fixture for table '${tableName}'`);
+  }
+
+  findRow(tableName: string, rowName: string) {
+    this.findFixture(tableName).findRow(rowName);
+  }
+
+  allFixturesInOrder() {
+    const orderedFixtures: Fixture[] = [];
+
+    for (const tableName of this.fixtureCreationOrder()) {
+      orderedFixtures.push(this.findFixture(tableName));
+    }
+
+    return orderedFixtures;
   }
 
   allRegisteredTables() {

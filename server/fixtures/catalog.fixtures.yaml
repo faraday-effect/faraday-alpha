@@ -6,3 +6,8 @@ fixtures:
         title: Multi-tier Web Application Development
         prefix: ^prefix.cos
         department: ^department.cos
+  - table: offering
+    rows:
+      cos-243-f19:
+        course: ^course.cos-243
+        title: Section 17

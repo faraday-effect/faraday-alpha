@@ -17,8 +17,25 @@ class EntityMetadata {
   constructor(
     public entityName: string,
     public tableName: string,
+    public target: string | Function,
     public columns: ColumnMetadata[]
   ) {}
+
+  listColumnNames() {
+    return this.columns.map(column => column.name);
+  }
+
+  hasColumn(columnName: string) {
+    return this.findColumn(columnName) !== undefined;
+  }
+
+  findColumn(columnName: string) {
+    return this.columns.find(column => column.name === columnName);
+  }
+
+  columnType(columnName: string) {
+    return this.findColumn(columnName).type;
+  }
 }
 
 export default class EntityMetadataRegistry {
@@ -27,10 +44,10 @@ export default class EntityMetadataRegistry {
   constructor() {
     const connection = getConnection();
 
-    for (let entity of connection.entityMetadatas) {
+    for (let entityMetadata of connection.entityMetadatas) {
       const columnMetadata: ColumnMetadata[] = [];
 
-      for (let column of entity.columns) {
+      for (let column of entityMetadata.columns) {
         columnMetadata.push(
           new ColumnMetadata(
             column.propertyName,
@@ -41,14 +58,19 @@ export default class EntityMetadataRegistry {
       }
 
       this.registry.set(
-        entity.tableName,
-        new EntityMetadata(entity.name, entity.tableName, columnMetadata)
+        entityMetadata.tableName,
+        new EntityMetadata(
+          entityMetadata.name,
+          entityMetadata.tableName,
+          entityMetadata.target,
+          columnMetadata
+        )
       );
     }
     debug("METADATA REGISTRY %O", this.registry);
   }
 
-  static stringifyColumnType(columnType: ColumnType): string {
+  private static stringifyColumnType(columnType: ColumnType): string {
     if (typeof columnType === "function") {
       return columnType.name.toLowerCase();
     } else {
@@ -56,11 +78,7 @@ export default class EntityMetadataRegistry {
     }
   }
 
-  lookUpEntityName(tableName: string) {
-    return this.registry.get(tableName).entityName;
-  }
-
-  find(tableName: string) {
+  findEntityMetadata(tableName: string) {
     return this.registry.get(tableName);
   }
 }
