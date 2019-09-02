@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "../../shared/abstract-entity";
 import { Course } from "./Course";
@@ -10,6 +10,10 @@ export class Offering extends AbstractEntity {
   @Column()
   @Field()
   title: string;
+
+  @Column("int")
+  @Field(type => Int, { defaultValue: -1 })
+  creditHours: number;
 
   @ManyToOne(type => Course, course => course.offerings)
   @Field(type => Course)

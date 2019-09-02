@@ -30,6 +30,7 @@ type Course {
   prefix: Prefix!
   department: Department!
   offerings: [Offering!]!
+  sections: [Section!]!
 }
 
 input CourseCreateInput {
@@ -77,6 +78,7 @@ type Offering {
   """Unique ID for this entity"""
   id: Int!
   title: String!
+  creditHours: Int
   course: Course!
   units: [Unit!]!
 }
@@ -106,6 +108,32 @@ type Query {
   prefixes: [Prefix!]!
 }
 
+type Section {
+  """Unique ID for this entity"""
+  id: Int!
+  title: String!
+  regNumber: String!
+
+  """Meeting days (e.g., 'MWF', 'TR')"""
+  days: String!
+
+  """Daily start time (e.g., '09:00')"""
+  startTime: String!
+
+  """Daily stop time (e.g., '09:50')"""
+  stopTime: String!
+  term: Term!
+  course: Course!
+}
+
+input SectionCreateInput {
+  title: String!
+  regNumber: String!
+  creditHours: Int!
+  termId: Int!
+  courseId: Int!
+}
+
 type Term {
   """Unique ID for this entity"""
   id: Int!
@@ -113,6 +141,7 @@ type Term {
   startDate: String!
   endDate: String!
   dateRanges: [DateRange!]!
+  sections: [Section!]!
 }
 
 input TermCreateInput {

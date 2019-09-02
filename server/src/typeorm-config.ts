@@ -1,10 +1,11 @@
 import { config } from "dotenv";
 
-import { DateRange, Term } from "./calendar/entities";
-import { Topic, Unit, Activity } from "./syllabus/entities";
 import { ConnectionOptions } from "typeorm";
-import { Prefix, Department } from "./org/entities";
-import { Course, Offering } from "./catalog/entities";
+
+import { DateRange, Term } from "./calendar/entities";
+import { Activity, Topic, Unit } from "./syllabus/entities";
+import { Department, Prefix } from "./org/entities";
+import { Course, Offering, Section } from "./catalog/entities";
 
 config();
 
@@ -17,13 +18,14 @@ const options: ConnectionOptions = {
   entities: [
     Term,
     DateRange,
+    Activity,
     Topic,
     Unit,
-    Course,
-    Offering,
     Department,
     Prefix,
-    Activity
+    Course,
+    Offering,
+    Section
   ]
 };
 

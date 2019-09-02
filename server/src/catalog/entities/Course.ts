@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "../../shared/abstract-entity";
 import { Department, Prefix } from "../../org/entities";
 import { Offering } from "./Offering";
+import { Section } from "./Section";
 
 @Entity()
 @ObjectType()
@@ -30,6 +31,10 @@ export class Course extends AbstractEntity {
   @OneToMany(type => Offering, offering => offering.course)
   @Field(type => [Offering])
   offerings: Offering[];
+
+  @OneToMany(type => Section, section => section.course)
+  @Field(type => [Section])
+  sections: Section[];
 }
 
 @InputType()
