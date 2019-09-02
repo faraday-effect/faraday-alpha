@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn
+} from "typeorm";
 import { Field, Int, ObjectType } from "type-graphql";
 
 @Entity()
@@ -9,4 +15,13 @@ export abstract class AbstractEntity {
     description: "Unique ID for this entity"
   })
   id: number;
+
+  @CreateDateColumn()
+  createdOn: Date;
+
+  @UpdateDateColumn()
+  updatedOn: Date;
+
+  @VersionColumn()
+  version: number;
 }

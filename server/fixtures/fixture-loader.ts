@@ -106,9 +106,17 @@ async function main(argv) {
 
         for (const fixtureColumn of fixtureRow.columns) {
           if (entityMetadata.hasColumn(fixtureColumn.name)) {
-            if (fixtureColumn.isForeignKey()) {
+            if (fixtureColumn.hasForeignKeyDescriptor()) {
               // Column is a foreign key
-              // TODO: Implement me.
+              const foreignKeyDescriptor = fixtureColumn.decodeForeignKeyDescriptor();
+              const foreignRow = fixtureRegistry.findRow(foreignKeyDescriptor);
+              if (!foreignRow) {
+                throw new Error(
+                  `No row with foreign key '${foreignKeyDescriptor}'`
+                );
+              }
+              const foreignKey = foreignRow.databaseId;
+              newEntity[fixtureColumn.name] = foreignKey;
             } else {
               // Column is a normal value.
               let columnValue = fixtureColumn.value;

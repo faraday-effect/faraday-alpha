@@ -10,14 +10,21 @@ const debug = Debug("fixture-registry");
 
 type tableName = string;
 
+export class ForeignKey {
+  constructor(
+    public readonly tableName: string,
+    public readonly rowName: string
+  ) {}
+}
+
 class FixtureColumn {
-  private static readonly foreignKeyRegex = /^\^(\w*)\.(\w*)/;
+  private static readonly foreignKeyDescriptorRegex = /^\^(\w*)\.(\w*)/;
 
   constructor(public name: string, public value: string | number) {
     if (
       typeof value === "string" &&
       value.startsWith("^") &&
-      !FixtureColumn.foreignKeyRegex.test(value)
+      !FixtureColumn.foreignKeyDescriptorRegex.test(value)
     ) {
       throw Error(
         `Do you intend '${value}' to be a foreign key? It doesn't match the pattern.`
@@ -25,24 +32,21 @@ class FixtureColumn {
     }
   }
 
-  isForeignKey() {
+  hasForeignKeyDescriptor() {
     if (typeof this.value === "string") {
-      return FixtureColumn.foreignKeyRegex.test(this.value);
+      return FixtureColumn.foreignKeyDescriptorRegex.test(this.value);
     }
     return false;
   }
 
-  decodeForeignKey() {
-    if (!this.isForeignKey()) {
+  decodeForeignKeyDescriptor() {
+    if (!this.hasForeignKeyDescriptor()) {
       throw Error(`Not a foreign key: ${this.value}`);
     }
 
     if (typeof this.value === "string") {
-      const result = FixtureColumn.foreignKeyRegex.exec(this.value);
-      return {
-        tableName: result[1],
-        rowName: result[2]
-      };
+      const result = FixtureColumn.foreignKeyDescriptorRegex.exec(this.value);
+      return new ForeignKey(result[1], result[2]);
     }
 
     throw Error("Something very weird happened");
@@ -54,10 +58,10 @@ class FixtureRow {
 
   constructor(public rowName: string, public columns: FixtureColumn[]) {}
 
-  listForeignKeys() {
+  listForeignKeyDescriptors() {
     return this.columns
-      .filter(column => column.isForeignKey())
-      .map(column => column.decodeForeignKey());
+      .filter(column => column.hasForeignKeyDescriptor())
+      .map(column => column.decodeForeignKeyDescriptor());
   }
 
   listColumnNames() {
@@ -83,12 +87,12 @@ class FixtureRow {
 class Fixture {
   constructor(public tableName: string, public rows: FixtureRow[]) {}
 
-  listForeignKeys() {
-    return flatMap(this.rows, row => row.listForeignKeys());
+  listForeignKeyDescriptors() {
+    return flatMap(this.rows, row => row.listForeignKeyDescriptors());
   }
 
   listForeignTableNames() {
-    return uniq(this.listForeignKeys().map(fk => fk.tableName));
+    return uniq(this.listForeignKeyDescriptors().map(fk => fk.tableName));
   }
 
   findRow(rowName: string) {
@@ -129,7 +133,7 @@ export default class FixtureRegistry {
           }
         }
         this.registry.set(fixture.table, fixtureObject);
-        debug("FOREIGN KEYS %O", fixtureObject.listForeignKeys());
+        debug("FOREIGN KEYS %O", fixtureObject.listForeignKeyDescriptors());
         debug("FOREIGN TABLES %O", fixtureObject.listForeignTableNames());
       }
     });
@@ -145,8 +149,8 @@ export default class FixtureRegistry {
     throw new Error(`Can't find fixture for table '${tableName}'`);
   }
 
-  findRow(tableName: string, rowName: string) {
-    this.findFixture(tableName).findRow(rowName);
+  findRow(foreignKey: ForeignKey) {
+    return this.findFixture(foreignKey.tableName).findRow(foreignKey.rowName);
   }
 
   allFixturesInOrder() {
