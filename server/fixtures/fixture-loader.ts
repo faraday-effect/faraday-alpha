@@ -10,11 +10,29 @@ import { AbstractEntity } from "../src/shared/abstract-entity";
 
 const debug = Debug("fixture-loader");
 
+// Represent a newly-inserted value in the database as a strong.
+function dbValueToString(dbValue) {
+  const fields: string[] = [];
+  let id = -1; // Keep this separate so it always shows up first.
+
+  for (const [key, value] of Object.entries(dbValue)) {
+    if (key === "id" && typeof value === "number") {
+      id = value;
+    } else {
+      fields.push(`${key}: ${value}`);
+    }
+  }
+
+  fields.sort();
+  fields.unshift(`id: ${id}`);
+  return `${dbValue.constructor.name}(${fields.join(", ")})`;
+}
+
 /**
  * DANGER: Remove all the rows from the named table and any tables that have foreign keys to it.
  * @param tableName - Table to truncate
  */
-export function truncateTable(tableName: string) {
+function truncateTable(tableName: string) {
   return getManager().query(`TRUNCATE TABLE ${tableName} CASCADE`);
 }
 
@@ -35,6 +53,7 @@ async function main(argv) {
       "-n, --nuclear",
       "nuke and reload everything (same as '--all-fixtures --truncate')"
     )
+    .option("-d, --dump-metadata", "dump all metadata and exit")
     .option("-v, --verbose", "output lots of details", false)
     .parse(argv);
 
@@ -53,99 +72,117 @@ async function main(argv) {
     program.allFixtures = program.truncate = true;
   }
 
-  // Make sure the user asked us to do something.
-  if (!(program.args.length || program.allFixtures)) {
-    console.error("No fixtures provided; nothing to do!");
-    process.exit(1);
-  }
-
   // Set up the database direct connection.
   const connectionOptions = { ...typeOrmConfig };
   if (program.verbose) {
     connectionOptions.logging = true;
   }
-  const connection = await createConnection(connectionOptions);
+  const dbConnection = await createConnection(connectionOptions);
 
   const metadataRegistry = new EntityMetadataRegistry();
 
+  if (program.dumpMetadata) {
+    for (const metadata of metadataRegistry.allEntityMetadata()) {
+      console.log(metadata);
+    }
+    process.exit(0);
+  }
+
+  // Make sure the user asked us to do something.
+  if (!(program.args.length || program.allFixtures)) {
+    console.error("No fixtures specified; nothing to do!");
+    process.exit(1);
+  }
+
   // Set of all features requested.
-  const argsSet = new Set(program.args);
+  const tablesFromCommandLine = new Set(program.args);
 
-  // Iterate over all fixtures and execute the one(s) requested.
-  // Fixtures returned by `allFixtures` are in topographic order
+  // List tables to process. Tables listed in topographic order
   // according to dependencies between tables.
-  for (const fixture of fixtureRegistry.allFixturesInOrder()) {
-    if (program.allFixtures || argsSet.has(fixture.tableName)) {
-      // Load this fixture.
+  const namesOfTablesToProcess = fixtureRegistry
+    .allFixturesInOrder()
+    .filter(
+      fixture =>
+        program.allFixtures || tablesFromCommandLine.has(fixture.tableName)
+    )
+    .map(fixture => fixture.tableName);
 
-      if (program.truncate) {
-        // Truncate table.
-        console.log(`Truncating table '${fixture.tableName}'`);
-        await truncateTable(fixture.tableName);
-      }
+  // Truncate tables, if requested. Do these all up front, rather than
+  // during fixture loading, which could cause previous updates to be lost.
+  if (program.truncate) {
+    for (const tableName of namesOfTablesToProcess) {
+      console.log(`Truncate table '${tableName}'`);
+      await truncateTable(tableName);
+    }
+  }
 
-      const entityMetadata = metadataRegistry.findEntityMetadata(
-        fixture.tableName
-      );
-      debug(
-        "Table %s for entity %s",
-        fixture.tableName,
-        entityMetadata.entityName
-      );
+  // Load the fixtures requested.
+  for (const tableName of namesOfTablesToProcess) {
+    const entityMetadata = metadataRegistry.findEntityMetadata(tableName);
+    const fixture = fixtureRegistry.findFixture(tableName);
+    debug("Table %s for entity %s", tableName, entityMetadata.entityName);
 
-      // Because we're fetching a repository for this entity at run time,
-      // it's too late for the type system to make use of the `Entity` type
-      // throughout this portion of code. Essentially, we end up with a
-      // repository of type `Repository<unknown>`.
-      // Solution: pass a type parameter explicitly.
-      const repository = getRepository<AbstractEntity>(entityMetadata.target);
+    // Because we're fetching a repository for this entity at run time,
+    // it's too late for the type system to make use of the `Entity` type
+    // throughout this portion of code. Essentially, we end up with a
+    // repository of type `Repository<unknown>`.
+    // Solution: pass a type parameter explicitly.
+    const repository = getRepository<AbstractEntity>(entityMetadata.target);
 
-      for (const fixtureRow of fixture.rows) {
-        const newEntity = repository.create();
+    for (const fixtureRow of fixture.rows) {
+      // Load a single row.
+      const newEntity = repository.create();
 
-        for (const fixtureColumn of fixtureRow.columns) {
-          if (entityMetadata.hasColumn(fixtureColumn.name)) {
-            if (fixtureColumn.hasForeignKeyDescriptor()) {
-              // Column is a foreign key
-              const foreignKeyDescriptor = fixtureColumn.decodeForeignKeyDescriptor();
-              const foreignRow = fixtureRegistry.findRow(foreignKeyDescriptor);
-              if (!foreignRow) {
-                throw new Error(
-                  `No row with foreign key '${foreignKeyDescriptor}'`
-                );
-              }
-              const foreignKey = foreignRow.databaseId;
-              newEntity[fixtureColumn.name] = foreignKey;
-            } else {
-              // Column is a normal value.
-              let columnValue = fixtureColumn.value;
-              const columnType = entityMetadata.columnType(fixtureColumn.name);
+      for (const fixtureColumn of fixtureRow.columns) {
+        const adjustedColumnName = entityMetadata.adjustedColumnName(
+          fixtureColumn.name
+        );
 
-              if (typeof columnValue === "string") {
-                if (columnType === "number") {
-                  columnValue = parseInt(columnValue);
-                }
-              }
+        if (fixtureColumn.hasForeignKeyDescriptor()) {
+          // Column is a foreign key
+          const foreignKeyDescriptor = fixtureColumn.decodeForeignKeyDescriptor();
 
-              newEntity[fixtureColumn.name] = columnValue;
-            }
-          } else {
+          let foreignRow;
+          try {
+            foreignRow = fixtureRegistry.findRowFromForeignKey(
+              foreignKeyDescriptor
+            );
+          } catch (err) {
+            console.log(`Loading table '${tableName}'`);
+            throw err;
+          }
+
+          if (!foreignRow) {
             throw new Error(
-              `No column called '${fixtureColumn.name}' in '${entityMetadata.entityName}'`
+              `No row with foreign key '${foreignKeyDescriptor}'`
             );
           }
-        }
+          newEntity[adjustedColumnName] = foreignRow.databaseId;
+        } else {
+          // Column is a normal value.
+          let columnValue = fixtureColumn.value;
+          const columnType = entityMetadata.columnType(adjustedColumnName);
 
-        const dbValue = await repository.save(newEntity);
-        fixtureRow.databaseId = dbValue.id;
+          if (typeof columnValue === "string") {
+            if (columnType === "number") {
+              columnValue = parseInt(columnValue);
+            }
+          }
+
+          newEntity[adjustedColumnName] = columnValue;
+        }
       }
+
+      const dbValue = await repository.save(newEntity);
+      fixtureRow.databaseId = dbValue.id;
+      console.log("Loaded", dbValueToString(dbValue));
     }
   }
 
   // Close the connection to the database.
-  return await connection.close();
+  return await dbConnection.close();
 }
 
 main(process.argv)
   .then(() => debug("Complete"))
-  .catch(err => console.error(`Something bad happened: ${err}`));
+  .catch(err => console.error(err));

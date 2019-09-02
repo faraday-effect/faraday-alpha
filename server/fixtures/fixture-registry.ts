@@ -15,10 +15,14 @@ export class ForeignKey {
     public readonly tableName: string,
     public readonly rowName: string
   ) {}
+
+  toString() {
+    return `ForeignKey<${this.tableName}.${this.rowName}>`;
+  }
 }
 
 class FixtureColumn {
-  private static readonly foreignKeyDescriptorRegex = /^\^(\w*)\.(\w*)/;
+  private static readonly foreignKeyDescriptorRegex = /^\^([\w-]+)\.([\w-]+)$/;
 
   constructor(public name: string, public value: string | number) {
     if (
@@ -62,10 +66,6 @@ class FixtureRow {
     return this.columns
       .filter(column => column.hasForeignKeyDescriptor())
       .map(column => column.decodeForeignKeyDescriptor());
-  }
-
-  listColumnNames() {
-    return this.columns.map(column => column.name);
   }
 
   get databaseId() {
@@ -115,7 +115,7 @@ export default class FixtureRegistry {
       .filter(name => name.endsWith(".fixtures.yaml"));
 
     yamlFileNames.forEach(yamlFileName => {
-      console.log(`LOADING ${yamlFileName}`);
+      console.log(`Reading '${yamlFileName}'`);
       const doc = safeLoad(
         fs.readFileSync(path.join(baseDir, yamlFileName), "utf8")
       );
@@ -149,8 +149,19 @@ export default class FixtureRegistry {
     throw new Error(`Can't find fixture for table '${tableName}'`);
   }
 
-  findRow(foreignKey: ForeignKey) {
-    return this.findFixture(foreignKey.tableName).findRow(foreignKey.rowName);
+  findRowFromForeignKey(foreignKey: ForeignKey) {
+    try {
+      const fixture = this.findFixture(foreignKey.tableName);
+      try {
+        return fixture.findRow(foreignKey.rowName);
+      } catch (err) {
+        console.error(`Finding row with name '${foreignKey.rowName}'`);
+        throw err;
+      }
+    } catch (err) {
+      console.error(`Finding fixture for table '${foreignKey.tableName}'`);
+      throw err;
+    }
   }
 
   allFixturesInOrder() {
@@ -165,10 +176,6 @@ export default class FixtureRegistry {
 
   allRegisteredTables() {
     return this.registry.keys();
-  }
-
-  hasTable(tableName: string) {
-    return this.registry.has(tableName);
   }
 
   fixtureCreationOrder() {

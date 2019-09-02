@@ -16,12 +16,14 @@ export abstract class AbstractEntity {
   })
   id: number;
 
-  @CreateDateColumn()
-  createdOn: Date;
-
-  @UpdateDateColumn()
-  updatedOn: Date;
-
-  @VersionColumn()
-  version: number;
+  // Maybe turn these on in the future; during development, just adds clutter.
+  //
+  // @CreateDateColumn()
+  // createdOn: Date;
+  //
+  // @UpdateDateColumn()
+  // updatedOn: Date;
+  //
+  // @VersionColumn()
+  // version: number;
 }

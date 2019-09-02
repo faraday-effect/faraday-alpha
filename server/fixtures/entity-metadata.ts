@@ -8,9 +8,16 @@ type tableName = string;
 class ColumnMetadata {
   constructor(
     public name: string,
+    public databaseName: string,
     public type: string,
     public nullable: boolean
   ) {}
+
+  toString() {
+    return `${this.name}: ${this.type} (${
+      this.nullable ? "" : "not "
+    } nullable)`;
+  }
 }
 
 class EntityMetadata {
@@ -21,8 +28,27 @@ class EntityMetadata {
     public columns: ColumnMetadata[]
   ) {}
 
-  listColumnNames() {
-    return this.columns.map(column => column.name);
+  toString() {
+    return `${this.tableName} for ${this.entityName}
+    ${this.columns}
+    `;
+  }
+
+  // Deal with the possibility that we ask for a column called `foo`
+  // but there is actually one called `fooId`.
+  adjustedColumnName(columnName: string) {
+    const candidates = [columnName, columnName + "Id"];
+    for (const candidate of candidates) {
+      if (this.hasColumn(candidate)) {
+        return candidate;
+      }
+    }
+
+    throw new Error(
+      `Can't find column '${columnName}' in ${
+        this.entityName
+      }; tried ${candidates.map(candidate => `'${candidate}'`).join(", ")}`
+    );
   }
 
   hasColumn(columnName: string) {
@@ -51,6 +77,7 @@ export default class EntityMetadataRegistry {
         columnMetadata.push(
           new ColumnMetadata(
             column.propertyName,
+            column.databaseName,
             EntityMetadataRegistry.stringifyColumnType(column.type),
             column.isNullable
           )
@@ -80,5 +107,9 @@ export default class EntityMetadataRegistry {
 
   findEntityMetadata(tableName: string) {
     return this.registry.get(tableName);
+  }
+
+  allEntityMetadata() {
+    return this.registry.values();
   }
 }

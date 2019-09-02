@@ -14,8 +14,7 @@ export class Topic extends AbstractEntity {
   @Field()
   description: string;
 
-  @Column("int")
-  unitId: number;
+  @Column("int") unitId: number;
   @ManyToOne(type => Unit, unit => unit.topics)
   @Field(type => Unit)
   unit: Unit;
