@@ -1,17 +1,13 @@
 import typeOrmConfig from "../src/typeorm-config";
 import * as commander from "commander";
-import {
-  createConnection,
-  getManager,
-  getRepository,
-  ObjectType
-} from "typeorm";
+import { createConnection, getManager, getRepository } from "typeorm";
 
 import FixtureRegistry from "./fixture-registry";
 import EntityMetadataRegistry from "./entity-metadata";
 
 import Debug from "debug";
-import { Course } from "../src/catalog/entities";
+import { AbstractEntity } from "../src/shared/abstract-entity";
+
 const debug = Debug("fixture-loader");
 
 /**
@@ -39,6 +35,7 @@ async function main(argv) {
       "-n, --nuclear",
       "nuke and reload everything (same as '--all-fixtures --truncate')"
     )
+    .option("-v, --verbose", "output lots of details", false)
     .parse(argv);
 
   const fixtureRegistry = new FixtureRegistry(program.fixtureDir);
@@ -63,10 +60,11 @@ async function main(argv) {
   }
 
   // Set up the database direct connection.
-  const connection = await createConnection({
-    ...typeOrmConfig,
-    logging: true
-  });
+  const connectionOptions = { ...typeOrmConfig };
+  if (program.verbose) {
+    connectionOptions.logging = true;
+  }
+  const connection = await createConnection(connectionOptions);
 
   const metadataRegistry = new EntityMetadataRegistry();
 
@@ -99,7 +97,8 @@ async function main(argv) {
       // it's too late for the type system to make use of the `Entity` type
       // throughout this portion of code. Essentially, we end up with a
       // repository of type `Repository<unknown>`.
-      const repository = getRepository(entityMetadata.target);
+      // Solution: pass a type parameter explicitly.
+      const repository = getRepository<AbstractEntity>(entityMetadata.target);
 
       for (const fixtureRow of fixture.rows) {
         const newEntity = repository.create();
@@ -137,16 +136,16 @@ async function main(argv) {
           }
         }
 
-        // We're left with a returned value of type `unknown`. :-(
-        // TODO: Is there a way around this? See comment above.
         const dbValue = await repository.save(newEntity);
-        fixtureRow.databaseId = (dbValue as any).id;
+        fixtureRow.databaseId = dbValue.id;
       }
     }
   }
 
   // Close the connection to the database.
-  await connection.close();
+  return await connection.close();
 }
 
-main(process.argv);
+main(process.argv)
+  .then(() => debug("Complete"))
+  .catch(err => console.error(`Something bad happened: ${err}`));
