@@ -1,7 +1,7 @@
 fixtures:
   - table: term
     rows:
-      fall2019:
+      fall-2019:
         name: Fall 2019
         startDate: "2019-08-26"
         endDate: "2019-12-11"
@@ -12,16 +12,16 @@ fixtures:
   - table: date_range
     rows:
       labor-day-2019:
-        term: ^term.fall2019
+        term: ^term.fall-2019
         title: Labor Day
         startDate: "2019-09-02"
       fall-break-2019:
-        term: ^term.fall2019
+        term: ^term.fall-2019
         title: Fall Break
         startDate: "2019-10-11"
         endDate: "2019-10-14"
       thanksgiving-2019:
-        term: ^term.fall2019
+        term: ^term.fall-2019
         title: Thanksgiving
         startDate: "2019-11-27"
         endDate: "2019-12-01"

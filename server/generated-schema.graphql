@@ -70,6 +70,7 @@ type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
   createCourse(createInput: CourseCreateInput!): Course!
+  createSection(createInput: SectionCreateInput!): Section!
   createDepartment(createInput: DepartmentCreateInput!): Department!
   createPrefix(createInput: PrefixCreateInput!): Prefix!
 }
@@ -104,6 +105,7 @@ type Query {
   topic(id: Int!): Topic!
   topics: [Topic!]!
   courses: [Course!]!
+  sections: [Section!]!
   departments: [Department!]!
   prefixes: [Prefix!]!
 }
@@ -129,7 +131,9 @@ type Section {
 input SectionCreateInput {
   title: String!
   regNumber: String!
-  creditHours: Int!
+  days: String!
+  startTime: String!
+  stopTime: String!
   termId: Int!
   courseId: Int!
 }

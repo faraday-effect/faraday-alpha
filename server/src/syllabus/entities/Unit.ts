@@ -19,7 +19,7 @@ export class Unit extends AbstractEntity {
   @Field(type => [Topic])
   topics: Topic[];
 
-  @ManyToOne(type => Offering, offering => offering.units)
+  @ManyToOne(type => Offering, offering => offering.units, { nullable: false })
   @Field(type => Offering)
   offering: Offering;
 }

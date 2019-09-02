@@ -15,7 +15,7 @@ export class Offering extends AbstractEntity {
   @Field(type => Int, { defaultValue: -1 })
   creditHours: number;
 
-  @ManyToOne(type => Course, course => course.offerings)
+  @ManyToOne(type => Course, course => course.offerings, { nullable: false })
   @Field(type => Course)
   course: Course;
 
