@@ -56,7 +56,6 @@ export class TopicResolver {
 
   @ResolveProperty("unit", type => Unit)
   resolveUnit(@Parent() topic: Topic) {
-    console.log("TOPIC", topic);
     return this.syllabusService.findOneOrFail(Unit, topic.unitId);
   }
 }

@@ -29,10 +29,12 @@ export class Section extends AbstractEntity {
   @Field({ description: "Daily stop time (e.g., '09:50')" })
   stopTime: string;
 
+  @Column("int") termId: number;
   @ManyToOne(type => Term, term => term.sections, { nullable: false })
   @Field(type => Term)
   term: Term;
 
+  @Column("int") courseId: number;
   @ManyToOne(type => Course, course => course.sections, { nullable: false })
   @Field(type => Course)
   course: Course;

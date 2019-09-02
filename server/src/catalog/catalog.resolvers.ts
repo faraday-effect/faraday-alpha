@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveProperty,
+  Resolver
+} from "@nestjs/graphql";
 import {
   Course,
   CourseCreateInput,
@@ -6,6 +13,8 @@ import {
   SectionCreateInput
 } from "./entities";
 import { CatalogService } from "./catalog.service";
+import { Term } from "src/calendar/entities/Term";
+import { Department } from "../org/entities";
 
 @Resolver(of => Course)
 export class CourseResolver {
@@ -19,6 +28,11 @@ export class CourseResolver {
   @Query(returns => [Course])
   courses() {
     return this.catalogService.readAll(Course);
+  }
+
+  @ResolveProperty("department", type => Department)
+  resolveDepartment(@Parent() course: Course) {
+    return this.catalogService.findOneOrFail(Department, course.departmentId);
   }
 }
 
@@ -34,5 +48,20 @@ export class SectionResolver {
   @Query(returns => [Section])
   sections() {
     return this.catalogService.readAll(Section);
+  }
+
+  @Query(returns => Section)
+  section(id: number) {
+    return this.catalogService.readOne(Section, id);
+  }
+
+  @ResolveProperty("term", type => Term)
+  resolveTerm(@Parent() section: Section) {
+    return this.catalogService.findOneOrFail(Term, section.termId);
+  }
+
+  @ResolveProperty("course", type => Course)
+  resolveCourse(@Parent() section: Section) {
+    return this.catalogService.findOneOrFail(Course, section.courseId);
   }
 }

@@ -53,11 +53,6 @@ export class CatalogService extends BaseService {
       course
     });
 
-    const errors = await validate(newSection);
-    if (errors.length) {
-      throw new Error(errors.toString());
-    } else {
-      return this.sectionRepo.save(newSection);
-    }
+    return this.validateAndSave(newSection);
   }
 }
