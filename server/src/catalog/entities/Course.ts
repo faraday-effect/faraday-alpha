@@ -31,10 +31,6 @@ export class Course extends AbstractEntity {
   @OneToMany(type => Offering, offering => offering.course)
   @Field(type => [Offering])
   offerings: Offering[];
-
-  @OneToMany(type => Section, section => section.course)
-  @Field(type => [Section])
-  sections: Section[];
 }
 
 @InputType()

@@ -2,7 +2,7 @@ import { Field, InputType, ObjectType } from "type-graphql";
 import { Column, Entity, OneToMany } from "typeorm";
 import { DateRange, DateRangeCreateInput } from "./DateRange";
 import { AbstractEntity } from "../../shared/abstract-entity";
-import { Section } from "../../catalog/entities";
+import { Offering, Section } from "../../catalog/entities";
 
 @Entity()
 @ObjectType()
@@ -23,9 +23,9 @@ export class Term extends AbstractEntity {
   @Field(type => [DateRange])
   dateRanges: DateRange[];
 
-  @OneToMany(type => Section, section => section.term)
-  @Field(type => [Section])
-  sections: Section[];
+  @OneToMany(type => Offering, offering => offering.term)
+  @Field(type => [Offering])
+  offerings: Offering[];
 }
 
 @InputType()

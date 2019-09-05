@@ -4,6 +4,7 @@ import { BaseService } from "../shared/base.service";
 import {
   Course,
   CourseCreateInput,
+  Offering,
   Section,
   SectionCreateInput
 } from "./entities";
@@ -38,19 +39,14 @@ export class CatalogService extends BaseService {
   }
 
   async createSection(createInput: SectionCreateInput) {
-    const term = await this.entityManager.findOneOrFail(
-      Term,
-      createInput.termId
-    );
-    const course = await this.entityManager.findOneOrFail(
-      Course,
-      createInput.courseId
+    const offering = await this.entityManager.findOneOrFail(
+      Offering,
+      createInput.offeringId
     );
 
     const newSection = this.sectionRepo.create({
       ...createInput,
-      term,
-      course
+      offering
     });
 
     return this.validateAndSave(newSection);

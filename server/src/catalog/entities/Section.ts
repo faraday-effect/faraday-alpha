@@ -4,6 +4,7 @@ import { AbstractEntity } from "../../shared/abstract-entity";
 import { Term } from "../../calendar/entities";
 import { Course } from "./Course";
 import { Matches } from "class-validator";
+import { Offering } from "./Offering";
 
 @Entity()
 @ObjectType()
@@ -19,7 +20,7 @@ export class Section extends AbstractEntity {
   @Column()
   @Field({ description: "Meeting days (e.g., 'MWF', 'TR')" })
   @Matches(/^[MTWRF]+$/)
-  days: string;
+  daysOfWeek: string;
 
   @Column()
   @Field({ description: "Daily start time (e.g., '09:00')" })
@@ -29,15 +30,12 @@ export class Section extends AbstractEntity {
   @Field({ description: "Daily stop time (e.g., '09:50')" })
   stopTime: string;
 
-  @Column("int") termId: number;
-  @ManyToOne(type => Term, term => term.sections, { nullable: false })
-  @Field(type => Term)
-  term: Term;
-
-  @Column("int") courseId: number;
-  @ManyToOne(type => Course, course => course.sections, { nullable: false })
-  @Field(type => Course)
-  course: Course;
+  @Column("int") offeringId: number;
+  @ManyToOne(type => Offering, offering => offering.sections, {
+    nullable: false
+  })
+  @Field(type => Offering)
+  offering: Offering;
 }
 
 @InputType()
@@ -47,6 +45,5 @@ export class SectionCreateInput {
   @Field() days: string;
   @Field() startTime: string;
   @Field() stopTime: string;
-  @Field(type => Int) termId: number;
-  @Field(type => Int) courseId: number;
+  @Field(type => Int) offeringId: number;
 }

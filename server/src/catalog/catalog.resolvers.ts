@@ -9,12 +9,13 @@ import {
 import {
   Course,
   CourseCreateInput,
+  Offering,
   Section,
   SectionCreateInput
 } from "./entities";
 import { CatalogService } from "./catalog.service";
-import { Term } from "src/calendar/entities/Term";
 import { Department } from "../org/entities";
+import { Term } from "../calendar/entities";
 
 @Resolver(of => Course)
 export class CourseResolver {
@@ -33,6 +34,11 @@ export class CourseResolver {
   @ResolveProperty("department", type => Department)
   resolveDepartment(@Parent() course: Course) {
     return this.catalogService.findOneOrFail(Department, course.departmentId);
+  }
+
+  @ResolveProperty("offerings", type => [Offering])
+  resolveOfferings(@Parent() course: Course) {
+    return this.catalogService.find(Offering, { course });
   }
 }
 
@@ -55,13 +61,8 @@ export class SectionResolver {
     return this.catalogService.readOne(Section, id);
   }
 
-  @ResolveProperty("term", type => Term)
-  resolveTerm(@Parent() section: Section) {
-    return this.catalogService.findOneOrFail(Term, section.termId);
-  }
-
-  @ResolveProperty("course", type => Course)
-  resolveCourse(@Parent() section: Section) {
-    return this.catalogService.findOneOrFail(Course, section.courseId);
+  @ResolveProperty("offering", type => Offering)
+  resolveOffering(@Parent() section: Section) {
+    return this.catalogService.findOneOrFail(Offering, section.offeringId);
   }
 }

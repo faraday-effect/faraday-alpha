@@ -30,7 +30,6 @@ type Course {
   prefix: Prefix!
   department: Department!
   offerings: [Offering!]!
-  sections: [Section!]!
 }
 
 input CourseCreateInput {
@@ -81,7 +80,9 @@ type Offering {
   title: String!
   creditHours: Int
   course: Course!
+  term: Term!
   units: [Unit!]!
+  sections: [Section!]!
 }
 
 type Prefix {
@@ -118,15 +119,14 @@ type Section {
   regNumber: String!
 
   """Meeting days (e.g., 'MWF', 'TR')"""
-  days: String!
+  daysOfWeek: String!
 
   """Daily start time (e.g., '09:00')"""
   startTime: String!
 
   """Daily stop time (e.g., '09:50')"""
   stopTime: String!
-  term: Term!
-  course: Course!
+  offering: Offering!
 }
 
 input SectionCreateInput {
@@ -135,8 +135,7 @@ input SectionCreateInput {
   days: String!
   startTime: String!
   stopTime: String!
-  termId: Int!
-  courseId: Int!
+  offeringId: Int!
 }
 
 type Term {
@@ -146,7 +145,7 @@ type Term {
   startDate: String!
   endDate: String!
   dateRanges: [DateRange!]!
-  sections: [Section!]!
+  offerings: [Offering!]!
 }
 
 input TermCreateInput {

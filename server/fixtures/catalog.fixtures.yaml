@@ -9,16 +9,16 @@ fixtures:
   - table: section
     rows:
       cos-243-section-1:
-        course: ^course.cos-243
-        term: ^term.fall-2019
+        offering: ^offering.cos-243-f19
         title: COS 243 (Section 1)
         regNumber: 1234-4444
-        days: MWF
+        daysOfWeek: MWF
         startTime: 09:00
         stopTime: 09:50
   - table: offering
     rows:
       cos-243-f19:
         course: ^course.cos-243
+        term: ^term.fall-2019
         title: Section 17
         creditHours: 3
