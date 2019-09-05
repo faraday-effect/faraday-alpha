@@ -20,7 +20,8 @@
 import Vue from "vue";
 import { DateTime } from "luxon";
 import TermSettings from "./TermSettings.vue";
-import { ALL_TERMS_QUERY, Term } from "@/graphql/calendar.graphql";
+import { ALL_TERMS_QUERY } from "@/graphql";
+import { Term } from "@/types";
 
 interface Selection {
   text: string;
@@ -38,7 +39,7 @@ function idOfNearestTerm(terms: Term[]) {
 
   // If we're in any of the known terms, return that one.
   for (let term of terms) {
-    if (today >= term.startDateTime && today <= term.endDateTime) {
+    if (today >= term.startDate && today <= term.endDate) {
       console.log("In term", term.id);
       return term.id;
     }
@@ -49,8 +50,8 @@ function idOfNearestTerm(terms: Term[]) {
   let smallestDelta: number = Infinity;
   for (let term of terms) {
     const delta = Math.min(
-      Math.abs(today.diff(term.startDateTime).as("days")),
-      Math.abs(today.diff(term.endDateTime).as("days"))
+      Math.abs(today.diff(term.startDate).as("days")),
+      Math.abs(today.diff(term.endDate).as("days"))
     );
     if (delta < smallestDelta) {
       nearestTerm = term.id;

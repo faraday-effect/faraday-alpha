@@ -1,7 +1,4 @@
 import gql from "graphql-tag";
-import { Term } from "./calendar.graphql";
-import { Unit } from "@/graphql/syllabus.graphql";
-import { Type } from "class-transformer";
 
 export const ONE_COURSE_QUERY = gql`
   query OneCourse($courseId: Int!) {
@@ -46,13 +43,18 @@ export const ONE_OFFERING_QUERY = gql`
     offering(id: $offeringId) {
       id
       title
+      creditHours
       sections {
         id
         startTime
         stopTime
+        daysOfWeek
+        regNumber
+        title
       }
       term {
         id
+        name
         startDate
         endDate
         dateRanges {
@@ -63,6 +65,7 @@ export const ONE_OFFERING_QUERY = gql`
       }
       units {
         id
+        title
         description
         topics {
           id
@@ -73,36 +76,3 @@ export const ONE_OFFERING_QUERY = gql`
     }
   }
 `;
-
-export class Section {
-  id = NaN;
-  title = "";
-  regNumber = "";
-  daysOfWeek = "";
-  startTime = "";
-  stopTime = "";
-}
-
-export class Offering {
-  id = NaN;
-  title = "";
-  creditHours = NaN;
-
-  @Type(() => Term)
-  term: Term = {} as Term;
-
-  @Type(() => Section)
-  sections: Section[] = [];
-
-  @Type(() => Unit)
-  units: Unit[] = [];
-}
-
-export class Course {
-  id = NaN;
-  number = "";
-  title = "";
-
-  @Type(() => Offering)
-  offerings: Offering[] = [];
-}

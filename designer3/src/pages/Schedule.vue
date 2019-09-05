@@ -17,7 +17,8 @@
         </draggable>
       </v-list>
       <pre>
-      {{ JSON.stringify(topics, null, 2) }}
+        {{ JSON.stringify(topics, null, 2) }}
+        {{ JSON.stringify(offering, null, 2) }}
       </pre>
     </v-layout>
   </v-container>
@@ -26,9 +27,9 @@
 <script lang="ts">
 import Vue from "vue";
 import draggable from "vuedraggable";
-import { ONE_OFFERING_QUERY, Offering } from "@/graphql/catalog.graphql";
 import { plainToClass } from "class-transformer";
-import { Topic } from "@/graphql/syllabus.graphql";
+import { Offering, Topic } from "@/types";
+import { ONE_OFFERING_QUERY } from "@/graphql";
 
 export default Vue.extend({
   apollo: {

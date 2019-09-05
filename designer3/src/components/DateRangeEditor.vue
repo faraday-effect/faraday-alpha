@@ -25,7 +25,8 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import DatePicker from "./DatePicker.vue";
-import { DateRange } from "@/graphql/calendar.graphql";
+import { DateRange } from "@/types";
+import { DateTime } from "luxon";
 
 export default Vue.extend({
   name: "DateRangeEditor",
@@ -45,8 +46,8 @@ export default Vue.extend({
   data() {
     return {
       internalTitle: "",
-      internalStartDate: "",
-      internalEndDate: ""
+      internalStartDate: DateTime,
+      internalEndDate: DateTime
     };
   },
 
@@ -54,8 +55,8 @@ export default Vue.extend({
     value: {
       handler(newRangeProp: DateRange) {
         this.internalTitle = newRangeProp.title;
-        this.internalStartDate = newRangeProp.startDate;
-        this.internalEndDate = newRangeProp.endDate || "";
+        //        this.internalStartDate = newRangeProp.startDate;
+        //        this.internalEndDate = newRangeProp.endDate || "";
       },
       immediate: true
     }
