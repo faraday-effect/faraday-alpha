@@ -67,7 +67,7 @@ export default Vue.extend({
     terms: {
       query: ALL_TERMS_QUERY,
       update(data) {
-        return data.terms.map((term: Term) => new Term(term));
+        return data.terms.map((term: Term) => new Term(/*term*/));
       },
       result() {
         this.isLoading = false;

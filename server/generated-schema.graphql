@@ -105,6 +105,7 @@ type Query {
   units: [Unit!]!
   topic(id: Int!): Topic!
   topics: [Topic!]!
+  course(id: Int!): Course!
   courses: [Course!]!
   sections: [Section!]!
   section: Section!

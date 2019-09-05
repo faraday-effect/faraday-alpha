@@ -27,16 +27,21 @@
 import Vue from "vue";
 import draggable from "vuedraggable";
 import { ONE_OFFERING_QUERY, Offering } from "@/graphql/catalog.graphql";
+import { plainToClass } from "class-transformer";
+import { Topic } from "@/graphql/syllabus.graphql";
 
 export default Vue.extend({
   apollo: {
     offering: {
       query: ONE_OFFERING_QUERY,
       variables: {
-        offeringId: 7
+        offeringId: 7 // FIXME: hard coded value
       },
       update(data) {
-        return new Offering(data.offering);
+        const offering = plainToClass(Offering, data.offering);
+        console.log("OFFERING", offering);
+        console.log("JSON", JSON.stringify(offering, null, 2));
+        return offering;
       }
     }
   },
@@ -45,12 +50,17 @@ export default Vue.extend({
   },
   data() {
     return {
-      offering: Object
+      offering: {} as Offering
     };
   },
   computed: {
-    topics() {
-      return this.offering.units[0].topics;
+    topics: {
+      get: function(): Topic[] {
+        return this.offering.units[0].topics;
+      },
+      set: function(newValue: Topic[]) {
+        this.offering.units[0].topics = newValue;
+      }
     }
   }
 });

@@ -71,21 +71,21 @@ export default Vue.extend({
 
   computed: {
     termDetails(): DateRange {
-      return new DateRange({
+      return new DateRange(/*{
         title: this.internalTerm.name,
         startDate: this.internalTerm.startDate,
         endDate: this.internalTerm.endDate
-      });
+      }*/);
     }
   },
 
   methods: {
     createDateRange() {
       this.internalTerm.dateRanges.push(
-        new DateRange({
+        new DateRange(/*{
           title: "New Holiday",
           startDate: "2020-01-01"
-        })
+        }*/)
       );
     },
     deleteDateRange(idx: number) {
@@ -101,7 +101,7 @@ export default Vue.extend({
       // Update local data when the prop changes.
       handler() {
         // Clone the prop object so it's not aliased within the form.
-        this.internalTerm = new Term(this.value);
+        this.internalTerm = new Term(/* this.value */);
       },
       immediate: true
     }

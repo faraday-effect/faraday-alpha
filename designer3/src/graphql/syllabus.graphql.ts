@@ -11,14 +11,14 @@ export const ALL_TOPICS_QUERY = gql`
 `;
 
 export class Topic {
-  public id = -Infinity;
-  public title = "";
-  public description = "";
+  id = NaN;
+  title = "";
+  description = "";
 }
 
 export class Unit {
-  public id = -Infinity;
-  public title = "";
-  public description = "";
-  public topics: Topic[] = [];
+  id = NaN;
+  title = "";
+  description = "";
+  topics: Topic[] = [];
 }

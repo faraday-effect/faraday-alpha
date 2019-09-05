@@ -1,3 +1,5 @@
+import "reflect-metadata"; // Keep this first, just in case.
+
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";

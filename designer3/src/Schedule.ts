@@ -1,3 +1,4 @@
+/*
 import { DateTime } from "luxon";
 
 class DateRange {
@@ -111,65 +112,63 @@ class Section {
 //   ) {}
 // }
 
-/*
-class OutlineNode {
-  static nextId = 0;
-
-  constructor(type, props, children) {
-    this.id = OutlineNode.nextId++;
-    this.type = type;
-    this.props = {};
-    this.children = children;
-
-    if (type === "org-data") {
-      this.props.title = "TOP LEVEL";
-      this.props.tags = [];
-      this.props.level = -1;
-    } else if (type === "headline") {
-      let m = props.title.match(/\[\[(.*?)]\[(.*?)]]/);
-      this.props.title = m ? m[2] : props.title;
-      this.props.tags = props.tags;
-      this.props.level = props.level;
-    } else {
-      throw new Error(`Unhandled type ${type}`);
-    }
-  }
-
-  hasTag(tag) {
-    return this.props.tags && this.props.tags.includes(tag);
-  }
-}
-
-class Outline {
-  constructor(orgOutline) {
-    this.root = Outline.convertOrgOutline(orgOutline);
-  }
-
-  static convertOrgOutline(orgOutline) {
-    let [type, props, ...children] = orgOutline;
-    return new OutlineNode(
-      type,
-      props,
-      children.map(child => Outline.convertOrgOutline(child))
-    );
-  }
-
-  deepestLevel() {
-    let max = -1;
-    for (let node of this.nodes()) {
-      max = Math.max(max, node.props.level);
-    }
-    return max;
-  }
-
-  *nodes(node = this.root) {
-    yield node;
-    for (let child of node.children) {
-      yield* this.nodes(child);
-    }
-  }
-}
-*/
+// class OutlineNode {
+//   static nextId = 0;
+//
+//   constructor(type, props, children) {
+//     this.id = OutlineNode.nextId++;
+//     this.type = type;
+//     this.props = {};
+//     this.children = children;
+//
+//     if (type === "org-data") {
+//       this.props.title = "TOP LEVEL";
+//       this.props.tags = [];
+//       this.props.level = -1;
+//     } else if (type === "headline") {
+//       let m = props.title.match(/\[\[(.*?)]\[(.*?)]]/);
+//       this.props.title = m ? m[2] : props.title;
+//       this.props.tags = props.tags;
+//       this.props.level = props.level;
+//     } else {
+//       throw new Error(`Unhandled type ${type}`);
+//     }
+//   }
+//
+//   hasTag(tag) {
+//     return this.props.tags && this.props.tags.includes(tag);
+//   }
+// }
+//
+// class Outline {
+//   constructor(orgOutline) {
+//     this.root = Outline.convertOrgOutline(orgOutline);
+//   }
+//
+//   static convertOrgOutline(orgOutline) {
+//     let [type, props, ...children] = orgOutline;
+//     return new OutlineNode(
+//       type,
+//       props,
+//       children.map(child => Outline.convertOrgOutline(child))
+//     );
+//   }
+//
+//   deepestLevel() {
+//     let max = -1;
+//     for (let node of this.nodes()) {
+//       max = Math.max(max, node.props.level);
+//     }
+//     return max;
+//   }
+//
+//   *nodes(node = this.root) {
+//     yield node;
+//     for (let child of node.children) {
+//       yield* this.nodes(child);
+//     }
+//   }
+// }
 
 class CalendarDay {
   constructor(details) {
@@ -377,3 +376,4 @@ class Schedule {
     }
   }
 }
+*/

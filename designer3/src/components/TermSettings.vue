@@ -68,12 +68,12 @@ export default Vue.extend({
   methods: {
     addBlankTerm() {
       this.terms.push(
-        new Term({
+        new Term(/*{
           name: "Term Name",
           startDate: "",
           endDate: "",
           dateRanges: []
-        })
+        }*/)
       );
       this.selectedTermId = this.terms.length - 1;
     },

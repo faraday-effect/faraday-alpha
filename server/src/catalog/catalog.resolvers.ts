@@ -28,6 +28,11 @@ export class CourseResolver {
     return this.catalogService.createCourse(createInput);
   }
 
+  @Query(returns => Course)
+  course(@Args({ name: "id", type: () => Int }) id: number) {
+    return this.catalogService.readOne(Course, id);
+  }
+
   @Query(returns => [Course])
   courses() {
     return this.catalogService.readAll(Course);

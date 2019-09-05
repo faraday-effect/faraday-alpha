@@ -43,7 +43,7 @@ export default Vue.extend({
         };
       },
       update(data) {
-        return new Term(data.term);
+        return new Term(/*data.term*/);
       },
       skip() {
         // Don't run query unless we have a valid term.

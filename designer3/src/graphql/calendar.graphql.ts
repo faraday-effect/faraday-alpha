@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import { DateTime } from "luxon";
-import omit from "lodash/omit";
 import { VCalendarEvent } from "@/plugins/vuetify.types";
+import { Type } from "class-transformer";
 
 export const ALL_TERMS_QUERY = gql`
   query AllTerms {
@@ -35,13 +35,9 @@ export const ONE_TERM_QUERY = gql`
 `;
 
 export class DateRange {
-  public title: string = "";
-  public startDate: string = "";
-  public endDate?: string = "";
-
-  constructor(argObj: Partial<DateRange>) {
-    Object.assign(this, argObj);
-  }
+  title: string = "";
+  startDate: string = "";
+  endDate?: string = "";
 
   asVCalendarEvent(): VCalendarEvent {
     return {
@@ -53,18 +49,13 @@ export class DateRange {
 }
 
 export class Term {
-  id = 0;
+  id = NaN;
   name = "";
   startDate = "";
   endDate = "";
-  dateRanges: DateRange[] = [];
 
-  // constructor(argObj: Partial<Term>) {
-  //   Object.assign(this, omit(argObj, ["dateRanges"]));
-  //   if (argObj.dateRanges) {
-  //     this.dateRanges = argObj.dateRanges.map(range => new DateRange(range));
-  //   }
-  // }
+  @Type(() => DateRange)
+  dateRanges: DateRange[] = [];
 
   // TODO: Cache these Luxon calculations.
 
