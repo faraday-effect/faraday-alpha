@@ -9,3 +9,16 @@ export const ALL_TOPICS_QUERY = gql`
     }
   }
 `;
+
+export class Topic {
+  public id = -Infinity;
+  public title = "";
+  public description = "";
+}
+
+export class Unit {
+  public id = -Infinity;
+  public title = "";
+  public description = "";
+  public topics: Topic[] = [];
+}

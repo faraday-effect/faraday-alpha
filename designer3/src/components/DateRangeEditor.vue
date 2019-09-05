@@ -25,7 +25,7 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import DatePicker from "./DatePicker.vue";
-import { DateRange } from "@/components/term.types";
+import { DateRange } from "@/graphql/calendar.graphql";
 
 export default Vue.extend({
   name: "DateRangeEditor",

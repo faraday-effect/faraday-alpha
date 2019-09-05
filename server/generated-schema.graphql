@@ -108,6 +108,8 @@ type Query {
   courses: [Course!]!
   sections: [Section!]!
   section: Section!
+  offering(id: Int!): Offering!
+  offerings: [Offering!]!
   departments: [Department!]!
   prefixes: [Prefix!]!
 }

@@ -14,8 +14,10 @@ import {
   SectionCreateInput
 } from "./entities";
 import { CatalogService } from "./catalog.service";
-import { Department } from "../org/entities";
+import { Department, Prefix } from "../org/entities";
 import { Term } from "../calendar/entities";
+import { Unit } from "../syllabus/entities";
+import { Int } from "type-graphql";
 
 @Resolver(of => Course)
 export class CourseResolver {
@@ -39,6 +41,11 @@ export class CourseResolver {
   @ResolveProperty("offerings", type => [Offering])
   resolveOfferings(@Parent() course: Course) {
     return this.catalogService.find(Offering, { course });
+  }
+
+  @ResolveProperty("prefix", type => Prefix)
+  resolvePrefix(@Parent() course: Course) {
+    return this.catalogService.findOneOrFail(Prefix, course.prefixId);
   }
 }
 
@@ -64,5 +71,41 @@ export class SectionResolver {
   @ResolveProperty("offering", type => Offering)
   resolveOffering(@Parent() section: Section) {
     return this.catalogService.findOneOrFail(Offering, section.offeringId);
+  }
+}
+
+@Resolver(of => Offering)
+export class OfferingResolver {
+  constructor(private readonly catalogService: CatalogService) {}
+
+  @Query(returns => Offering)
+  offering(@Args({ name: "id", type: () => Int }) id: number) {
+    return this.catalogService.readOne(Offering, id);
+  }
+
+  @Query(returns => [Offering])
+  offerings() {
+    return this.catalogService.readAll(Offering);
+  }
+
+  @ResolveProperty("units", type => [Unit])
+  resolveUnits(@Parent() offering: Offering) {
+    return this.catalogService.find(Unit, { offering });
+  }
+
+  @ResolveProperty("sections", type => [Section])
+  resolveSections(@Parent() offering: Offering) {
+    console.log("OFFERING", offering);
+    return this.catalogService.find(Section, { offering });
+  }
+
+  @ResolveProperty("term", type => Term)
+  resolveTerm(@Parent() offering: Offering) {
+    return this.catalogService.findOneOrFail(Term, offering.termId);
+  }
+
+  @ResolveProperty("course", type => Course)
+  resolveCourse(@Parent() offering: Offering) {
+    return this.catalogService.findOneOrFail(Course, offering.courseId);
   }
 }

@@ -47,9 +47,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { ALL_TERMS_QUERY } from "@/graphql/calendar.graphql";
+import { ALL_TERMS_QUERY, Term } from "@/graphql/calendar.graphql";
 import TermEditor from "./TermEditor.vue";
-import { Term } from "./term.types";
 
 export default Vue.extend({
   name: "TermSettings",

@@ -9,9 +9,9 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ topic.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{
-                topic.description
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle
+                >{{ topic.description }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </draggable>
@@ -25,17 +25,33 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { ALL_TOPICS_QUERY } from "@/graphql/syllabus.graphql";
 import draggable from "vuedraggable";
+import { ONE_OFFERING_QUERY, Offering } from "@/graphql/catalog.graphql";
 
 export default Vue.extend({
   apollo: {
-    topics: {
-      query: ALL_TOPICS_QUERY
+    offering: {
+      query: ONE_OFFERING_QUERY,
+      variables: {
+        offeringId: 7
+      },
+      update(data) {
+        return new Offering(data.offering);
+      }
     }
   },
   components: {
     draggable
+  },
+  data() {
+    return {
+      offering: Object
+    };
+  },
+  computed: {
+    topics() {
+      return this.offering.units[0].topics;
+    }
   }
 });
 </script>

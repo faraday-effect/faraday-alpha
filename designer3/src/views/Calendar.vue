@@ -28,9 +28,8 @@
 <script lang="ts">
 import Vue from "vue";
 import TermSelector from "@/components/TermSelector.vue";
-import { ONE_TERM_QUERY } from "@/graphql/calendar.graphql";
-import { Term } from "@/components/term.types";
-import { VCalendarEvent } from "@/components/vuetify.types";
+import { ONE_TERM_QUERY, Term } from "@/graphql/calendar.graphql";
+import { VCalendarEvent } from "@/plugins/vuetify.types";
 
 export default Vue.extend({
   components: { TermSelector },

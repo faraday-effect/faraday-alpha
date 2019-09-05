@@ -50,7 +50,7 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import DateRangeEditor from "@/components/DateRangeEditor.vue";
-import { DateRange, Term } from "@/components/term.types";
+import { DateRange, Term } from "@/graphql/calendar.graphql";
 
 export default Vue.extend({
   name: "TermEditor",
