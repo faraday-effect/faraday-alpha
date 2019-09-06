@@ -108,7 +108,7 @@ type Query {
   course(id: Int!): Course!
   courses: [Course!]!
   sections: [Section!]!
-  section: Section!
+  section(id: Int!): Section!
   offering(id: Int!): Offering!
   offerings: [Offering!]!
   departments: [Department!]!

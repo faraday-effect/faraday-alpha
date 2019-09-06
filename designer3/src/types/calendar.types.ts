@@ -8,14 +8,21 @@ export class DateRange {
   @Transform(value => DateTime.fromISO(value))
   startDate: DateTime = {} as DateTime;
 
-  @Transform(value => DateTime.fromISO(value))
-  endDate?: DateTime = {} as DateTime;
+  // If no end date, make it the same as the start date.
+  @Transform((value, obj) =>
+    value ? DateTime.fromISO(value) : DateTime.fromISO(obj.startDate)
+  )
+  endDate: DateTime = {} as DateTime;
+
+  contains(dt: DateTime) {
+    return dt >= this.startDate && dt <= this.endDate;
+  }
 
   asVCalendarEvent(): VCalendarEvent {
     return {
       name: this.title,
-      start: this.startDate,
-      end: this.endDate || this.startDate
+      start: this.startDate.toISODate(),
+      end: this.endDate.toISODate()
     };
   }
 }
@@ -32,4 +39,8 @@ export class Term {
 
   @Type(() => DateRange)
   dateRanges: DateRange[] = [];
+
+  inAnyDateRange(dt: DateTime) {
+    return this.dateRanges.find(range => range.contains(dt)) || null;
+  }
 }

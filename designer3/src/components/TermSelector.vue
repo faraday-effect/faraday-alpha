@@ -22,6 +22,7 @@ import { DateTime } from "luxon";
 import TermSettings from "./TermSettings.vue";
 import { ALL_TERMS_QUERY } from "@/graphql";
 import { Term } from "@/types";
+import { plainToClass } from "class-transformer";
 
 interface Selection {
   text: string;
@@ -40,7 +41,6 @@ function idOfNearestTerm(terms: Term[]) {
   // If we're in any of the known terms, return that one.
   for (let term of terms) {
     if (today >= term.startDate && today <= term.endDate) {
-      console.log("In term", term.id);
       return term.id;
     }
   }
@@ -68,7 +68,7 @@ export default Vue.extend({
     terms: {
       query: ALL_TERMS_QUERY,
       update(data) {
-        return data.terms.map((term: Term) => new Term(/*term*/));
+        return plainToClass(Term, data.terms);
       },
       result() {
         this.isLoading = false;

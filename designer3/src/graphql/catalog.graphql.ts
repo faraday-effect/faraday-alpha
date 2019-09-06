@@ -76,3 +76,45 @@ export const ONE_OFFERING_QUERY = gql`
     }
   }
 `;
+
+export const ONE_SECTION_QUERY = gql`
+  query OneSection($sectionId: Int!) {
+    section(id: $sectionId) {
+      title
+      regNumber
+      startTime
+      stopTime
+      daysOfWeek
+      offering {
+        course {
+          prefix {
+            name
+          }
+          number
+          title
+        }
+        title
+        creditHours
+        term {
+          name
+          startDate
+          endDate
+          dateRanges {
+            title
+            startDate
+            endDate
+          }
+        }
+        units {
+          id
+          title
+          topics {
+            id
+            title
+            description
+          }
+        }
+      }
+    }
+  }
+`;

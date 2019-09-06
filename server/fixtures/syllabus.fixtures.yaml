@@ -7,6 +7,10 @@ fixtures:
         description: Fun with Asynchronicity
   - table: topic
     rows:
+      intro-to-node:
+        unit: ^unit.async-js
+        title: NodeJS
+        description: Who knew? JS on the server
       async-js-callbacks:
         unit: ^unit.async-js
         title: Callbacks
@@ -19,3 +23,7 @@ fixtures:
         unit: ^unit.async-js
         title: Async/Await
         description: Almost like synchronous code
+      pyramid-of-doom:
+        unit: ^unit.async-js
+        title: Pyramid of Doom
+        description: Too much nesting

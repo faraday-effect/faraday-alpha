@@ -69,7 +69,7 @@ export class SectionResolver {
   }
 
   @Query(returns => Section)
-  section(id: number) {
+  section(@Args({ name: "id", type: () => Int }) id: number) {
     return this.catalogService.readOne(Section, id);
   }
 

@@ -12,8 +12,8 @@
           <v-sheet height="2000">
             <v-calendar
               type="custom-weekly"
-              :start="term.startDate"
-              :end="term.endDate"
+              :start="term.startDate.toISODate()"
+              :end="term.endDate.toISODate()"
               :events="calendarEvents"
               :event-margin-bottom="3"
               :event-color="getEventColor"
@@ -31,6 +31,7 @@ import TermSelector from "@/components/TermSelector.vue";
 import { VCalendarEvent } from "@/types/vuetify.types";
 import { ONE_TERM_QUERY } from "@/graphql";
 import { Term } from "@/types";
+import { plainToClass } from "class-transformer";
 
 export default Vue.extend({
   components: { TermSelector },
@@ -44,7 +45,7 @@ export default Vue.extend({
         };
       },
       update(data) {
-        return new Term(/*data.term*/);
+        return plainToClass(Term, data.term);
       },
       skip() {
         // Don't run query unless we have a valid term.
@@ -55,7 +56,7 @@ export default Vue.extend({
   data: function() {
     return {
       term: {} as Term,
-      selectedTermId: -1
+      selectedTermId: NaN
     };
   },
   computed: {
@@ -66,15 +67,15 @@ export default Vue.extend({
 
       events.push({
         name: "Semester start",
-        start: this.term.startDate,
-        end: this.term.startDate,
+        start: this.term.startDate.toISODate(),
+        end: this.term.startDate.toISODate(),
         color: "green"
       });
 
       events.push({
         name: "Semester end",
-        start: this.term.endDate,
-        end: this.term.endDate,
+        start: this.term.endDate.toISODate(),
+        end: this.term.endDate.toISODate(),
         color: "red"
       });
 

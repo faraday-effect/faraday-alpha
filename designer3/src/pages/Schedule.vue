@@ -1,26 +1,35 @@
 <template>
   <v-container>
-    <v-layout>
-      <v-list>
-        <draggable v-model="topics" ghost-class="ghost">
-          <v-list-item two-line v-for="topic in topics" :key="topic.id">
-            <v-list-item-icon>
-              <v-icon>mdi-drag-horizontal</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>{{ topic.title }}</v-list-item-title>
-              <v-list-item-subtitle
-                >{{ topic.description }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </draggable>
-      </v-list>
-      <pre>
-        {{ JSON.stringify(topics, null, 2) }}
-        {{ JSON.stringify(offering, null, 2) }}
-      </pre>
-    </v-layout>
+    <v-progress-circular
+      v-if="$apollo.loading"
+      indeterminate
+    ></v-progress-circular>
+    <v-row v-else>
+      <v-col cols="3">
+        <v-list>
+          <draggable v-model="topics" ghost-class="ghost">
+            <v-list-item two-line v-for="topic in topics" :key="topic.id">
+              <v-list-item-icon>
+                <v-icon>mdi-drag-horizontal</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{ topic.title }}</v-list-item-title>
+                <v-list-item-subtitle
+                  >{{ topic.description }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </draggable>
+        </v-list>
+      </v-col>
+      <v-col cols="9">
+        <v-data-table :headers="headers" :items="classSchedule.classDays" />
+      </v-col>
+    </v-row>
+    <pre>
+        {{ JSON.stringify(section, null, 2) }}
+      </pre
+    >
   </v-container>
 </template>
 
@@ -28,39 +37,52 @@
 import Vue from "vue";
 import draggable from "vuedraggable";
 import { plainToClass } from "class-transformer";
-import { Offering, Topic } from "@/types";
-import { ONE_OFFERING_QUERY } from "@/graphql";
+import { ClassSchedule, Section, Topic } from "@/types";
+import { ONE_SECTION_QUERY } from "@/graphql";
 
 export default Vue.extend({
-  apollo: {
-    offering: {
-      query: ONE_OFFERING_QUERY,
-      variables: {
-        offeringId: 7 // FIXME: hard coded value
-      },
-      update(data) {
-        const offering = plainToClass(Offering, data.offering);
-        console.log("OFFERING", offering);
-        console.log("JSON", JSON.stringify(offering, null, 2));
-        return offering;
-      }
-    }
-  },
   components: {
     draggable
   },
+
+  apollo: {
+    section: {
+      query: ONE_SECTION_QUERY,
+      variables: {
+        sectionId: 13 // FIXME: hard-coded value
+      },
+      update(data) {
+        return plainToClass(Section, data.section);
+      }
+    }
+  },
+
   data() {
     return {
-      offering: {} as Offering
+      section: {} as Section,
+      headers: [
+        { text: "Week", value: "week", width: "10%" },
+        { text: "Course Day", value: "nthCourseDay", width: "10%" },
+        { text: "Class Day", value: "nthClassDay", width: "10%" },
+        { text: "Date", value: "date", width: "20%" },
+        { text: "Topic", value: "topics", width: "50%" }
+      ]
     };
   },
+
   computed: {
+    classSchedule: function(): ClassSchedule {
+      const schedule = new ClassSchedule(this.section);
+      schedule.scheduleClasses();
+      return schedule;
+    },
+
     topics: {
       get: function(): Topic[] {
-        return this.offering.units[0].topics;
+        return this.section.offering.units[0].topics;
       },
       set: function(newValue: Topic[]) {
-        this.offering.units[0].topics = newValue;
+        this.section.offering.units[0].topics = newValue;
       }
     }
   }
