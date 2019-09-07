@@ -19,3 +19,13 @@ export const CREATE_TOPIC_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_TOPIC_MUTATION = gql`
+  mutation DeleteTopic($topicId: Int!) {
+    deleteTopic(id: $topicId) {
+      id
+      title
+      description
+    }
+  }
+`;

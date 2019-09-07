@@ -69,6 +69,7 @@ type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
   createTopic(createInput: TopicCreateInput!): Topic!
+  deleteTopic(id: Int!): Topic!
   createCourse(createInput: CourseCreateInput!): Course!
   createSection(createInput: SectionCreateInput!): Section!
   createDepartment(createInput: DepartmentCreateInput!): Department!

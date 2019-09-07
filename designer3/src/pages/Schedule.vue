@@ -28,7 +28,11 @@ import Vue from "vue";
 import draggable from "vuedraggable";
 import { plainToClass } from "class-transformer";
 import { ClassSchedule, Section, Topic } from "@/types";
-import { CREATE_TOPIC_MUTATION, ONE_SECTION_QUERY } from "@/graphql";
+import {
+  CREATE_TOPIC_MUTATION,
+  DELETE_TOPIC_MUTATION,
+  ONE_SECTION_QUERY
+} from "@/graphql";
 import TopicCard from "@/components/schedule/TopicCard.vue";
 import ScheduleTable from "@/components/schedule/ScheduleTable.vue";
 import TopicDialog from "@/components/schedule/TopicDialog.vue";
@@ -64,10 +68,23 @@ export default Vue.extend({
 
   methods: {
     deleteTopic(topicId: number) {
-      this.section.deleteTopic(topicId);
+      console.log("DELETE TOPIC", topicId);
+      return this.$apollo
+        .mutate({
+          mutation: DELETE_TOPIC_MUTATION,
+          variables: {
+            topicId
+          }
+        })
+        .then(() => {
+          this.section.deleteTopic(topicId);
+        })
+        .catch(err => {
+          throw err;
+        });
     },
     addTopic(topic: any) {
-      this.$apollo
+      return this.$apollo
         .mutate<{ createTopic: Topic }>({
           mutation: CREATE_TOPIC_MUTATION,
           variables: {
@@ -112,6 +129,6 @@ export default Vue.extend({
 <style scoped>
 .ghost {
   opacity: 0.5;
-  background: #c8ebfb;
+  background: teal;
 }
 </style>

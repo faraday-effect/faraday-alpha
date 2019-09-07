@@ -9,6 +9,7 @@ import {
 import { SyllabusService } from "./syllabus.service";
 import { Topic, TopicCreateInput, Unit, UnitCreateInput } from "./entities";
 import { Int } from "type-graphql";
+import { AbstractEntity } from "../shared/abstract-entity";
 
 @Resolver(of => Unit)
 export class UnitResolver {
@@ -40,6 +41,8 @@ export class UnitResolver {
   }
 }
 
+type TopicDeleted = Omit<Topic, "id">;
+
 @Resolver(of => Topic)
 export class TopicResolver {
   constructor(private readonly syllabusService: SyllabusService) {}
@@ -57,6 +60,13 @@ export class TopicResolver {
   @Query(returns => [Topic])
   topics() {
     return this.syllabusService.readAll(Topic);
+  }
+
+  @Mutation(returns => Topic)
+  async deleteTopic(@Args({ name: "id", type: () => Int }) id: number) {
+    const topic = await this.syllabusService.findOneOrFail(Topic, id);
+    await this.syllabusService.delete(Topic, id);
+    return topic;
   }
 
   @ResolveProperty("unit", type => Unit)

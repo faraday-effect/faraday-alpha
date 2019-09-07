@@ -22,10 +22,6 @@ export class BaseService {
     return this.entityManager.find(entity);
   }
 
-  findOne<Entity>(entityClass: ObjectType<Entity>, id: number) {
-    return this.entityManager.findOne(entityClass, id);
-  }
-
   findOneOrFail<Entity>(entityClass: ObjectType<Entity>, id: number) {
     return this.entityManager.findOneOrFail(entityClass, id);
   }
@@ -35,5 +31,9 @@ export class BaseService {
     conditions: FindConditions<Entity>
   ) {
     return this.entityManager.find(entityClass, conditions);
+  }
+
+  delete<Entity>(entityClass: ObjectType<Entity>, id: number) {
+    return this.entityManager.delete(entityClass, id);
   }
 }
