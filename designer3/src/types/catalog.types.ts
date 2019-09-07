@@ -1,6 +1,6 @@
 import { Term } from "./calendar.types";
 import { Transform, Type } from "class-transformer";
-import { Unit } from "@/types/syllabus.types";
+import { Topic, Unit } from "@/types/syllabus.types";
 import { DateTime } from "luxon";
 
 const dayToLuxonWeekday = new Map<string, number>([
@@ -42,6 +42,10 @@ export class Section {
 
   firstDayOfWeek() {
     return Math.min(...this.daysOfWeek);
+  }
+
+  addTopic(topic: Topic) {
+    this.offering.units[0].topics.push(topic);
   }
 }
 

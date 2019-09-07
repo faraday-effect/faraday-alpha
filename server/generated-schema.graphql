@@ -68,6 +68,7 @@ input DepartmentCreateInput {
 type Mutation {
   createTerm(createInput: TermCreateInput!): Term!
   createUnit(createInput: UnitCreateInput!): Unit!
+  createTopic(createInput: TopicCreateInput!): Topic!
   createCourse(createInput: CourseCreateInput!): Course!
   createSection(createInput: SectionCreateInput!): Section!
   createDepartment(createInput: DepartmentCreateInput!): Department!
@@ -167,6 +168,7 @@ type Topic {
 }
 
 input TopicCreateInput {
+  unitId: Int!
   title: String!
   description: String!
 }

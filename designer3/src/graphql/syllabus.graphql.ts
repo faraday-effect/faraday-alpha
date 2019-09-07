@@ -9,3 +9,13 @@ export const ALL_TOPICS_QUERY = gql`
     }
   }
 `;
+
+export const CREATE_TOPIC_MUTATION = gql`
+  mutation CreateTopic($createInput: TopicCreateInput!) {
+    createTopic(createInput: $createInput) {
+      id
+      title
+      description
+    }
+  }
+`;

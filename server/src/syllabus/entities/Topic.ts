@@ -22,6 +22,7 @@ export class Topic extends AbstractEntity {
 
 @InputType()
 export class TopicCreateInput {
+  @Field(type => Int) unitId: number;
   @Field() title: string;
   @Field() description: string;
 }

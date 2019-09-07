@@ -34,8 +34,8 @@ export class SyllabusService extends BaseService {
     });
   }
 
-  // async createTopic(createInput: TopicCreateInput) {
-  //   const unit = await this.unitRepo.findOneOrFail(createInput.unitId);
-  //   return this.topicRepo.save(this.topicRepo.create(createInput));
-  // }
+  async createTopic(createInput: TopicCreateInput) {
+    const unit = await this.unitRepo.findOneOrFail(createInput.unitId);
+    return this.topicRepo.save(this.topicRepo.create({ ...createInput, unit }));
+  }
 }

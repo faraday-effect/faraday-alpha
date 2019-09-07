@@ -44,6 +44,11 @@ export class UnitResolver {
 export class TopicResolver {
   constructor(private readonly syllabusService: SyllabusService) {}
 
+  @Mutation(returns => Topic)
+  createTopic(@Args("createInput") createInput: TopicCreateInput) {
+    return this.syllabusService.createTopic(createInput);
+  }
+
   @Query(returns => Topic)
   topic(@Args({ name: "id", type: () => Int }) id: number) {
     return this.syllabusService.readOne(Topic, id);
