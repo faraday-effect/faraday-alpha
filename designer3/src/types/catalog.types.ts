@@ -47,6 +47,11 @@ export class Section {
   addTopic(topic: Topic) {
     this.offering.units[0].topics.push(topic);
   }
+
+  deleteTopic(topicId: number) {
+    const unit = this.offering.units[0];
+    unit.topics = unit.topics.filter(topic => topic.id !== topicId);
+  }
 }
 
 export class Offering {

@@ -6,7 +6,7 @@
         <v-progress-circular
           v-if="$apollo.loading || !isTermIdValid"
           indeterminate
-        ></v-progress-circular>
+        />
         <div v-else>
           <h1>{{ term.name }}</h1>
           <v-sheet height="2000">

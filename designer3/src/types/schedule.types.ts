@@ -2,19 +2,24 @@ import { DateTime } from "luxon";
 import { Section } from ".";
 
 export class ClassDay {
-  date = "";
   topics: string[] = [];
 
   constructor(
-    private readonly dateTime: DateTime,
+    readonly dateTime: DateTime,
     readonly week: number,
     readonly nthCourseDay: number,
     readonly nthClassDay: number,
     readonly inDateRange: boolean,
     readonly nearestToToday: boolean,
     readonly firstDayOfWeek: boolean
-  ) {
-    this.date = dateTime.toFormat("ccc/dd-LLL-yyyy");
+  ) {}
+
+  fullDate() {
+    return this.dateTime.toFormat("ccc/dd-LLL-yyyy");
+  }
+
+  shortDate() {
+    return this.dateTime.toFormat("ccccc/dd-LLL");
   }
 
   isAvailable() {
@@ -70,11 +75,13 @@ export class ClassSchedule {
     return this.classDays.filter(classDay => classDay.isAvailable());
   }
 
-  scheduleClasses() {
+  scheduleTopics() {
     const available = this.availableClassDays();
+    // FIXME: Hard-wired unit.
     const topics = this.section.offering.units[0].topics;
     for (let idx = 0; idx < topics.length; idx++) {
       available[idx].addTopic(topics[idx].title);
+      topics[idx].setClassDay(available[idx]);
     }
   }
 }
