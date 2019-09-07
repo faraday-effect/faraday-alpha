@@ -20,7 +20,7 @@ export class Unit {
   @Type(() => Topic)
   topics: Topic[] = [];
 
-  addTopic(id: number, title: string, description: string) {
-    this.topics.push(new Topic(id, title, description));
+  addTopic(topic: Topic) {
+    this.topics.push(topic);
   }
 }

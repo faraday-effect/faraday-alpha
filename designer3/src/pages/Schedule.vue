@@ -127,7 +127,7 @@ export default Vue.extend({
     },
     addTopic() {
       this.$apollo
-        .mutate({
+        .mutate<{ createTopic: Topic }>({
           mutation: CREATE_TOPIC_MUTATION,
           variables: {
             createInput: {
@@ -137,9 +137,11 @@ export default Vue.extend({
             }
           }
         })
-        .then(data => {
-          const newTopic = plainToClass(Topic, data.createInput);
-          this.section.addTopic(newTopic);
+        .then(result => {
+          if (result.data) {
+            const newTopic = plainToClass(Topic, result.data.createTopic);
+            this.section.addTopic(newTopic);
+          }
         })
         .catch(err => {
           throw err;
