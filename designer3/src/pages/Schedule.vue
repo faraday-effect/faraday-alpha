@@ -23,13 +23,31 @@
         </v-list>
       </v-col>
       <v-col cols="9">
-        <v-data-table :headers="headers" :items="classSchedule.classDays" />
+        <v-data-table
+          :headers="headers"
+          :items="classSchedule.classDays"
+          class="elevation-1"
+        >
+          <template v-slot:body="{ items }">
+            <tbody>
+              <tr
+                v-for="item in items"
+                :key="item.id"
+                :class="{
+                  'in-date-range': item.inDateRange,
+                  'first-day-of-week': item.firstDayOfWeek
+                }"
+              >
+                <td>{{ item.firstDayOfWeek ? item.week : "" }}</td>
+                <td>{{ item.inDateRange ? "" : item.nthClassDay }}</td>
+                <td>{{ item.date }}</td>
+                <td>{{ item.topics.join(", ") }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
-    <pre>
-        {{ JSON.stringify(section, null, 2) }}
-      </pre
-    >
   </v-container>
 </template>
 
@@ -62,10 +80,9 @@ export default Vue.extend({
       section: {} as Section,
       headers: [
         { text: "Week", value: "week", width: "10%" },
-        { text: "Course Day", value: "nthCourseDay", width: "10%" },
-        { text: "Class Day", value: "nthClassDay", width: "10%" },
+        { text: "Day", value: "nthClassDay", width: "10%" },
         { text: "Date", value: "date", width: "20%" },
-        { text: "Topic", value: "topics", width: "50%" }
+        { text: "Topic", value: "topics", width: "60%" }
       ]
     };
   },
@@ -90,6 +107,18 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.v-data-table >>> table {
+  border-collapse: collapse;
+}
+
+.first-day-of-week {
+  border-top: solid coral 2px;
+}
+
+.in-date-range {
+  background: rgba(255, 127, 80, 0.21);
+}
+
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;

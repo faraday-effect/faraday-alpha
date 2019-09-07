@@ -28,10 +28,20 @@ export class Section {
   offering: Offering = {} as Offering;
 
   static convertDaysOfWeek = (dow: string) =>
-    dow.split("").map(char => dayToLuxonWeekday.get(char));
+    dow.split("").map(char => {
+      const weekDay = dayToLuxonWeekday.get(char);
+      if (!weekDay) {
+        throw new Error(`No day of week called '${char}'`);
+      }
+      return weekDay;
+    });
 
   isClassDay(dt: DateTime) {
     return this.daysOfWeek.includes(dt.weekday);
+  }
+
+  firstDayOfWeek() {
+    return Math.min(...this.daysOfWeek);
   }
 }
 

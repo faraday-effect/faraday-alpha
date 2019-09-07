@@ -34,6 +34,8 @@ export class ClassSchedule {
     const endDate = section.offering.term.endDate;
 
     const startWeekNumber = startDate.weekNumber;
+    const firstDayOfWeek = section.firstDayOfWeek();
+
     let nthCourseDay = 0;
     let nthClassDay = 0;
 
@@ -53,7 +55,7 @@ export class ClassSchedule {
           nthClassDay,
           dateRange !== null,
           false,
-          false
+          dt.weekday === firstDayOfWeek
         );
 
         if (dateRange) {
