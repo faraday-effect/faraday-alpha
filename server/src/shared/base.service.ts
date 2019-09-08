@@ -14,12 +14,12 @@ export class BaseService {
     }
   }
 
-  readOne(entity: ObjectType<AbstractEntity>, id: number) {
-    return this.entityManager.findOne(entity, id);
+  readOne<Entity>(entityClass: ObjectType<Entity>, id: number) {
+    return this.entityManager.findOne(entityClass, id);
   }
 
-  readAll(entity: ObjectType<AbstractEntity>) {
-    return this.entityManager.find(entity);
+  readAll<Entity>(entityClass: ObjectType<Entity>) {
+    return this.entityManager.find(entityClass);
   }
 
   findOneOrFail<Entity>(entityClass: ObjectType<Entity>, id: number) {
@@ -31,6 +31,10 @@ export class BaseService {
     conditions: FindConditions<Entity>
   ) {
     return this.entityManager.find(entityClass, conditions);
+  }
+
+  update<Entity>(entity: Entity) {
+    return this.entityManager.save(entity);
   }
 
   delete<Entity>(entityClass: ObjectType<Entity>, id: number) {

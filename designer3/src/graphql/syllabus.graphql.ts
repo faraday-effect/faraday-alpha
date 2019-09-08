@@ -1,5 +1,15 @@
 import gql from "graphql-tag";
 
+export const CREATE_TOPIC_MUTATION = gql`
+  mutation CreateTopic($createInput: TopicCreateInput!) {
+    createTopic(createInput: $createInput) {
+      id
+      title
+      description
+    }
+  }
+`;
+
 export const ALL_TOPICS_QUERY = gql`
   query AllTopics {
     topics {
@@ -10,9 +20,9 @@ export const ALL_TOPICS_QUERY = gql`
   }
 `;
 
-export const CREATE_TOPIC_MUTATION = gql`
-  mutation CreateTopic($createInput: TopicCreateInput!) {
-    createTopic(createInput: $createInput) {
+export const UPDATE_TOPIC_MUTATION = gql`
+  mutation UpdateTopic($updateInput: TopicUpdateInput!) {
+    updateTopic(updateInput: $updateInput) {
       id
       title
       description

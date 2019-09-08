@@ -26,3 +26,10 @@ export class TopicCreateInput {
   @Field() title: string;
   @Field() description: string;
 }
+
+@InputType()
+export class TopicUpdateInput {
+  @Field(type => Int) id: number;
+  @Field() title: string;
+  @Field() description: string;
+}

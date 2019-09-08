@@ -12,8 +12,13 @@
         </template>
 
         <v-list>
-          <v-list-item @click="$emit('delete-topic', topic.id)">
-            <v-list-item-title>Delete</v-list-item-title>
+          <v-list-item @click="$emit('update-topic', topic)">
+            <v-list-item-icon><v-icon>mdi-pencil</v-icon></v-list-item-icon>
+            <v-list-item-content>Edit</v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="$emit('delete-topic', topic)">
+            <v-list-item-icon><v-icon>mdi-delete</v-icon></v-list-item-icon>
+            <v-list-item-content>Delete</v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>

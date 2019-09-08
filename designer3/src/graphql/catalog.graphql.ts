@@ -108,6 +108,7 @@ export const ONE_SECTION_QUERY = gql`
         units {
           id
           title
+          description
           topics {
             id
             title

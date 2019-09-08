@@ -1,8 +1,5 @@
 <template>
-  <v-dialog v-model="isVisible" persistent max-width="500px">
-    <template v-slot:activator="{ on }">
-      <v-btn class="ma-4" v-on="on">Add</v-btn>
-    </template>
+  <v-dialog v-model="visible" persistent max-width="500px">
     <v-card>
       <v-card-title>Add a topic</v-card-title>
       <v-card-text>
@@ -19,8 +16,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="emitAdd">Add</v-btn>
-        <v-btn text @click="resetDialog">Cancel</v-btn>
+        <v-btn text @click="reset">Cancel</v-btn>
+        <v-btn text @click="emitSave">Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -30,11 +27,18 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "TopicDialog",
+  name: "TopicAddDialog",
+
+  props: {
+    visible: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
+  },
 
   data() {
     return {
-      isVisible: false,
       formData: {
         title: "",
         description: ""
@@ -43,14 +47,14 @@ export default Vue.extend({
   },
 
   methods: {
-    emitAdd() {
-      this.$emit("add-topic", this.formData);
-      this.resetDialog();
+    emitSave() {
+      this.$emit("save", this.formData);
+      this.reset();
     },
-    resetDialog() {
+    reset() {
       this.formData.title = "";
       this.formData.description = "";
-      this.isVisible = false;
+      this.$emit("update:visible", false);
     }
   }
 });

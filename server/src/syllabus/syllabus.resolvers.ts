@@ -7,7 +7,13 @@ import {
   Resolver
 } from "@nestjs/graphql";
 import { SyllabusService } from "./syllabus.service";
-import { Topic, TopicCreateInput, Unit, UnitCreateInput } from "./entities";
+import {
+  Topic,
+  TopicCreateInput,
+  TopicUpdateInput,
+  Unit,
+  UnitCreateInput
+} from "./entities";
 import { Int } from "type-graphql";
 import { AbstractEntity } from "../shared/abstract-entity";
 
@@ -41,8 +47,6 @@ export class UnitResolver {
   }
 }
 
-type TopicDeleted = Omit<Topic, "id">;
-
 @Resolver(of => Topic)
 export class TopicResolver {
   constructor(private readonly syllabusService: SyllabusService) {}
@@ -60,6 +64,18 @@ export class TopicResolver {
   @Query(returns => [Topic])
   topics() {
     return this.syllabusService.readAll(Topic);
+  }
+
+  @Mutation(returns => Topic)
+  async updateTopic(@Args("updateInput") updateInput: TopicUpdateInput) {
+    console.log("INPUT", JSON.stringify(updateInput, null, 2));
+    const topic = await this.syllabusService.findOneOrFail(
+      Topic,
+      updateInput.id
+    );
+    topic.title = updateInput.title;
+    topic.description = updateInput.description;
+    return this.syllabusService.update(topic);
   }
 
   @Mutation(returns => Topic)

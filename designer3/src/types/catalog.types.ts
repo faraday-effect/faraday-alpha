@@ -48,6 +48,18 @@ export class Section {
     this.offering.units[0].topics.push(topic);
   }
 
+  updateTopic(updatedTopic: Topic) {
+    const targetTopic = this.offering.units[0].topics.find(
+      topic => topic.id === updatedTopic.id
+    );
+    if (targetTopic) {
+      targetTopic.title = updatedTopic.title;
+      targetTopic.description = updatedTopic.description;
+    } else {
+      throw new Error(`Can't find topic matching ${updatedTopic}`);
+    }
+  }
+
   deleteTopic(topicId: number) {
     const unit = this.offering.units[0];
     unit.topics = unit.topics.filter(topic => topic.id !== topicId);
