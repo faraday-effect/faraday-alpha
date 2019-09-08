@@ -119,3 +119,21 @@ export const ONE_SECTION_QUERY = gql`
     }
   }
 `;
+
+export const ALL_OFFERINGS_QUERY = gql`
+  query {
+    offerings {
+      id
+      course {
+        prefix {
+          name
+        }
+        number
+        title
+      }
+      term {
+        name
+      }
+    }
+  }
+`;

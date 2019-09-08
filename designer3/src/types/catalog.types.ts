@@ -13,6 +13,16 @@ const dayToLuxonWeekday = new Map<string, number>([
   ["A", 6]
 ]);
 
+const luxonWeekdayToDay = new Map<number, string>([
+  [1, "Mon"],
+  [2, "Tue"],
+  [3, "Wed"],
+  [4, "Thu"],
+  [5, "Fri"],
+  [6, "Sat"],
+  [7, "Sun"]
+]);
+
 export class Section {
   id = NaN;
   title = "";
@@ -42,6 +52,16 @@ export class Section {
 
   firstDayOfWeek() {
     return Math.min(...this.daysOfWeek);
+  }
+
+  daysOfWeekNames() {
+    this.daysOfWeek.map(dow => luxonWeekdayToDay.get(dow) || "???");
+  }
+
+  descriptiveName() {
+    return `${this.title} ${this.daysOfWeekNames()} ${this.startTime}-${
+      this.stopTime
+    }`;
   }
 
   addTopic(topic: Topic) {
@@ -79,12 +99,35 @@ export class Offering {
 
   @Type(() => Unit)
   units: Unit[] = [];
+
+  @Type(() => Course)
+  course: Course = {} as Course;
+
+  courseNumber() {
+    return `${this.course.prefix.name} ${this.course.number}`;
+  }
+
+  courseTitle() {
+    return this.course.title;
+  }
+}
+
+export class Prefix {
+  id = NaN;
+  name = "";
+  description = "";
+
+  @Type(() => Course)
+  courses: Course[] = [];
 }
 
 export class Course {
   id = NaN;
   number = "";
   title = "";
+
+  @Type(() => Prefix)
+  prefix: Prefix = {} as Prefix;
 
   @Type(() => Offering)
   offerings: Offering[] = [];

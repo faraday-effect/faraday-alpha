@@ -40,8 +40,8 @@ export default Vue.extend({
       headers: [
         { text: "Week", value: "week", width: "10%" },
         { text: "Day", value: "nthClassDay", width: "10%" },
-        { text: "Date", value: "date", width: "20%" },
-        { text: "Topic", value: "topics", width: "60%" }
+        { text: "Date", value: "date", width: "25%" },
+        { text: "Topic", value: "topics", width: "55%" }
       ]
     };
   }
