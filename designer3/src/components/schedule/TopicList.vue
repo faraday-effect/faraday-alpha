@@ -15,9 +15,17 @@
         @delete-topic="deleteTopic"
       />
     </draggable>
+
     <v-btn class="ma-4" @click="addDialogVisible = true">Add</v-btn>
-    <TopicAddDialog :visible.sync="addDialogVisible" @save="createTopic" />
-    <TopicUpdateDialog
+    <TopicDialog
+      title="Add a topic"
+      action="Add"
+      :visible.sync="addDialogVisible"
+      @save="createTopic"
+    />
+    <TopicDialog
+      title="Update a topic"
+      action="Update"
       :visible.sync="updateDialogVisible"
       :topic="updateModel"
       @save="updateTopic"
@@ -36,21 +44,18 @@ import {
   UPDATE_TOPIC_MUTATION
 } from "@/graphql";
 import TopicCard from "@/components/schedule/TopicCard.vue";
-import TopicAddDialog from "@/components/schedule/TopicAddDialog.vue";
-import TopicUpdateDialog from "@/components/schedule/TopicUpdateDialog.vue";
+import TopicDialog from "@/components/schedule/TopicDialog.vue";
 
 export default Vue.extend({
   components: {
     draggable,
     TopicCard,
-    TopicAddDialog,
-    TopicUpdateDialog
+    TopicDialog
   },
 
   props: {
-    topics: {
-      type: Array,
-      required: true
+    unit: {
+      type: Object
     }
   },
 
@@ -63,6 +68,12 @@ export default Vue.extend({
     };
   },
 
+  computed: {
+    topics(): Topic[] {
+      return this.unit ? this.unit.topics : [];
+    }
+  },
+
   methods: {
     createTopic(topic: Topic) {
       return this.$apollo
@@ -72,14 +83,15 @@ export default Vue.extend({
             createInput: {
               title: topic.title,
               description: topic.description,
-              unitId: 28 // FIXME: hard-wired value
+              unitId: this.unit.id
             }
           }
         })
         .then(result => {
           if (result.data) {
-            return plainToClass(Topic, result.data.createTopic);
-            // this.section.addTopic(newTopic); THIS ISN'T GOING TO WORK
+            const newTopic = plainToClass(Topic, result.data.createTopic);
+            this.unit.addTopic(newTopic);
+            return newTopic;
           }
         })
         .catch(err => {
@@ -107,7 +119,7 @@ export default Vue.extend({
         .then(result => {
           if (result.data) {
             const updatedTopic = plainToClass(Topic, result.data.updateTopic);
-            // this.section.updateTopic(updatedTopic);   ????????????????????/
+            this.unit.updateTopic(updatedTopic);
             this.updateDialogVisible = false;
           }
         })
@@ -125,23 +137,13 @@ export default Vue.extend({
           }
         })
         .then(() => {
-          // this.section.deleteTopic(topic.id); ??????????????????????????????
+          this.unit.deleteTopic(topic.id);
         })
         .catch(err => {
           throw err;
         });
     }
   }
-
-  /*
-        computed: {
-          classSchedule: function(): ClassSchedule {
-            const schedule = new ClassSchedule(this.section);
-            schedule.scheduleTopics();
-            return schedule;
-          }
-        }
-         */
 });
 </script>
 

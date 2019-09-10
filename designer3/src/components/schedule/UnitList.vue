@@ -38,9 +38,8 @@ export default Vue.extend({
   },
 
   props: {
-    units: {
-      type: Array,
-      required: true
+    offering: {
+      type: Object
     }
   },
 
@@ -64,6 +63,12 @@ export default Vue.extend({
           unitCardComponent.deactivate();
         }
       });
+    }
+  },
+
+  computed: {
+    units(): Unit[] {
+      return this.offering ? this.offering.units : [];
     }
   }
 });
