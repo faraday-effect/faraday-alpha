@@ -34,8 +34,8 @@ export class Section {
   @Transform(value => Section.convertDaysOfWeek(value))
   daysOfWeek: number[] = [];
 
-  @Type(() => Offering)
-  offering: Offering = {} as Offering;
+  // @Type(() => Offering)
+  // offering: Offering = {} as Offering;
 
   static convertDaysOfWeek = (dow: string) =>
     dow.split("").map(char => {
@@ -50,39 +50,20 @@ export class Section {
     return this.daysOfWeek.includes(dt.weekday);
   }
 
-  firstDayOfWeek() {
+  firstDayOfWeek(): number {
     return Math.min(...this.daysOfWeek);
   }
 
-  daysOfWeekNames() {
-    this.daysOfWeek.map(dow => luxonWeekdayToDay.get(dow) || "???");
+  daysOfWeekNames(): string[] {
+    return this.daysOfWeek.map(dow => luxonWeekdayToDay.get(dow) || "???");
   }
 
-  descriptiveName() {
-    return `${this.title} ${this.daysOfWeekNames()} ${this.startTime}-${
-      this.stopTime
-    }`;
-  }
-
-  addTopic(topic: Topic) {
-    this.offering.units[0].topics.push(topic);
-  }
-
-  updateTopic(updatedTopic: Topic) {
-    const targetTopic = this.offering.units[0].topics.find(
-      topic => topic.id === updatedTopic.id
-    );
-    if (targetTopic) {
-      targetTopic.title = updatedTopic.title;
-      targetTopic.description = updatedTopic.description;
-    } else {
-      throw new Error(`Can't find topic matching ${updatedTopic}`);
-    }
-  }
-
-  deleteTopic(topicId: number) {
-    const unit = this.offering.units[0];
-    unit.topics = unit.topics.filter(topic => topic.id !== topicId);
+  descriptiveName(): string {
+    return [
+      this.title,
+      this.daysOfWeekNames().join(", "),
+      `${this.startTime} - ${this.stopTime}`
+    ].join(" - ");
   }
 }
 

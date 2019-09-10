@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="topics.length > 0">
     <div class="title text-center">
       <v-badge>
         <template #badge>{{ topics.length }}</template>
@@ -15,10 +15,10 @@
         @delete-topic="deleteTopic"
       />
     </draggable>
-    <v-btn class="ma-4" @click="addTopicDialogVisible = true">Add</v-btn>
-    <TopicAddDialog :visible.sync="addTopicDialogVisible" @save="createTopic" />
+    <v-btn class="ma-4" @click="addDialogVisible = true">Add</v-btn>
+    <TopicAddDialog :visible.sync="addDialogVisible" @save="createTopic" />
     <TopicUpdateDialog
-      :visible.sync="updateTopicDialogVisible"
+      :visible.sync="updateDialogVisible"
       :topic="updateModel"
       @save="updateTopic"
     />
@@ -29,11 +29,10 @@
 import Vue from "vue";
 import draggable from "vuedraggable";
 import { plainToClass } from "class-transformer";
-import { ClassSchedule, Section, Topic } from "@/types";
+import { Topic } from "@/types";
 import {
   CREATE_TOPIC_MUTATION,
   DELETE_TOPIC_MUTATION,
-  ONE_SECTION_QUERY,
   UPDATE_TOPIC_MUTATION
 } from "@/graphql";
 import TopicCard from "@/components/schedule/TopicCard.vue";
@@ -48,26 +47,18 @@ export default Vue.extend({
     TopicUpdateDialog
   },
 
-  apollo: {
-    section: {
-      query: ONE_SECTION_QUERY,
-      variables: {
-        sectionId: 13 // FIXME: hard-coded value
-      },
-      update(data) {
-        const section = plainToClass(Section, data.section);
-        const schedule = new ClassSchedule(section);
-        schedule.scheduleTopics();
-        return section;
-      }
+  props: {
+    topics: {
+      type: Array,
+      required: true
     }
   },
 
   data() {
     return {
-      section: {} as Section,
-      addTopicDialogVisible: false,
-      updateTopicDialogVisible: false,
+      addDialogVisible: false,
+      updateDialogVisible: false,
+
       updateModel: {} as Topic
     };
   },
@@ -87,8 +78,8 @@ export default Vue.extend({
         })
         .then(result => {
           if (result.data) {
-            const newTopic = plainToClass(Topic, result.data.createTopic);
-            this.section.addTopic(newTopic);
+            return plainToClass(Topic, result.data.createTopic);
+            // this.section.addTopic(newTopic); THIS ISN'T GOING TO WORK
           }
         })
         .catch(err => {
@@ -98,7 +89,7 @@ export default Vue.extend({
 
     editTopic(topic: Topic) {
       this.updateModel = topic;
-      this.updateTopicDialogVisible = true;
+      this.updateDialogVisible = true;
     },
 
     updateTopic(topic: Topic) {
@@ -116,8 +107,8 @@ export default Vue.extend({
         .then(result => {
           if (result.data) {
             const updatedTopic = plainToClass(Topic, result.data.updateTopic);
-            this.section.updateTopic(updatedTopic);
-            this.updateTopicDialogVisible = false;
+            // this.section.updateTopic(updatedTopic);   ????????????????????/
+            this.updateDialogVisible = false;
           }
         })
         .catch(err => {
@@ -134,30 +125,23 @@ export default Vue.extend({
           }
         })
         .then(() => {
-          this.section.deleteTopic(topic.id);
+          // this.section.deleteTopic(topic.id); ??????????????????????????????
         })
         .catch(err => {
           throw err;
         });
     }
-  },
-
-  computed: {
-    classSchedule: function(): ClassSchedule {
-      const schedule = new ClassSchedule(this.section);
-      schedule.scheduleTopics();
-      return schedule;
-    },
-
-    topics: {
-      get: function(): Topic[] {
-        return this.section.offering.units[0].topics;
-      },
-      set: function(newValue: Topic[]) {
-        this.section.offering.units[0].topics = newValue;
-      }
-    }
   }
+
+  /*
+        computed: {
+          classSchedule: function(): ClassSchedule {
+            const schedule = new ClassSchedule(this.section);
+            schedule.scheduleTopics();
+            return schedule;
+          }
+        }
+         */
 });
 </script>
 

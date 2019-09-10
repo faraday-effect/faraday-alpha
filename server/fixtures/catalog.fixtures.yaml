@@ -10,11 +10,18 @@ fixtures:
     rows:
       cos-243-section-1:
         offering: ^offering.cos-243-f19
-        title: COS 243 (Section 1)
+        title: Section 1
         regNumber: 1234-4444
         daysOfWeek: MWF
         startTime: 09:00
         stopTime: 09:50
+      cos-243-section-2:
+        offering: ^offering.cos-243-f19
+        title: Section 2
+        regNumber: 1234-4444
+        daysOfWeek: TR
+        startTime: 14:00
+        stopTime: 15:15
   - table: offering
     rows:
       cos-243-f19:

@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Section } from ".";
+import { Offering, Section, Topic } from ".";
 
 export class ClassDay {
   topics: string[] = [];
@@ -34,9 +34,9 @@ export class ClassDay {
 export class ClassSchedule {
   readonly classDays: ClassDay[] = [];
 
-  constructor(readonly section: Section) {
-    const startDate = section.offering.term.startDate;
-    const endDate = section.offering.term.endDate;
+  constructor(readonly offering: Offering, readonly section: Section) {
+    const startDate = offering.term.startDate;
+    const endDate = offering.term.endDate;
 
     const startWeekNumber = startDate.weekNumber;
     const firstDayOfWeek = section.firstDayOfWeek();
@@ -48,7 +48,7 @@ export class ClassSchedule {
       if (section.isClassDay(dt)) {
         nthCourseDay += 1;
 
-        const dateRange = section.offering.term.inAnyDateRange(dt);
+        const dateRange = offering.term.inAnyDateRange(dt);
         if (!dateRange) {
           nthClassDay += 1;
         }
@@ -75,10 +75,8 @@ export class ClassSchedule {
     return this.classDays.filter(classDay => classDay.isAvailable());
   }
 
-  scheduleTopics() {
+  scheduleTopics(topics: Topic[]) {
     const available = this.availableClassDays();
-    // FIXME: Hard-wired unit.
-    const topics = this.section.offering.units[0].topics;
     for (let idx = 0; idx < topics.length; idx++) {
       available[idx].addTopic(topics[idx].title);
       topics[idx].setClassDay(available[idx]);

@@ -29,4 +29,18 @@ export class Unit {
   addTopic(topic: Topic) {
     this.topics.push(topic);
   }
+
+  updateTopic(updatedTopic: Topic) {
+    const targetTopic = this.topics.find(topic => topic.id === updatedTopic.id);
+    if (targetTopic) {
+      targetTopic.title = updatedTopic.title;
+      targetTopic.description = updatedTopic.description;
+    } else {
+      throw new Error(`Can't find topic matching ${updatedTopic}`);
+    }
+  }
+
+  deleteTopic(topicId: number) {
+    this.topics = this.topics.filter(topic => topic.id !== topicId);
+  }
 }

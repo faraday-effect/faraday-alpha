@@ -1,38 +1,43 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="classSchedule.classDays"
-    class="elevation-1"
-  >
-    <template v-slot:body="{ items }">
-      <tbody>
-        <tr
-          v-for="classDay in items"
-          :key="classDay.id"
-          :class="{
-            'in-date-range': classDay.inDateRange,
-            'first-day-of-week': classDay.firstDayOfWeek
-          }"
-        >
-          <td>{{ classDay.firstDayOfWeek ? classDay.week : "" }}</td>
-          <td>{{ classDay.inDateRange ? "" : classDay.nthClassDay }}</td>
-          <td>{{ classDay.fullDate() }}</td>
-          <td>{{ classDay.topics.join(", ") }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-data-table>
+  <div v-if="isScheduleValid()">
+    <div class="title text-center">Schedule</div>
+    <v-data-table
+      :headers="headers"
+      :items="classSchedule.classDays"
+      class="elevation-1"
+    >
+      <template v-slot:body="{ items }">
+        <tbody>
+          <tr
+            v-for="classDay in items"
+            :key="classDay.id"
+            :class="{
+              'in-date-range': classDay.inDateRange,
+              'first-day-of-week': classDay.firstDayOfWeek
+            }"
+          >
+            <td>{{ classDay.firstDayOfWeek ? classDay.week : "" }}</td>
+            <td>{{ classDay.inDateRange ? "" : classDay.nthClassDay }}</td>
+            <td>{{ classDay.fullDate() }}</td>
+            <td>{{ classDay.topics.join(", ") }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { ClassSchedule } from "@/types";
 
 export default Vue.extend({
   name: "ScheduleTable",
 
   props: {
-    classSchedule: ClassSchedule
+    classSchedule: {
+      type: Object,
+      required: true
+    }
   },
 
   data() {
@@ -44,6 +49,12 @@ export default Vue.extend({
         { text: "Topic", value: "topics", width: "55%" }
       ]
     };
+  },
+
+  methods: {
+    isScheduleValid() {
+      return Object.keys(this.classSchedule).length > 0;
+    }
   }
 });
 </script>

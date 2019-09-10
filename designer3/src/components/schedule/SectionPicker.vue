@@ -1,47 +1,39 @@
 <template>
-  <v-select label="Course" :items="sectionSelections" />
+  <v-select
+    label="Section"
+    :items="sectionSelections"
+    @change="emitSelectedSection"
+    :disabled="sections.length < 1"
+  />
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { ONE_SECTION_QUERY } from "@/graphql";
-import { plainToClass } from "class-transformer";
-import { Section } from "@/types";
 import { VSelectItem } from "@/types/vuetify.types";
+import { Section } from "@/types";
 
 export default Vue.extend({
   name: "SectionPicker",
 
-  apollo: {
-    sections: {
-      query: ONE_SECTION_QUERY,
-      variables() {
-        return {
-          sectionId: this.sectionId
-        };
-      },
-      update(data) {
-        return plainToClass(Section, data.sections);
-      }
-    }
-  },
-
   props: {
-    sectionId: {
-      type: Number,
+    sections: {
+      type: Array,
       required: true
     }
   },
 
-  data() {
-    return {
-      sections: {} as Section[]
-    };
+  methods: {
+    emitSelectedSection(sectionId: number) {
+      const selectedSection = (this.sections as Section[]).find(
+        section => section.id === sectionId
+      );
+      this.$emit("section-selected", selectedSection);
+    }
   },
 
   computed: {
     sectionSelections(): VSelectItem[] {
-      return this.sections.map(section => ({
+      return (this.sections as Array<Section>).map(section => ({
         text: section.descriptiveName(),
         value: section.id
       }));

@@ -124,6 +124,8 @@ export const ALL_OFFERINGS_QUERY = gql`
   query {
     offerings {
       id
+      creditHours
+      title
       course {
         prefix {
           name
@@ -132,7 +134,34 @@ export const ALL_OFFERINGS_QUERY = gql`
         title
       }
       term {
+        id
         name
+        startDate
+        endDate
+        dateRanges {
+          id
+          title
+          startDate
+          endDate
+        }
+      }
+      units {
+        id
+        title
+        description
+        topics {
+          id
+          title
+          description
+        }
+      }
+      sections {
+        id
+        title
+        regNumber
+        daysOfWeek
+        startTime
+        stopTime
       }
     }
   }

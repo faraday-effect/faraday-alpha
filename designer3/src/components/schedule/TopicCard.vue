@@ -25,7 +25,6 @@
     </v-card-title>
     <v-card-text>
       <div>{{ topic.description }}</div>
-      <div>{{ topic.classDay.shortDate() }}</div>
     </v-card-text>
   </v-card>
 </template>

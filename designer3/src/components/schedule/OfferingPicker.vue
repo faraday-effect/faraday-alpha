@@ -1,9 +1,8 @@
 <template>
   <v-select
-    label="Course"
+    label="Course Offering"
     :items="offeringSelections"
-    :value="value"
-    @input="$emit('input', $event)"
+    @change="emitSelectedOffering"
   />
 </template>
 
@@ -26,18 +25,19 @@ export default Vue.extend({
     }
   },
 
-  props: {
-    value: {
-      type: Number,
-      required: true
-    }
-  },
-
   data() {
     return {
-      offerings: [] as Offering[],
-      selection: NaN
+      offerings: [] as Offering[]
     };
+  },
+
+  methods: {
+    emitSelectedOffering(offeringId: number) {
+      const selectedOffering = this.offerings.find(
+        offering => offering.id === offeringId
+      );
+      this.$emit("offering-selected", selectedOffering);
+    }
   },
 
   computed: {

@@ -4,24 +4,26 @@
     <div v-else>
       <v-row>
         <v-col cols="6">
-          <OfferingPicker v-model="offeringId" />
+          <OfferingPicker @offering-selected="updateSelectedOffering" />
         </v-col>
         <v-col cols="6">
-          <SectionPicker />
+          <SectionPicker
+            :sections="availableSections"
+            @section-selected="updateSelectedSection"
+          />
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="3">
-          <UnitList />
+          <UnitList :units="units" />
         </v-col>
 
         <v-col cols="3">
-          <TopicList />
+          <TopicList :topics="topics" />
         </v-col>
 
         <v-col cols="6">
-          <div class="title text-center">Schedule</div>
           <ScheduleTable :class-schedule="classSchedule" />
         </v-col>
       </v-row>
@@ -31,51 +33,54 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { plainToClass } from "class-transformer";
-import { ClassSchedule, Section, Topic } from "@/types";
-import { ONE_SECTION_QUERY } from "@/graphql";
-import ScheduleTable from "@/components/schedule/ScheduleTable.vue";
-import UnitList from "@/components/schedule/UnitList.vue";
-import TopicList from "@/components/schedule/TopicList.vue";
+import { ClassSchedule, Offering, Section, Topic, Unit } from "@/types";
 import OfferingPicker from "@/components/schedule/OfferingPicker.vue";
 import SectionPicker from "@/components/schedule/SectionPicker.vue";
+import TopicList from "@/components/schedule/TopicList.vue";
+import UnitList from "@/components/schedule/UnitList.vue";
+import ScheduleTable from "@/components/schedule/ScheduleTable.vue";
 
 export default Vue.extend({
   components: {
+    OfferingPicker,
+    SectionPicker,
     UnitList,
     TopicList,
-    ScheduleTable,
-    OfferingPicker,
-    SectionPicker
-  },
-
-  apollo: {
-    section: {
-      query: ONE_SECTION_QUERY,
-      variables: {
-        sectionId: 13 // FIXME: hard-coded value
-      },
-      update(data) {
-        const section = plainToClass(Section, data.section);
-        const schedule = new ClassSchedule(section);
-        schedule.scheduleTopics();
-        return section;
-      }
-    }
+    ScheduleTable
   },
 
   data() {
     return {
-      offeringId: NaN,
-      section: {} as Section
+      availableSections: [] as Section[],
+      selectedSection: (null as any) as Section,
+      selectedOffering: (null as any) as Offering,
+      classSchedule: {} as ClassSchedule
     };
   },
 
+  methods: {
+    updateSelectedOffering(offering: Offering) {
+      this.selectedOffering = offering;
+      this.availableSections = offering.sections;
+    },
+
+    updateSelectedSection(section: Section) {
+      this.selectedSection = section;
+      this.classSchedule = new ClassSchedule(
+        this.selectedOffering,
+        this.selectedSection
+      );
+      this.classSchedule.scheduleTopics(this.selectedOffering.units[0].topics);
+    }
+  },
+
   computed: {
-    classSchedule: function(): ClassSchedule {
-      const schedule = new ClassSchedule(this.section);
-      schedule.scheduleTopics();
-      return schedule;
+    units(): Unit[] {
+      return this.selectedOffering ? this.selectedOffering.units : [];
+    },
+
+    topics(): Topic[] {
+      return this.selectedOffering ? this.selectedOffering.units[0].topics : [];
     }
   }
 });

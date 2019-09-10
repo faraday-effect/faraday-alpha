@@ -14,7 +14,7 @@
     "start:debug": "tsc-watch -p tsconfig.build.json --onSuccess \"node --inspect-brk dist/main.js\"",
     "start:prod": "node dist/main.js",
     "lint": "echo NOT USING tslint -p tsconfig.json -c tslint.json",
-    "load-fixtures": "ts-node fixtures/doomed-fixture-loader.ts",
+    "load-fixtures": "ts-node fixtures/fixture-loader.ts --nuclear",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
