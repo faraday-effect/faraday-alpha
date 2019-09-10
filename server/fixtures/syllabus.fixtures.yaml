@@ -5,6 +5,10 @@ fixtures:
         offering: ^offering.cos-243-f19
         title: Asynchronous JavaScript
         description: Fun with Asynchronicity
+      data-persistence:
+        offering: ^offering.cos-243-f19
+        title: Data Persistence
+        description: Keep things on hand
   - table: topic
     rows:
       intro-to-node:
@@ -27,3 +31,16 @@ fixtures:
         unit: ^unit.async-js
         title: Pyramid of Doom
         description: Too much nesting
+      postgres:
+        unit: ^unit.data-persistence
+        title: PostgreSQL
+        description: Hooking up to the RDBMS
+      knex:
+        unit: ^unit.data-persistence
+        title: Knex
+        description: JavaScript Query Builder
+      objection:
+        unit: ^unit.data-persistence
+        title: Objection
+        description: Object-Relational Mapping from Finland
+
