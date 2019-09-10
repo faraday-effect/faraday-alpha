@@ -8,7 +8,13 @@
     </div>
 
     <draggable v-model="units" :group="{ name: 'units' }">
-      <UnitCard v-for="unit in units" :key="unit.id" :unit="unit" />
+      <UnitCard
+        v-for="unit in units"
+        :key="unit.id"
+        :unit="unit"
+        @card-clicked="cardClicked"
+        ref="unitCards"
+      />
     </draggable>
 
     <v-btn class="ma-4" @click="addDialogVisible = true">Add</v-btn>
@@ -22,6 +28,7 @@ import draggable from "vuedraggable";
 import { Unit } from "@/types";
 import UnitCard from "@/components/schedule/UnitCard.vue";
 import UnitAddDialog from "@/components/schedule/UnitAddDialog.vue";
+import { VueApolloComponent } from "vue-apollo/types/apollo-provider";
 
 export default Vue.extend({
   components: {
@@ -44,7 +51,20 @@ export default Vue.extend({
   },
 
   methods: {
-    createUnit(unit: Unit) {}
+    createUnit(unit: Unit) {},
+
+    cardClicked(unitId: number) {
+      // FIXME: Get rid of the nuclear `any` option.
+      (this.$refs.unitCards as any[]).forEach(unitCardComponent => {
+        // Make sure only the clicked card is activated.
+        if (unitCardComponent.unit.id === unitId) {
+          unitCardComponent.activate();
+          this.$emit("unit-selected", unitCardComponent.unit);
+        } else {
+          unitCardComponent.deactivate();
+        }
+      });
+    }
   }
 });
 </script>

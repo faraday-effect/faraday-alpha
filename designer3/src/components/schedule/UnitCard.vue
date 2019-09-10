@@ -1,7 +1,12 @@
 <template>
-  <v-card class="my-1" :hover="true">
+  <v-card @click="$emit('card-clicked', unit.id)" class="my-1" :hover="true">
     <v-card-title>
-      {{ unit.title }}
+      <v-badge color="primary" left v-model="active">
+        <template #badge>
+          <v-icon dark>mdi-check</v-icon>
+        </template>
+        {{ unit.title }}
+      </v-badge>
     </v-card-title>
     <v-card-text>
       {{ unit.description }}
@@ -20,6 +25,21 @@ export default Vue.extend({
     unit: {
       type: Object,
       required: true
+    }
+  },
+
+  data() {
+    return {
+      active: false
+    };
+  },
+
+  methods: {
+    activate() {
+      this.active = true;
+    },
+    deactivate() {
+      this.active = false;
     }
   }
 });

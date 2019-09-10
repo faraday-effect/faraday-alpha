@@ -16,7 +16,7 @@
 
       <v-row>
         <v-col cols="3">
-          <UnitList :units="units" />
+          <UnitList :units="units" @unit-selected="updateSelectedUnit" />
         </v-col>
 
         <v-col cols="3">
@@ -51,9 +51,12 @@ export default Vue.extend({
 
   data() {
     return {
+      selectedOffering: (null as any) as Offering,
+      selectedUnit: (null as any) as Unit,
+
       availableSections: [] as Section[],
       selectedSection: (null as any) as Section,
-      selectedOffering: (null as any) as Offering,
+
       classSchedule: {} as ClassSchedule
     };
   },
@@ -64,13 +67,35 @@ export default Vue.extend({
       this.availableSections = offering.sections;
     },
 
+    updateSelectedUnit(unit: Unit) {
+      this.selectedUnit = unit;
+      this.updateClassSchedule();
+    },
+
     updateSelectedSection(section: Section) {
       this.selectedSection = section;
+      this.updateClassSchedule();
+    },
+
+    updateClassSchedule() {
+      if (this.isReadyToSchedule()) {
+        console.log("Can't create schedule");
+        return;
+      }
+
       this.classSchedule = new ClassSchedule(
         this.selectedOffering,
         this.selectedSection
       );
-      this.classSchedule.scheduleTopics(this.selectedOffering.units[0].topics);
+      this.classSchedule.scheduleTopics(this.selectedUnit.topics);
+    },
+
+    isReadyToSchedule(): boolean {
+      return (
+        this.selectedOffering !== null &&
+        this.selectedSection !== null &&
+        this.selectedUnit !== null
+      );
     }
   },
 
@@ -80,7 +105,7 @@ export default Vue.extend({
     },
 
     topics(): Topic[] {
-      return this.selectedOffering ? this.selectedOffering.units[0].topics : [];
+      return this.selectedUnit ? this.selectedUnit.topics : [];
     }
   }
 });
