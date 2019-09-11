@@ -14,24 +14,8 @@ export class SyllabusService extends BaseService {
     super(entityManager);
   }
 
-  createUnit(createInput: UnitCreateInput) {
-    return this.entityManager.transaction(async manager => {
-      const unitRepo = manager.getRepository(Unit);
-      const topicRepo = manager.getRepository(Topic);
-
-      const newUnit = await unitRepo.save(unitRepo.create(createInput));
-
-      for (const topic of createInput.topics) {
-        await topicRepo.save(
-          topicRepo.create({
-            ...topic,
-            unit: newUnit
-          })
-        );
-      }
-
-      return newUnit;
-    });
+  async createUnit(createInput: UnitCreateInput) {
+    return this.unitRepo.save(this.unitRepo.create(createInput));
   }
 
   async createTopic(createInput: TopicCreateInput) {

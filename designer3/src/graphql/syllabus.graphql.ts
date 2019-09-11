@@ -10,16 +10,6 @@ export const CREATE_TOPIC_MUTATION = gql`
   }
 `;
 
-export const ALL_TOPICS_QUERY = gql`
-  query AllTopics {
-    topics {
-      id
-      title
-      description
-    }
-  }
-`;
-
 export const UPDATE_TOPIC_MUTATION = gql`
   mutation UpdateTopic($updateInput: TopicUpdateInput!) {
     updateTopic(updateInput: $updateInput) {
@@ -33,6 +23,36 @@ export const UPDATE_TOPIC_MUTATION = gql`
 export const DELETE_TOPIC_MUTATION = gql`
   mutation DeleteTopic($topicId: Int!) {
     deleteTopic(id: $topicId) {
+      id
+      title
+      description
+    }
+  }
+`;
+
+export const CREATE_UNIT_MUTATION = gql`
+  mutation CreateUnit($createInput: UnitCreateInput!) {
+    createUnit(createInput: $createInput) {
+      id
+      title
+      description
+    }
+  }
+`;
+
+export const UPDATE_UNIT_MUTATION = gql`
+  mutation UpdateUnit($updateInput: UnitUpdateInput!) {
+    updateUnit(updateInput: $updateInput) {
+      id
+      title
+      description
+    }
+  }
+`;
+
+export const DELETE_UNIT_MUTATION = gql`
+  mutation DeleteUnit($unitId: Int!) {
+    deleteUnit(id: $unitId) {
       id
       title
       description

@@ -91,6 +91,24 @@ export class Offering {
   courseTitle() {
     return this.course.title;
   }
+
+  addUnit(unit: Unit) {
+    this.units.push(unit);
+  }
+
+  updateUnit(updatedUnit: Unit) {
+    const targetUnit = this.units.find(unit => unit.id === updatedUnit.id);
+    if (targetUnit) {
+      targetUnit.title = updatedUnit.title;
+      targetUnit.description = updatedUnit.description;
+    } else {
+      throw new Error(`Can't find unit matching ${updatedUnit}`);
+    }
+  }
+
+  deleteUnit(unitId: number) {
+    this.units = this.units.filter(unit => unit.id !== unitId);
+  }
 }
 
 export class Prefix {

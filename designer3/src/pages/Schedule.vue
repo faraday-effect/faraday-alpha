@@ -4,12 +4,12 @@
     <div v-else>
       <v-row>
         <v-col cols="6">
-          <OfferingPicker @offering-selected="updateSelectedOffering" />
+          <OfferingPicker @offering-selected="selectedOffering = $event" />
         </v-col>
         <v-col cols="6">
           <SectionPicker
-            :sections="availableSections"
-            @section-selected="updateSelectedSection"
+            :sections="sections"
+            @section-selected="selectedSection = $event"
           />
         </v-col>
       </v-row>
@@ -18,7 +18,7 @@
         <v-col cols="3">
           <UnitList
             :offering="selectedOffering"
-            @unit-selected="updateSelectedUnit"
+            @unit-selected="selectedUnit = $event"
           />
         </v-col>
 
@@ -74,48 +74,30 @@ export default Vue.extend({
     return {
       selectedOffering: (null as any) as Offering,
       selectedUnit: (null as any) as Unit,
-      selectedSection: (null as any) as Section,
-
-      availableSections: [] as Section[],
-
-      classSchedule: {} as ClassSchedule
+      selectedSection: (null as any) as Section
     };
   },
 
-  methods: {
-    updateSelectedOffering(offering: Offering) {
-      this.selectedOffering = offering;
-      this.availableSections = offering.sections;
-    },
-
-    updateSelectedUnit(unit: Unit) {
-      this.selectedUnit = unit;
-      this.updateClassSchedule();
-    },
-
-    updateSelectedSection(section: Section) {
-      this.selectedSection = section;
-      this.updateClassSchedule();
-    },
-
-    updateClassSchedule() {
-      if (this.isReadyToSchedule) {
-        this.classSchedule = new ClassSchedule(
-          this.selectedOffering,
-          this.selectedSection
-        );
-        this.classSchedule.scheduleTopics(this.selectedUnit.topics);
-      }
-    }
-  },
-
   computed: {
+    sections(): Section[] {
+      return this.selectedOffering ? this.selectedOffering.sections : [];
+    },
+
     isReadyToSchedule(): boolean {
       return (
         this.selectedOffering !== null &&
         this.selectedSection !== null &&
         this.selectedUnit !== null
       );
+    },
+
+    classSchedule(): ClassSchedule {
+      const schedule = new ClassSchedule(
+        this.selectedOffering,
+        this.selectedSection
+      );
+      schedule.scheduleOffering(this.selectedOffering);
+      return schedule;
     }
   }
 });

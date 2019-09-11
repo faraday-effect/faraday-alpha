@@ -1,42 +1,35 @@
 <template>
   <v-card class="my-1" :hover="true">
-    <v-card-title>
-      {{ topic.title }}
-      <div class="flex-grow-1"></div>
+    <v-list-item three-line>
+      <v-list-item-content>
+        <v-list-item-title>{{ topic.title }}</v-list-item-title>
+        <v-list-item-subtitle>{{ topic.description }}</v-list-item-subtitle>
+      </v-list-item-content>
 
-      <v-menu bottom left>
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list>
-          <v-list-item @click="$emit('update-topic', topic)">
-            <v-list-item-icon><v-icon>mdi-pencil</v-icon></v-list-item-icon>
-            <v-list-item-content>Edit</v-list-item-content>
-          </v-list-item>
-          <v-list-item @click="$emit('delete-topic', topic)">
-            <v-list-item-icon><v-icon>mdi-delete</v-icon></v-list-item-icon>
-            <v-list-item-content>Delete</v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-card-title>
-    <v-card-text>
-      <div>{{ topic.description }}</div>
-    </v-card-text>
+      <v-list-item-action>
+        <CardMenu
+          :card="topic"
+          @update-card="$emit('update-topic', topic)"
+          @delete-card="$emit('delete-topic', topic)"
+        />
+      </v-list-item-action>
+    </v-list-item>
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Topic } from "@/types";
+import CardMenu from "@/components/schedule/CardMenu.vue";
 
 export default Vue.extend({
   name: "TopicCard",
+  components: {
+    CardMenu
+  },
   props: {
-    topic: Topic
+    topic: {
+      type: Object
+    }
   }
 });
 </script>

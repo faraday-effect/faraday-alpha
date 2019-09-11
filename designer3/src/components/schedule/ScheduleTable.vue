@@ -43,10 +43,10 @@ export default Vue.extend({
   data() {
     return {
       headers: [
-        { text: "Week", value: "week", width: "10%" },
-        { text: "Day", value: "nthClassDay", width: "10%" },
-        { text: "Date", value: "date", width: "25%" },
-        { text: "Topic", value: "topics", width: "55%" }
+        { text: "Week", value: "week", sortable: false, width: "10%" },
+        { text: "Day", value: "nthClassDay", sortable: false, width: "10%" },
+        { text: "Date", value: "date", sortable: false, width: "25%" },
+        { text: "Topic", value: "topics", sortable: false, width: "55%" }
       ]
     };
   },

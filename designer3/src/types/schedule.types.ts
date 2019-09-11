@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Offering, Section, Topic } from ".";
+import { Offering, Section } from ".";
 
 export class ClassDay {
   topics: string[] = [];
@@ -7,7 +7,6 @@ export class ClassDay {
   constructor(
     readonly dateTime: DateTime,
     readonly week: number,
-    readonly nthCourseDay: number,
     readonly nthClassDay: number,
     readonly inDateRange: boolean,
     readonly nearestToToday: boolean,
@@ -41,13 +40,10 @@ export class ClassSchedule {
     const startWeekNumber = startDate.weekNumber;
     const firstDayOfWeek = section.firstDayOfWeek();
 
-    let nthCourseDay = 0;
     let nthClassDay = 0;
 
     for (let dt = startDate; dt <= endDate; dt = dt.plus({ days: 1 })) {
       if (section.isClassDay(dt)) {
-        nthCourseDay += 1;
-
         const dateRange = offering.term.inAnyDateRange(dt);
         if (!dateRange) {
           nthClassDay += 1;
@@ -56,7 +52,6 @@ export class ClassSchedule {
         const newClassDay = new ClassDay(
           dt,
           dt.weekNumber - startWeekNumber + 1,
-          nthCourseDay,
           nthClassDay,
           dateRange !== null,
           false,
@@ -71,15 +66,26 @@ export class ClassSchedule {
     }
   }
 
-  availableClassDays() {
-    return this.classDays.filter(classDay => classDay.isAvailable());
+  *availableClassDays() {
+    const classDays = this.classDays.filter(classDay => classDay.isAvailable());
+    for (const classDay of classDays) {
+      yield classDay;
+    }
   }
 
-  scheduleTopics(topics: Topic[]) {
-    const available = this.availableClassDays();
-    for (let idx = 0; idx < topics.length; idx++) {
-      available[idx].addTopic(topics[idx].title);
-      topics[idx].setClassDay(available[idx]);
+  scheduleOffering(offering: Offering) {
+    const classDays = this.availableClassDays();
+
+    for (let unit of offering.units) {
+      for (let topic of unit.topics) {
+        const classDay = classDays.next().value;
+        if (classDay) {
+          classDay.addTopic(topic.title);
+          topic.setClassDay(classDay);
+        } else {
+          throw new Error("Not enough days; TODO: fix this");
+        }
+      }
     }
   }
 }

@@ -63,14 +63,18 @@ export default Vue.extend({
     return {
       addDialogVisible: false,
       updateDialogVisible: false,
-
       updateModel: {} as Topic
     };
   },
 
   computed: {
-    topics(): Topic[] {
-      return this.unit ? this.unit.topics : [];
+    topics: {
+      get: function(): Topic[] {
+        return this.unit ? this.unit.topics : [];
+      },
+      set: function(topics: Topic[]) {
+        this.unit.topics = topics;
+      }
     }
   },
 

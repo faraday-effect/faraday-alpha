@@ -12,7 +12,8 @@ import {
   TopicCreateInput,
   TopicUpdateInput,
   Unit,
-  UnitCreateInput
+  UnitCreateInput,
+  UnitUpdateInput
 } from "./entities";
 import { Int } from "type-graphql";
 import { AbstractEntity } from "../shared/abstract-entity";
@@ -26,11 +27,6 @@ export class UnitResolver {
     return this.syllabusService.createUnit(createInput);
   }
 
-  // @Mutation(returns => Topic)
-  // createTopic(@Args("createInput") createInput: TopicCreateInput) {
-  //   return this.syllabusService.createTopic(createInput);
-  // }
-
   @Query(returns => Unit)
   unit(@Args({ name: "id", type: () => Int }) id: number) {
     return this.syllabusService.readOne(Unit, id);
@@ -39,6 +35,21 @@ export class UnitResolver {
   @Query(returns => [Unit])
   units() {
     return this.syllabusService.readAll(Unit);
+  }
+
+  @Mutation(returns => Unit)
+  async updateUnit(@Args("updateInput") updateInput: UnitUpdateInput) {
+    const unit = await this.syllabusService.findOneOrFail(Unit, updateInput.id);
+    unit.title = updateInput.title;
+    unit.description = updateInput.description;
+    return this.syllabusService.update(unit);
+  }
+
+  @Mutation(returns => Unit)
+  async deleteUnit(@Args({ name: "id", type: () => Int }) id: number) {
+    const unit = await this.syllabusService.findOneOrFail(Unit, id);
+    await this.syllabusService.delete(Unit, id);
+    return unit;
   }
 
   @ResolveProperty("topics", type => [Topic])
