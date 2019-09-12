@@ -73,6 +73,7 @@ export default Vue.extend({
       { title: "Home", route: "home", icon: "mdi-home", divider: true },
       { title: "Calendar", route: "calendar", icon: "mdi-calendar-month" },
       { title: "Schedule", route: "schedule", icon: "mdi-calendar" },
+      { title: "Multi-Morph", route: "multi-morph", icon: "mdi-file-multiple" },
       {
         title: "Quizzes",
         route: "quizzes",

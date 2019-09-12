@@ -30,6 +30,12 @@ export default new Router({
       path: "/schedule",
       component: () =>
         import(/* webpackChunkName: "schedule" */ "./pages/Schedule.vue")
+    },
+    {
+      name: "multi-morph",
+      path: "/multi-morph",
+      component: () =>
+        import(/* webpackChunkName: "multi-morph" */ "./pages/MultiMorph.vue")
     }
   ]
 });
