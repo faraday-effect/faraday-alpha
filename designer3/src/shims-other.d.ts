@@ -5,5 +5,3 @@ declare module "rehype-highlight";
 declare module "rehype-stringify";
 
 declare module "mousetrap";
-
-declare module "vue-codemirror";
