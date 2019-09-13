@@ -22,6 +22,7 @@
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.15",
     "luxon": "^1.17.2",
+    "mdast-builder": "^1.1.1",
     "mousetrap": "^1.6.3",
     "reflect-metadata": "^0.1.13",
     "rehype-format": "^3.0.0",
@@ -29,6 +30,7 @@
     "rehype-stringify": "^6.0.0",
     "remark-parse": "^7.0.1",
     "remark-rehype": "^5.0.0",
+    "remark-stringify": "^7.0.3",
     "splitpanes": "^1.14.5",
     "unified": "^8.3.2",
     "vue": "^2.6.10",
@@ -36,7 +38,8 @@
     "vue-router": "^3.0.3",
     "vuedraggable": "^2.23.0",
     "vuetify": "^2.0.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vuex-pathify": "^1.4.0"
   },
   "devDependencies": {
     "@types/graphql": "^14.2.3",

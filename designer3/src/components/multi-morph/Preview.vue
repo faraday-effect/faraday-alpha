@@ -16,7 +16,7 @@ import remark2rehype from "remark-rehype";
 import format from "rehype-format";
 import highlight from "rehype-highlight";
 import html from "rehype-stringify";
-import PaneTitle from "@/components/PaneTitle.vue";
+import PaneTitle from "@/components/multi-morph/PaneTitle.vue";
 
 export default Vue.extend({
   components: {
@@ -86,13 +86,7 @@ export default Vue.extend({
 
 <style scoped lang="sass">
 .preview
-  height: 500px
   overflow-y: auto
-  border: solid thin teal
-
-.preview-text
-  background: lightgray
-
-.preview-html
-  background: lightyellow
+  border: solid thin lightgray
+  min-height: 5em
 </style>

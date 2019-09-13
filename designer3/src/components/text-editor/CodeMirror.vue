@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pane-title title="Editor" />
+    <pane-title :title="title" />
     <textarea ref="editor" />
   </div>
 </template>
@@ -9,7 +9,7 @@
 // Yes, this is a JavaScript component. Code Mirror isn't especially TypeScript friendly.
 
 import codemirror from "codemirror";
-import PaneTitle from "@/components/PaneTitle";
+import PaneTitle from "@/components/multi-morph/PaneTitle";
 
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/markdown/markdown.js";
@@ -25,6 +25,21 @@ export default {
         value: {
             type: String,
             default: ""
+        },
+        title: {
+            type: String,
+            required: true
+        },
+        mode: {
+            type: String,
+            required: true,
+            validate: function (value) {
+                return ["markdown"].includes(value);
+            }
+        },
+        theme: {
+            type: String,
+            default: "solarized"
         }
     },
 
@@ -36,8 +51,8 @@ export default {
 
     mounted() {
         this.editor = codemirror.fromTextArea(this.$refs.editor, {
-            mode: "markdown",
-            theme: "solarized",
+            mode: this.mode,
+            theme: this.theme,
             lineNumbers: true
         });
         this.editor.setValue(this.value);
@@ -51,6 +66,6 @@ export default {
 
 <style>
 .CodeMirror {
-  height: 500px;
+  min-height: 5em;
 }
 </style>
