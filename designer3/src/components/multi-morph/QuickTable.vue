@@ -39,21 +39,28 @@
     </table>
     <div>Currently {{ rowCount }} x {{ columnCount }}</div>
     <v-btn @click="clearTable">Clear</v-btn>
-    <v-text-field
-      type="number"
-      min="1"
-      v-model="rowCount"
-      single-line
-      style="width: 60px"
-    />
-    <v-text-field
-      type="number"
-      min="1"
-      v-model="columnCount"
-      single-line
-      style="width: 60px"
-    />
+    <v-row>
+      <v-text-field
+        type="number"
+        min="1"
+        v-model="rowCount"
+        single-line
+        class="rowColText"
+      />
+      &times;
+      <v-text-field
+        type="number"
+        min="1"
+        v-model="columnCount"
+        single-line
+        class="rowColText"
+      />
+    </v-row>
     <div>{{ tableRows }}</div>
+    <Notification
+      :message="snackbar.message"
+      :visible.sync="snackbar.visible"
+    />
   </div>
 </template>
 
@@ -61,15 +68,20 @@
 import Vue from "vue";
 import RowMenu from "@/components/multi-morph/RowMenu.vue";
 import ColumnMenu from "@/components/multi-morph/ColumnMenu.vue";
+import Notification from "@/components/Notification.vue";
 import times from "lodash/times";
 
 export default Vue.extend({
   name: "QuickTable",
 
-  components: { RowMenu, ColumnMenu },
+  components: { RowMenu, ColumnMenu, Notification },
 
   data() {
     return {
+      snackbar: {
+        visible: false,
+        message: ""
+      },
       tableRows: [
         ["alpha", "beta", "gamma", "delta"],
         ["one", "two", "three", "four"]
@@ -84,7 +96,7 @@ export default Vue.extend({
       },
       set(newCount: number) {
         if (newCount < 1) {
-          // TODO: Put up a snack bar or something.
+          this.notify("Can't have fewer than one row");
           return;
         }
         if (newCount < this.rowCount) {
@@ -103,12 +115,27 @@ export default Vue.extend({
         }
         return this.tableRows[0].length;
       },
-      set(value: number) {}
+      set(newCount: number) {
+        const initialColumnCount = this.columnCount; // Save old value; will change.
+        if (newCount < 1) {
+          this.notify("Can't have fewer than one column");
+          return;
+        }
+        if (newCount < initialColumnCount) {
+          this.tableRows.forEach(row =>
+            row.splice(newCount, initialColumnCount - newCount)
+          );
+        } else if (newCount > initialColumnCount) {
+          times(newCount - initialColumnCount, () =>
+            this.tableRows.forEach(row => row.push(""))
+          );
+        }
+      }
     }
   },
 
   methods: {
-    // The row and column values send to event handlers are zero-based.
+    // The row and colnumn values send to event handlers are zero-based.
     addLeft(column: number) {
       this.tableRows.forEach(row => row.splice(column, 0, ""));
     },
@@ -152,6 +179,12 @@ export default Vue.extend({
           this._setCell(row, column, "");
         }
       }
+    },
+
+    notify(message: string) {
+      console.log("NOTIFY", message);
+      this.snackbar.message = message;
+      this.snackbar.visible = true;
     }
   }
 });
@@ -163,5 +196,9 @@ export default Vue.extend({
   border: thin dashed coral;
   min-height: 1em;
   min-width: 4em;
+}
+
+.rowColText {
+  max-width: 60px;
 }
 </style>
