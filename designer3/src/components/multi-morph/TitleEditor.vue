@@ -14,11 +14,15 @@ import { sync } from "vuex-pathify";
 export default Vue.extend({
   name: "TitleEditor",
 
+  mounted() {
+    console.log(this.$store);
+  },
+
   computed: {
-    title: sync("title"),
-    subtitle: sync("subtitle"),
-    author: sync("author"),
-    date: sync("date")
+    title: sync("titleSegment/title"),
+    subtitle: sync("titleSegment/subtitle"),
+    author: sync("titleSegment/author"),
+    date: sync("titleSegment/date")
   }
 });
 </script>

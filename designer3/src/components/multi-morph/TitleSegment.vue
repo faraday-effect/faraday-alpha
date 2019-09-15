@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <TitleEditor title="Editor" />
+        <TitleEditor />
       </v-col>
       <v-col>
         <Preview mode="markdown" :content="asMarkdown" />
@@ -16,31 +16,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { get } from "vuex-pathify";
 
 import Preview from "@/components/multi-morph/Preview.vue";
 import TitleEditor from "@/components/multi-morph/TitleEditor.vue";
 
-import { heading, paragraph, root, strong, text } from "mdast-builder";
-import stringify from "remark-stringify";
-import unified from "unified";
-
-function getSomeMarkdown(state: any): string {
-  const processor = unified().use(stringify, {
-    bullet: "-",
-    fence: "`",
-    fences: true,
-    incrementListMarker: false
-  });
-
-  const output = processor.stringify(
-    root([
-      heading(1, text(state.title)),
-      heading(2, text(state.subtitle)),
-      paragraph(strong(text(state.author))),
-      paragraph(strong(text(state.date)))
-    ])
-  );
-  return output;
+function latexHelper(cmd: string, arg: string) {
+  return `\\${cmd}{${arg}}`;
 }
 
 export default Vue.extend({
@@ -51,16 +33,26 @@ export default Vue.extend({
 
   computed: {
     asMarkdown(): string {
-      return getSomeMarkdown(this.$store.state);
+      return [
+        `# ${this.title}`,
+        `## ${this.subtitle}`,
+        `** ${this.author} (${this.date}) **`
+      ].join("\n");
     },
 
     asLaTeX(): string {
-      return "LaTeX";
+      return [
+        latexHelper("title", this.title),
+        latexHelper("subtitle", this.subtitle),
+        latexHelper("author", this.author),
+        latexHelper("date", this.date)
+      ].join("\n");
     },
 
-    content() {
-      return this.$store.state;
-    }
+    title: get("titleSegment/title"),
+    subtitle: get("titleSegment/subtitle"),
+    author: get("titleSegment/author"),
+    date: get("titleSegment/date")
   }
 });
 </script>

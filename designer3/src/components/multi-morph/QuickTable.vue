@@ -1,20 +1,56 @@
 <template>
   <div>
+    <v-row align="center" justify="space-around">
+      <v-text-field
+        label="Rows"
+        type="number"
+        min="1"
+        v-model="rowCount"
+        class="rowColText"
+      />
+      <v-text-field
+        label="Columns"
+        type="number"
+        min="1"
+        v-model="columnCount"
+        class="rowColText"
+      />
+      <v-switch label="Header" v-model="hasHeader" />
+      <v-btn @click="clearTable">Clear</v-btn>
+    </v-row>
+
     <table>
       <tbody>
+        <!-- Column menus -->
         <tr>
           <td />
-          <td v-for="col in tableRows[0].length" :key="col">
+          <td v-for="(col, idx) in columnCount" :key="`col-menu-${idx}`">
             <ColumnMenu
-              :column="col"
+              :column="idx"
               :columnCount="columnCount"
-              @add-left="addLeft(col - 1)"
-              @add-right="addRight(col - 1)"
-              @remove="removeCol(col - 1)"
+              @add-left="addLeft(idx)"
+              @add-right="addRight(idx)"
+              @remove="removeCol(idx)"
             />
           </td>
         </tr>
-        <tr v-for="(row, rowIdx) in tableRows" :key="rowIdx">
+
+        <!-- Header row -->
+        <tr v-if="hasHeader">
+          <th />
+          <th v-for="(header, idx) in headerRow" :key="`hdr-${idx}`">
+            <div
+              :id="idx"
+              class="datum header"
+              contenteditable="true"
+              v-text="header"
+              @blur="updateHeader"
+            />
+          </th>
+        </tr>
+
+        <!-- Body rows -->
+        <tr v-for="(tableRow, rowIdx) in tableRows" :key="`row-${rowIdx}`">
           <td>
             <RowMenu
               :row="rowIdx"
@@ -24,38 +60,22 @@
               @remove="removeRow(rowIdx)"
             />
           </td>
-          <td v-for="(col, colIdx) in row" :key="colIdx">
+          <td
+            v-for="(cell, cellIdx) in tableRow"
+            :key="`cell-${rowIdx}-${cellIdx}`"
+          >
             <div
+              :id="`${rowIdx}-${cellIdx}`"
               class="datum"
+              v-text="cell"
               contenteditable="true"
-              v-text="col"
-              style="display: inline-block"
-              :id="`${rowIdx}-${colIdx}`"
               @blur="updateCell"
             />
           </td>
         </tr>
       </tbody>
     </table>
-    <div>Currently {{ rowCount }} x {{ columnCount }}</div>
-    <v-btn @click="clearTable">Clear</v-btn>
-    <v-row>
-      <v-text-field
-        type="number"
-        min="1"
-        v-model="rowCount"
-        single-line
-        class="rowColText"
-      />
-      &times;
-      <v-text-field
-        type="number"
-        min="1"
-        v-model="columnCount"
-        single-line
-        class="rowColText"
-      />
-    </v-row>
+    <div>{{ headerRow }}</div>
     <div>{{ tableRows }}</div>
     <Notification
       :message="snackbar.message"
@@ -66,10 +86,11 @@
 
 <script lang="ts">
 import Vue from "vue";
+import times from "lodash/times";
+
 import RowMenu from "@/components/multi-morph/RowMenu.vue";
 import ColumnMenu from "@/components/multi-morph/ColumnMenu.vue";
 import Notification from "@/components/Notification.vue";
-import times from "lodash/times";
 
 export default Vue.extend({
   name: "QuickTable",
@@ -78,14 +99,13 @@ export default Vue.extend({
 
   data() {
     return {
+      tableRows: [["", ""], ["", ""]],
+      hasHeader: false,
+      headerRow: ["", ""],
       snackbar: {
         visible: false,
         message: ""
-      },
-      tableRows: [
-        ["alpha", "beta", "gamma", "delta"],
-        ["one", "two", "three", "four"]
-      ]
+      }
     };
   },
 
@@ -108,6 +128,7 @@ export default Vue.extend({
         }
       }
     },
+
     columnCount: {
       get(): number {
         if (this.tableRows.length === 0) {
@@ -125,10 +146,12 @@ export default Vue.extend({
           this.tableRows.forEach(row =>
             row.splice(newCount, initialColumnCount - newCount)
           );
+          this.headerRow.splice(newCount, initialColumnCount - newCount);
         } else if (newCount > initialColumnCount) {
-          times(newCount - initialColumnCount, () =>
-            this.tableRows.forEach(row => row.push(""))
-          );
+          times(newCount - initialColumnCount, () => {
+            this.tableRows.forEach(row => row.push(""));
+            this.headerRow.push("");
+          });
         }
       }
     }
@@ -138,12 +161,15 @@ export default Vue.extend({
     // The row and colnumn values send to event handlers are zero-based.
     addLeft(column: number) {
       this.tableRows.forEach(row => row.splice(column, 0, ""));
+      this.headerRow.splice(column, 0, "");
     },
     addRight(column: number) {
       this.tableRows.forEach(row => row.splice(column + 1, 0, ""));
+      this.headerRow.splice(column + 1, 0, "");
     },
     removeCol(column: number) {
       this.tableRows.forEach(row => row.splice(column, 1));
+      this.headerRow.splice(column, 1);
     },
 
     _emptyRow() {
@@ -160,29 +186,37 @@ export default Vue.extend({
       this.tableRows.splice(row, 1);
     },
 
-    _setCell(row: number, column: number, newValue: string) {
-      this.$set(this.tableRows[row], column, newValue);
+    _setCell(row: number, column: number, value = "") {
+      // console.log(`(${row},${column}) = ${value}`);
+      this.$set(this.tableRows[row], column, value);
+    },
+
+    _setHeader(column: number, value = "") {
+      this.$set(this.headerRow, column, value);
     },
 
     updateCell(event: any) {
       const lostFocus = event.target;
-      // const gotFocus = event.relatedTarget;
-
       const [row, col] = lostFocus.id.split("-");
       const newValue = lostFocus.innerText;
       this._setCell(row, col, newValue);
     },
 
+    updateHeader(event: any) {
+      const lostFocus = event.target;
+      const col = lostFocus.id;
+      const newValue = lostFocus.innerText;
+      this._setHeader(col, newValue);
+    },
+
     clearTable() {
-      for (let row = 0; row < this.rowCount; row++) {
-        for (let column = 0; column < this.columnCount; column++) {
-          this._setCell(row, column, "");
-        }
-      }
+      times(this.columnCount, idx => this._setHeader(idx));
+      times(this.rowCount, row =>
+        times(this.columnCount, col => this._setCell(row, col))
+      );
     },
 
     notify(message: string) {
-      console.log("NOTIFY", message);
       this.snackbar.message = message;
       this.snackbar.visible = true;
     }
@@ -192,10 +226,15 @@ export default Vue.extend({
 
 <style>
 .datum {
+  display: inline-block;
   background: lightgray;
-  border: thin dashed coral;
+  border: thin solid darkgray;
   min-height: 1em;
   min-width: 4em;
+}
+
+.header {
+  background: lightskyblue;
 }
 
 .rowColText {
