@@ -5,10 +5,10 @@
         <QuickTable />
       </v-col>
       <v-col>
-        <Preview mode="markdown" content="HELLO" />
+        <Preview mode="text" :content="tableRows" />
       </v-col>
       <v-col>
-        <Preview mode="text" content="GOODBYE" />
+        <Preview mode="text" :content="headerRow" />
       </v-col>
     </v-row>
   </v-container>
@@ -24,6 +24,16 @@ export default Vue.extend({
   components: {
     QuickTable,
     Preview
+  },
+
+  computed: {
+    tableRows() {
+      return this.$store.state.tableSegment.tableRows;
+    },
+
+    headerRow() {
+      return this.$store.state.tableSegment.headerRow;
+    }
   }
 });
 </script>

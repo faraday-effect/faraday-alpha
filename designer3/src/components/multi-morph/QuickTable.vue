@@ -86,11 +86,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import times from "lodash/times";
 
 import RowMenu from "@/components/multi-morph/RowMenu.vue";
 import ColumnMenu from "@/components/multi-morph/ColumnMenu.vue";
 import Notification from "@/components/Notification.vue";
+import { RowsAndColumns } from "@/store/table-segment.store";
 
 export default Vue.extend({
   name: "QuickTable",
@@ -99,9 +99,7 @@ export default Vue.extend({
 
   data() {
     return {
-      tableRows: [["", ""], ["", ""]],
       hasHeader: false,
-      headerRow: ["", ""],
       snackbar: {
         visible: false,
         message: ""
@@ -110,110 +108,104 @@ export default Vue.extend({
   },
 
   computed: {
+    tableRows() {
+      return this.$store.state.tableSegment.tableRows;
+    },
+
+    headerRow() {
+      return this.$store.state.tableSegment.headerRow;
+    },
+
     rowCount: {
-      get(): number {
-        return this.tableRows.length;
+      get() {
+        return this.$store.getters["tableSegment/rowCount"];
       },
       set(newCount: number) {
         if (newCount < 1) {
           this.notify("Can't have fewer than one row");
-          return;
-        }
-        if (newCount < this.rowCount) {
-          this.tableRows.splice(newCount, this.rowCount - newCount);
-        } else if (newCount > this.rowCount) {
-          times(newCount - this.rowCount, () =>
-            this.tableRows.push(this._emptyRow())
-          );
+        } else {
+          this.$store.commit("tableSegment/setRowCount", newCount);
         }
       }
     },
 
     columnCount: {
-      get(): number {
-        if (this.tableRows.length === 0) {
-          return 0;
-        }
-        return this.tableRows[0].length;
+      get() {
+        return this.$store.getters["tableSegment/columnCount"];
       },
       set(newCount: number) {
-        const initialColumnCount = this.columnCount; // Save old value; will change.
         if (newCount < 1) {
           this.notify("Can't have fewer than one column");
-          return;
-        }
-        if (newCount < initialColumnCount) {
-          this.tableRows.forEach(row =>
-            row.splice(newCount, initialColumnCount - newCount)
-          );
-          this.headerRow.splice(newCount, initialColumnCount - newCount);
-        } else if (newCount > initialColumnCount) {
-          times(newCount - initialColumnCount, () => {
-            this.tableRows.forEach(row => row.push(""));
-            this.headerRow.push("");
-          });
+        } else {
+          this.$store.commit("tableSegment/setColumnCount", newCount);
         }
       }
     }
   },
 
   methods: {
-    // The row and colnumn values send to event handlers are zero-based.
+    // The row and column values send to event handlers are zero-based.
     addLeft(column: number) {
-      this.tableRows.forEach(row => row.splice(column, 0, ""));
-      this.headerRow.splice(column, 0, "");
+      this.$store.commit("tableSegment/addRowColumn", {
+        direction: RowsAndColumns.COLUMN_LEFT,
+        index: column
+      });
     },
     addRight(column: number) {
-      this.tableRows.forEach(row => row.splice(column + 1, 0, ""));
-      this.headerRow.splice(column + 1, 0, "");
+      this.$store.commit("tableSegment/addRowColumn", {
+        direction: RowsAndColumns.COLUMN_RIGHT,
+        index: column
+      });
     },
     removeCol(column: number) {
-      this.tableRows.forEach(row => row.splice(column, 1));
-      this.headerRow.splice(column, 1);
-    },
-
-    _emptyRow() {
-      return Array(this.columnCount).fill("");
+      this.$store.commit("tableSegment/removeRowColumn", {
+        direction: RowsAndColumns.REMOVE_COLUMN,
+        index: column
+      });
     },
 
     addAbove(row: number) {
-      this.tableRows.splice(row, 0, this._emptyRow());
+      this.$store.commit("tableSegment/addRowColumn", {
+        direction: RowsAndColumns.ROW_ABOVE,
+        index: row
+      });
     },
     addBelow(row: number) {
-      this.tableRows.splice(row + 1, 0, this._emptyRow());
+      this.$store.commit("tableSegment/addRowColumn", {
+        direction: RowsAndColumns.ROW_BELOW,
+        index: row
+      });
     },
     removeRow(row: number) {
-      this.tableRows.splice(row, 1);
-    },
-
-    _setCell(row: number, column: number, value = "") {
-      // console.log(`(${row},${column}) = ${value}`);
-      this.$set(this.tableRows[row], column, value);
-    },
-
-    _setHeader(column: number, value = "") {
-      this.$set(this.headerRow, column, value);
+      this.$store.commit("tableSegment/removeRowColumn", {
+        direction: RowsAndColumns.REMOVE_ROW,
+        index: row
+      });
     },
 
     updateCell(event: any) {
       const lostFocus = event.target;
-      const [row, col] = lostFocus.id.split("-");
-      const newValue = lostFocus.innerText;
-      this._setCell(row, col, newValue);
+      const [row, column] = lostFocus.id.split("-");
+      const value = lostFocus.innerText;
+      this.$store.commit("tableSegment/setCell", {
+        row,
+        column,
+        value
+      });
     },
 
     updateHeader(event: any) {
       const lostFocus = event.target;
-      const col = lostFocus.id;
-      const newValue = lostFocus.innerText;
-      this._setHeader(col, newValue);
+      const column = lostFocus.id;
+      const value = lostFocus.innerText;
+      this.$store.commit("tableSegment/setHeader", {
+        column,
+        value
+      });
     },
 
     clearTable() {
-      times(this.columnCount, idx => this._setHeader(idx));
-      times(this.rowCount, row =>
-        times(this.columnCount, col => this._setCell(row, col))
-      );
+      this.$store.commit("tableSegment/clearTable");
     },
 
     notify(message: string) {

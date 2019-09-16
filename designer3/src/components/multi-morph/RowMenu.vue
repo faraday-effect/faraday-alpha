@@ -1,7 +1,7 @@
 <template>
   <v-menu>
     <template #activator="{ on }">
-      <v-btn x-small v-on="on">
+      <v-btn x-small v-on="on" tabindex="-1">
         <v-icon>mdi-menu-down</v-icon>
       </v-btn>
     </template>
