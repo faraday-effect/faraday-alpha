@@ -31,6 +31,9 @@
               @add-left="addLeft(idx)"
               @add-right="addRight(idx)"
               @remove="removeCol(idx)"
+              @align-left="alignLeft(idx)"
+              @align-center="alignCenter(idx)"
+              @align-right="alignRight(idx)"
             />
           </td>
         </tr>
@@ -160,6 +163,25 @@ export default Vue.extend({
     removeCol(column: number) {
       this.$store.commit("tableSegment/removeRowColumn", {
         direction: RowsAndColumns.REMOVE_COLUMN,
+        index: column
+      });
+    },
+
+    alignLeft(column: number) {
+      this.$store.commit("tableSegment/alignColumn", {
+        direction: RowsAndColumns.ALIGN_LEFT,
+        index: column
+      });
+    },
+    alignCenter(column: number) {
+      this.$store.commit("tableSegment/alignColumn", {
+        direction: RowsAndColumns.ALIGN_CENTER,
+        index: column
+      });
+    },
+    alignRight(column: number) {
+      this.$store.commit("tableSegment/alignColumn", {
+        direction: RowsAndColumns.ALIGN_RIGHT,
         index: column
       });
     },

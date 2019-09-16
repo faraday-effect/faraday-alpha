@@ -28,7 +28,7 @@ export default Vue.extend({
       type: String,
       required: true,
       validator: function(value) {
-        return ["text", "markdown"].includes(value);
+        return ["text", "markdown", "raw"].includes(value);
       }
     },
     content: {
@@ -57,6 +57,8 @@ export default Vue.extend({
       switch (this.mode) {
         case "text":
           return this.content;
+        case "raw":
+          return `<pre>${this.content}</pre>`;
         case "markdown":
           this.ensureUnistProcessor();
           return this.unifiedProcessor.processSync(this.content).toString();

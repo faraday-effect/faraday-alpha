@@ -14,10 +14,6 @@ import { sync } from "vuex-pathify";
 export default Vue.extend({
   name: "TitleEditor",
 
-  mounted() {
-    console.log(this.$store);
-  },
-
   computed: {
     title: sync("titleSegment/title"),
     subtitle: sync("titleSegment/subtitle"),

@@ -6,18 +6,23 @@
       </v-btn>
     </template>
     <v-list>
+      <!-- Add left -->
       <v-list-item @click="$emit('add-left', column)">
         <v-list-item-icon>
           <v-icon>mdi-table-column-plus-before</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Add left</v-list-item-title>
       </v-list-item>
+
+      <!-- Add right -->
       <v-list-item @click="$emit('add-right', column)">
         <v-list-item-icon>
           <v-icon>mdi-table-column-plus-after</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Add right</v-list-item-title>
       </v-list-item>
+
+      <!-- Remove -->
       <v-list-item
         @click="$emit('remove', column)"
         :disabled="columnCount <= 1"
@@ -26,6 +31,28 @@
           <v-icon>mdi-table-column-remove</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Delete</v-list-item-title>
+      </v-list-item>
+
+      <v-divider />
+
+      <!-- Alignment -->
+      <v-list-item @click="$emit('align-left', column)">
+        <v-list-item-icon>
+          <v-icon>mdi-format-align-left</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Left</v-list-item-title>
+      </v-list-item>
+      <v-list-item @click="$emit('align-center', column)">
+        <v-list-item-icon>
+          <v-icon>mdi-format-align-center</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Center</v-list-item-title>
+      </v-list-item>
+      <v-list-item @click="$emit('align-right', column)">
+        <v-list-item-icon>
+          <v-icon>mdi-format-align-right</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Right</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>

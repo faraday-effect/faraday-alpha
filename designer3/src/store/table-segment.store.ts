@@ -3,14 +3,25 @@ import { RootState } from "@/store/index";
 import times from "lodash/times";
 import Vue from "vue";
 
+export enum ColumnAlignment {
+  ALIGN_LEFT = "left",
+  ALIGN_CENTER = "center",
+  ALIGN_RIGHT = "right"
+}
+
+interface ColumnHeader {
+  alignment: ColumnAlignment;
+  value: string;
+}
+
 interface TableSegmentState {
+  headerRow: Array<ColumnHeader>;
   tableRows: Array<Array<string>>;
-  headerRow: Array<string>;
 }
 
 const state: TableSegmentState = {
-  tableRows: [["", ""], ["", ""]],
-  headerRow: ["", ""]
+  headerRow: [makeDefaultHeader(), makeDefaultHeader()],
+  tableRows: [["", ""], ["", ""]]
 };
 
 export enum RowsAndColumns {
@@ -19,57 +30,86 @@ export enum RowsAndColumns {
   ROW_ABOVE,
   ROW_BELOW,
   REMOVE_ROW,
-  REMOVE_COLUMN
+  REMOVE_COLUMN,
+  ALIGN_LEFT,
+  ALIGN_CENTER,
+  ALIGN_RIGHT
 }
 
-export interface RowAndColumnPayload {
+interface RowAndColumnPayload {
   direction: RowsAndColumns;
   index: number;
 }
 
-export interface SetCellPayload {
+interface SetCellPayload {
   row: number;
   column: number;
   value: string;
 }
 
-export interface SetHeaderPayload {
+interface SetHeaderValuePayload {
   column: number;
   value: string;
 }
 
+interface SetHeaderAlignmentPayload {
+  column: number;
+  alignment: ColumnAlignment;
+}
+
 // Helpers
 
-function rowCount(state: TableSegmentState) {
+function getRowCount(state: TableSegmentState) {
   return state.tableRows.length;
 }
 
-function columnCount(state: TableSegmentState) {
+function getColumnCount(state: TableSegmentState) {
   if (state.tableRows.length === 0) {
     return 0;
   }
   return state.tableRows[0].length;
 }
 
+function makeDefaultHeader(): ColumnHeader {
+  return {
+    alignment: ColumnAlignment.ALIGN_LEFT,
+    value: ""
+  };
+}
+
 function makeEmptyRow(state: TableSegmentState) {
-  return Array(columnCount(state)).fill("");
+  return Array(getColumnCount(state)).fill("");
 }
 
 function setCell(
   state: TableSegmentState,
   row: number,
   column: number,
-  value = ""
+  value: string = ""
 ) {
   Vue.set(state.tableRows[row], column, value);
 }
 
-function setHeader(state: TableSegmentState, column: number, value = "") {
+function setHeaderValue(
+  state: TableSegmentState,
+  column: number,
+  value: ColumnHeader
+) {
   Vue.set(state.headerRow, column, value);
 }
 
+function setHeaderAlignment(
+  state: TableSegmentState,
+  column: number,
+  value: ColumnAlignment
+) {
+  Vue.set(state.headerRow, column, value);
+}
+
+// Getters
+
 const getters: GetterTree<TableSegmentState, RootState> = {
-  rowCount: (state: TableSegmentState) => rowCount(state),
+  rowCount: (state: TableSegmentState) => getRowCount(state),
 
   columnCount: (state: TableSegmentState) => {
     if (state.tableRows.length === 0) {
@@ -79,9 +119,11 @@ const getters: GetterTree<TableSegmentState, RootState> = {
   }
 };
 
+// Mutations
+
 const mutations: MutationTree<TableSegmentState> = {
   setRowCount: (state, newCount: number) => {
-    const currentCount = rowCount(state);
+    const currentCount = getRowCount(state);
     if (newCount < currentCount) {
       state.tableRows.splice(newCount, currentCount - newCount);
     } else if (newCount > currentCount) {
@@ -92,7 +134,7 @@ const mutations: MutationTree<TableSegmentState> = {
   },
 
   setColumnCount: (state, newCount: number) => {
-    const initialColumnCount = columnCount(state); // Save old value; will change.
+    const initialColumnCount = getColumnCount(state); // Save old value; will change.
     if (newCount < initialColumnCount) {
       state.tableRows.forEach(row =>
         row.splice(newCount, initialColumnCount - newCount)
@@ -101,7 +143,7 @@ const mutations: MutationTree<TableSegmentState> = {
     } else if (newCount > initialColumnCount) {
       times(newCount - initialColumnCount, () => {
         state.tableRows.forEach(row => row.push(""));
-        state.headerRow.push("");
+        state.headerRow.push(makeDefaultHeader());
       });
     }
   },
@@ -124,11 +166,11 @@ const mutations: MutationTree<TableSegmentState> = {
     switch (payload.direction) {
       case RowsAndColumns.COLUMN_LEFT:
         state.tableRows.forEach(row => row.splice(payload.index, 0, ""));
-        state.headerRow.splice(payload.index, 0, "");
+        state.headerRow.splice(payload.index, 0, makeDefaultHeader());
         break;
       case RowsAndColumns.COLUMN_RIGHT:
         state.tableRows.forEach(row => row.splice(payload.index + 1, 0, ""));
-        state.headerRow.splice(payload.index + 1, 0, "");
+        state.headerRow.splice(payload.index + 1, 0, makeDefaultHeader());
         break;
       case RowsAndColumns.ROW_ABOVE:
         state.tableRows.splice(payload.index, 0, makeEmptyRow(state));
@@ -141,16 +183,32 @@ const mutations: MutationTree<TableSegmentState> = {
     }
   },
 
+  alignColumn: (state, payload: RowAndColumnPayload) => {
+    switch (payload.direction) {
+      case RowsAndColumns.ALIGN_LEFT:
+        setHeaderAlignment(state, payload.index, ColumnAlignment.ALIGN_LEFT);
+        break;
+      case RowsAndColumns.ALIGN_CENTER:
+        setHeaderAlignment(state, payload.index, ColumnAlignment.ALIGN_CENTER);
+        break;
+      case RowsAndColumns.ALIGN_RIGHT:
+        setHeaderAlignment(state, payload.index, ColumnAlignment.ALIGN_RIGHT);
+        break;
+      default:
+        throw new Error(`Invalid direction: '${payload.direction}'`);
+    }
+  },
+
   setCell: (state, payload: SetCellPayload) =>
     setCell(state, payload.row, payload.column, payload.value),
 
-  setHeader: (state, payload: SetHeaderPayload) =>
+  setHeaderValue: (state, payload: SetHeaderValuePayload) =>
     setHeader(state, payload.column, payload.value),
 
   clearTable: state => {
-    times(columnCount(state), idx => setHeader(state, idx, ""));
-    times(rowCount(state), row =>
-      times(columnCount(state), col => setCell(state, row, col, ""))
+    times(getColumnCount(state), idx => setHeader(state, idx, ""));
+    times(getRowCount(state), row =>
+      times(getColumnCount(state), col => setCell(state, row, col, ""))
     );
   }
 };

@@ -5,10 +5,10 @@
         <QuickTable />
       </v-col>
       <v-col>
-        <Preview mode="text" :content="tableRows" />
+        <Preview mode="raw" :content="asGithubFlavoredMarkdown" />
       </v-col>
       <v-col>
-        <Preview mode="text" :content="headerRow" />
+        <Preview mode="markdown" :content="asGithubFlavoredMarkdown" />
       </v-col>
     </v-row>
   </v-container>
@@ -27,12 +27,26 @@ export default Vue.extend({
   },
 
   computed: {
-    tableRows() {
+    tableRows(): string[][] {
       return this.$store.state.tableSegment.tableRows;
     },
 
-    headerRow() {
+    headerRow(): string[] {
       return this.$store.state.tableSegment.headerRow;
+    },
+
+    columnAlignment(): string[] {
+      return this.$store.state.tableSegment.columnAlignment;
+    },
+
+    asGithubFlavoredMarkdown(): string {
+      const lines = [
+        this.headerRow.join(" | "),
+        this.headerRow.map(() => ":---:").join(" | ")
+      ];
+
+      this.tableRows.forEach(row => lines.push(row.join(" | ")));
+      return lines.map(line => `| ${line} |`).join("\n");
     }
   }
 });
