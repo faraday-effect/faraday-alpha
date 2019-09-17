@@ -15,7 +15,6 @@
         v-model="columnCount"
         class="rowColText"
       />
-      <v-switch label="Header" v-model="hasHeader" />
       <v-btn @click="clearTable">Clear</v-btn>
     </v-row>
 
@@ -39,14 +38,15 @@
         </tr>
 
         <!-- Header row -->
-        <tr v-if="hasHeader">
+        <tr>
           <th />
           <th v-for="(header, idx) in headerRow" :key="`hdr-${idx}`">
             <div
               :id="idx"
               class="datum header"
+              :style="columnAlignment(idx)"
               contenteditable="true"
-              v-text="header"
+              v-text="header.value"
               @blur="updateHeader"
             />
           </th>
@@ -70,6 +70,7 @@
             <div
               :id="`${rowIdx}-${cellIdx}`"
               class="datum"
+              :style="columnAlignment(cellIdx)"
               v-text="cell"
               contenteditable="true"
               @blur="updateCell"
@@ -102,7 +103,7 @@ export default Vue.extend({
 
   data() {
     return {
-      hasHeader: false,
+      showHeader: false,
       snackbar: {
         visible: false,
         message: ""
@@ -220,7 +221,7 @@ export default Vue.extend({
       const lostFocus = event.target;
       const column = lostFocus.id;
       const value = lostFocus.innerText;
-      this.$store.commit("tableSegment/setHeader", {
+      this.$store.commit("tableSegment/setHeaderValue", {
         column,
         value
       });
@@ -233,6 +234,12 @@ export default Vue.extend({
     notify(message: string) {
       this.snackbar.message = message;
       this.snackbar.visible = true;
+    },
+
+    columnAlignment(idx: number) {
+      return {
+        "text-align": this.headerRow[idx].alignment
+      };
     }
   }
 });

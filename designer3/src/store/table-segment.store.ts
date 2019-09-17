@@ -9,7 +9,7 @@ export enum ColumnAlignment {
   ALIGN_RIGHT = "right"
 }
 
-interface ColumnHeader {
+export interface ColumnHeader {
   alignment: ColumnAlignment;
   value: string;
 }
@@ -93,9 +93,9 @@ function setCell(
 function setHeaderValue(
   state: TableSegmentState,
   column: number,
-  value: ColumnHeader
+  value: string
 ) {
-  Vue.set(state.headerRow, column, value);
+  Vue.set(state.headerRow[column], "value", value);
 }
 
 function setHeaderAlignment(
@@ -103,7 +103,7 @@ function setHeaderAlignment(
   column: number,
   value: ColumnAlignment
 ) {
-  Vue.set(state.headerRow, column, value);
+  Vue.set(state.headerRow[column], "alignment", value);
 }
 
 // Getters
@@ -203,10 +203,13 @@ const mutations: MutationTree<TableSegmentState> = {
     setCell(state, payload.row, payload.column, payload.value),
 
   setHeaderValue: (state, payload: SetHeaderValuePayload) =>
-    setHeader(state, payload.column, payload.value),
+    setHeaderValue(state, payload.column, payload.value),
+
+  setHeaderAlignment: (state, payload: SetHeaderAlignmentPayload) =>
+    setHeaderAlignment(state, payload.column, payload.alignment),
 
   clearTable: state => {
-    times(getColumnCount(state), idx => setHeader(state, idx, ""));
+    times(getColumnCount(state), idx => setHeaderValue(state, idx, ""));
     times(getRowCount(state), row =>
       times(getColumnCount(state), col => setCell(state, row, col, ""))
     );

@@ -34,6 +34,7 @@
       </v-list-item>
 
       <v-divider />
+      <v-subheader>Alignment</v-subheader>
 
       <!-- Alignment -->
       <v-list-item @click="$emit('align-left', column)">
