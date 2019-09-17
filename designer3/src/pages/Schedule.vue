@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { ClassSchedule, Offering, Section, Topic, Unit } from "@/types";
+import { ClassSchedule, Offering, Section, Unit } from "@/types";
 import OfferingPicker from "@/components/schedule/OfferingPicker.vue";
 import SectionPicker from "@/components/schedule/SectionPicker.vue";
 import TopicList from "@/components/schedule/TopicList.vue";

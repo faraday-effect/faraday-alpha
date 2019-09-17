@@ -34,11 +34,14 @@ import { Term } from "@/types";
 import { plainToClass } from "class-transformer";
 
 export default Vue.extend({
+  name: "Calendar",
+
   components: { TermSelector },
+
   apollo: {
     term: {
       query: ONE_TERM_QUERY,
-      variables() {
+      variables(): object {
         // Make query reactive per term id.
         return {
           termId: this.selectedTermId
@@ -47,18 +50,20 @@ export default Vue.extend({
       update(data) {
         return plainToClass(Term, data.term);
       },
-      skip() {
+      skip(): boolean {
         // Don't run query unless we have a valid term.
         return !this.isTermIdValid;
       }
     }
   },
+
   data: function() {
     return {
       term: {} as Term,
       selectedTermId: NaN
     };
   },
+
   computed: {
     calendarEvents: function(): VCalendarEvent[] {
       const events = this.term.dateRanges.map(dateRange =>
@@ -87,10 +92,12 @@ export default Vue.extend({
       return this.selectedTermId >= 1;
     }
   },
+
   methods: {
     getEventColor(event: VCalendarEvent) {
       return event.color || "primary";
     },
+
     onTermChanged(newTerm: number): void {
       this.selectedTermId = newTerm;
     }

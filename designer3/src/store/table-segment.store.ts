@@ -14,7 +14,7 @@ export interface ColumnHeader {
   value: string;
 }
 
-interface TableSegmentState {
+export interface TableSegmentState {
   headerRow: Array<ColumnHeader>;
   tableRows: Array<Array<string>>;
 }

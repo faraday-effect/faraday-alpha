@@ -238,7 +238,7 @@ export default Vue.extend({
       this.snackbar.visible = true;
     },
 
-    columnAlignment(idx: number) {
+    columnAlignment(idx: number): { [key: string]: string } {
       return {
         "text-align": this.headerRow[idx].alignment
       };
