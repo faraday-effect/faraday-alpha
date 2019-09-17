@@ -23,7 +23,11 @@
         <!-- Column menus -->
         <tr>
           <td />
-          <td v-for="(col, idx) in columnCount" :key="`col-menu-${idx}`">
+          <td
+            v-for="(col, idx) in columnCount"
+            :key="`col-menu-${idx}`"
+            class="col-menu"
+          >
             <ColumnMenu
               :column="idx"
               :columnCount="columnCount"
@@ -79,8 +83,6 @@
         </tr>
       </tbody>
     </table>
-    <div>{{ headerRow }}</div>
-    <div>{{ tableRows }}</div>
     <Notification
       :message="snackbar.message"
       :visible.sync="snackbar.visible"
@@ -252,10 +254,16 @@ export default Vue.extend({
   border: thin solid darkgray;
   min-height: 1em;
   min-width: 4em;
+  width: 100%;
+  height: 100%;
 }
 
 .header {
   background: lightskyblue;
+}
+
+.col-menu {
+  text-align: center;
 }
 
 .rowColText {
