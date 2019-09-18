@@ -1,8 +1,12 @@
 <template>
-  <v-container>
-    <v-layout justify-space-around align-center>
-      <p>This is an about page</p>
-    </v-layout>
+  <v-container fill-height>
+    <v-row>
+      <v-col align="center">
+        <h1>Faraday</h1>
+        <img src="/faraday-signature.png" />
+        <h2>Actionable Educational Intelligence</h2>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -11,3 +15,9 @@ export default {
   name: "AboutPage"
 };
 </script>
+
+<style>
+img {
+  height: 5em;
+}
+</style>

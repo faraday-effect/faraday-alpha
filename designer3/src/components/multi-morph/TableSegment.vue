@@ -1,19 +1,20 @@
-import {ColumnAlignment} from "@/store/table-segment.store"; import
-{ColumnAlignment} from "@/store/table-segment.store";
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <QuickTable />
-      </v-col>
-      <v-col>
-        <Preview mode="raw" :content="asGithubFlavoredMarkdown" />
-      </v-col>
-      <v-col>
-        <Preview mode="raw" :content="asLaTeX" />
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-expansion-panel>
+    <v-expansion-panel-header>Table Segment</v-expansion-panel-header>
+    <v-expansion-panel-content>
+      <v-row>
+        <v-col>
+          <QuickTable />
+        </v-col>
+        <v-col>
+          <Preview mode="raw" :content="asGithubFlavoredMarkdown" />
+        </v-col>
+        <v-col>
+          <Preview mode="raw" :content="asLaTeX" />
+        </v-col>
+      </v-row>
+    </v-expansion-panel-content>
+  </v-expansion-panel>
 </template>
 
 <script lang="ts">
