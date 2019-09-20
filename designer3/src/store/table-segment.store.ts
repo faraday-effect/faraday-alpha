@@ -19,11 +19,6 @@ export interface TableSegmentState {
   tableRows: Array<Array<string>>;
 }
 
-const state: TableSegmentState = {
-  headerRow: [makeDefaultHeader(), makeDefaultHeader()],
-  tableRows: [["", ""], ["", ""]]
-};
-
 export enum RowsAndColumns {
   COLUMN_LEFT,
   COLUMN_RIGHT,
@@ -218,7 +213,12 @@ const mutations: MutationTree<TableSegmentState> = {
 
 const module: Module<TableSegmentState, RootState> = {
   namespaced: true,
-  state,
+  state(): TableSegmentState {
+    return {
+      headerRow: [makeDefaultHeader(), makeDefaultHeader()],
+      tableRows: [["", ""], ["", ""]]
+    };
+  },
   getters,
   mutations
 };

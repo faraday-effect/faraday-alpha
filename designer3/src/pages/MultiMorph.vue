@@ -3,7 +3,12 @@
     <v-expansion-panels multiple>
       <MorphContainer header="Part 1">
         <MorphContainer header="Section 1">
-          <component v-for="(child, idx) in children" :key="idx" :is="child" />
+          <!--          <component v-for="(child, idx) in children" :key="idx" :is="child" />-->
+          <TitleSegment />
+          <TableSegment />
+          <MarkdownSegment />
+          <TableSegment />
+          <MarkdownSegment />
         </MorphContainer>
         <MorphContainer header="Section 2">
           <TitleSegment />
