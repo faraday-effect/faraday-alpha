@@ -1,89 +1,68 @@
 <template>
   <div>
-    <v-text-field label="Title" v-model="title" />
-    <v-text-field label="Subtitle" v-model="subtitle" />
-    <v-text-field label="Author" v-model="author" />
-    <v-text-field label="Date" v-model="date" />
+    <v-text-field
+      label="Title"
+      :value="title"
+      @input="updated('title', $event)"
+    />
+    <v-text-field
+      label="Subtitle"
+      :value="subtitle"
+      @input="updated('subtitle', $event)"
+    />
+    <v-text-field
+      label="Author"
+      :value="author"
+      @input="updated('author', $event)"
+    />
+    <v-text-field label="Date" :value="date" @input="updated('date', $event)" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import {
-  UpdateAuthorPayload,
-  UpdateDatePayload,
-  UpdateSubtitlePayload,
-  UpdateTitlePayload
-} from "@/store/title-segment.store";
+import { TitleFields } from "@/components/multi-morph/muti-morph.types";
 
 export default Vue.extend({
   name: "TitleEditor",
 
   props: {
-    segmentId: {
-      type: Number,
+    value: {
+      type: Object,
       required: true
     }
   },
 
-  // On creation of this component, create a new entry in the Vuex module.
-  // Tried to do this beforeCreate() but neither the props nor segmentId were yet defined.
-  created() {
-    Vue.set(this.$store.state.titleSegment, this.segmentId, {
+  data() {
+    return {
       title: "",
       subtitle: "",
       author: "",
       date: ""
-    });
+    } as TitleFields;
   },
 
-  computed: {
-    title: {
-      get(): string {
-        return this.$store.state.titleSegment[this.segmentId].title;
-      },
-      set(value: string) {
-        this.$store.commit("titleSegment/updateTitle", {
-          segmentId: this.segmentId,
-          title: value
-        } as UpdateTitlePayload);
-      }
-    },
+  methods: {
+    updated(field: string, value: string) {
+      this.$data[field] = value;
+      this.$emit("input", {
+        title: this.title,
+        subtitle: this.subtitle,
+        author: this.author,
+        date: this.date
+      } as TitleFields);
+    }
+  },
 
-    subtitle: {
-      get(): string {
-        return this.$store.state.titleSegment[this.segmentId].subtitle;
+  watch: {
+    value: {
+      handler(v: TitleFields) {
+        this.title = v.title;
+        this.subtitle = v.subtitle;
+        this.author = v.author;
+        this.date = v.date;
       },
-      set(value: string) {
-        this.$store.commit("titleSegment/updateSubtitle", {
-          segmentId: this.segmentId,
-          subtitle: value
-        } as UpdateSubtitlePayload);
-      }
-    },
-
-    author: {
-      get(): string {
-        return this.$store.state.titleSegment[this.segmentId].author;
-      },
-      set(value: string) {
-        this.$store.commit("titleSegment/updateAuthor", {
-          segmentId: this.segmentId,
-          author: value
-        } as UpdateAuthorPayload);
-      }
-    },
-
-    date: {
-      get(): string {
-        return this.$store.state.titleSegment[this.segmentId].date;
-      },
-      set(value: string) {
-        this.$store.commit("titleSegment/updateDate", {
-          segmentId: this.segmentId,
-          date: value
-        } as UpdateDatePayload);
-      }
+      immediate: true
     }
   }
 });
