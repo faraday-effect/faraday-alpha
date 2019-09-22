@@ -9,6 +9,12 @@
 
 <script lang="ts">
 import Vue from "vue";
+import {
+  UpdateAuthorPayload,
+  UpdateDatePayload,
+  UpdateSubtitlePayload,
+  UpdateTitlePayload
+} from "@/store/title-segment.store";
 
 export default Vue.extend({
   name: "TitleEditor",
@@ -20,67 +26,63 @@ export default Vue.extend({
     }
   },
 
+  // On creation of this component, create a new entry in the Vuex module.
   // Tried to do this beforeCreate() but neither the props nor segmentId were yet defined.
   created() {
-    console.log("BEFORE CREATE", this.$props);
-
-    this.$store.state.titleSegment[this.segmentId] = {
-      title: `TITLE-${this.segmentId}`,
-      subtitle: `SUBTITLE-${this.segmentId}`,
-      author: `AUTHOR-${this.segmentId}`,
-      date: `DATE-${this.segmentId}`
-    };
-
-    console.log("STATE AFTER SETUP", this.$store.state);
+    Vue.set(this.$store.state.titleSegment, this.segmentId, {
+      title: "",
+      subtitle: "",
+      author: "",
+      date: ""
+    });
   },
 
   computed: {
     title: {
       get(): string {
-        console.log(this.$store.state);
         return this.$store.state.titleSegment[this.segmentId].title;
       },
       set(value: string) {
         this.$store.commit("titleSegment/updateTitle", {
           segmentId: this.segmentId,
           title: value
-        });
+        } as UpdateTitlePayload);
       }
     },
+
     subtitle: {
       get(): string {
-        console.log(this.$store.state);
         return this.$store.state.titleSegment[this.segmentId].subtitle;
       },
       set(value: string) {
-        this.$store.commit("updateSubtitle", {
+        this.$store.commit("titleSegment/updateSubtitle", {
           segmentId: this.segmentId,
-          details: { subtitle: value }
-        });
+          subtitle: value
+        } as UpdateSubtitlePayload);
       }
     },
+
     author: {
       get(): string {
-        console.log(this.$store.state);
         return this.$store.state.titleSegment[this.segmentId].author;
       },
       set(value: string) {
-        this.$store.commit("updateAuthor", {
+        this.$store.commit("titleSegment/updateAuthor", {
           segmentId: this.segmentId,
-          details: { author: value }
-        });
+          author: value
+        } as UpdateAuthorPayload);
       }
     },
+
     date: {
       get(): string {
-        console.log(this.$store.state);
         return this.$store.state.titleSegment[this.segmentId].date;
       },
       set(value: string) {
-        this.$store.commit("updateDate", {
+        this.$store.commit("titleSegment/updateDate", {
           segmentId: this.segmentId,
-          details: { date: value }
-        });
+          date: value
+        } as UpdateDatePayload);
       }
     }
   }
