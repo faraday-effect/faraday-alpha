@@ -1,5 +1,5 @@
 import { storiesOf } from "@storybook/vue";
-import QuickTable from "../src/components/multi-morph/QuickTable";
+import QuickTable from "../src/components/multi-morph/TableEditor";
 
 // storiesOf("Button", module)
 //   .add("with text", () => "<my-button>with text</my-button>")

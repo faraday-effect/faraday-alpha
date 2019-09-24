@@ -4,7 +4,7 @@
     <v-expansion-panel-content>
       <v-row>
         <v-col>
-          <QuickTable @update="tableUpdated" />
+          <TableEditor @update="tableUpdated" />
         </v-col>
         <v-col>
           <Preview mode="raw" :content="asGithubFlavoredMarkdown" />
@@ -21,12 +21,13 @@
 import Vue from "vue";
 
 import Preview from "@/components/multi-morph/Preview.vue";
-import QuickTable from "@/components/multi-morph/QuickTable.vue";
 import times from "lodash/times";
 import {
   ColumnAlignment,
-  ColumnHeader, TableContent
+  TableHeader,
+  TableContent
 } from "@/components/multi-morph/muti-morph.types";
+import TableEditor from "@/components/multi-morph/TableEditor.vue";
 
 const latexTabularAlignment = new Map<string, string>([
   [ColumnAlignment.ALIGN_LEFT, "l"],
@@ -38,14 +39,14 @@ export default Vue.extend({
   name: "TableSegment",
 
   components: {
-    QuickTable,
+    TableEditor,
     Preview
   },
 
   data() {
     return {
       tableRows: [] as string[][],
-      headerRow: [] as ColumnHeader[]
+      headerRow: [] as TableHeader[]
     };
   },
 
@@ -101,7 +102,7 @@ export default Vue.extend({
       this.headerRow = event.headerRow;
     },
 
-    makeSeparator(header: ColumnHeader): string {
+    makeSeparator(header: TableHeader): string {
       const leftDecorator =
         header.alignment === ColumnAlignment.ALIGN_LEFT ||
         header.alignment === ColumnAlignment.ALIGN_CENTER

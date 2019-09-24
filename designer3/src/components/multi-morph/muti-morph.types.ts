@@ -11,16 +11,16 @@ export enum ColumnAlignment {
   ALIGN_RIGHT = "right"
 }
 
-export interface ColumnHeader {
+export interface TableHeader {
   alignment: ColumnAlignment;
   value: string;
 }
 
-type CellDatum = string;
+type TableCell = string;
 
-type TableRow = CellDatum[];
+type TableRow = TableCell[];
 
 export interface TableContent {
-  headerRow: ColumnHeader[];
+  headerRow: TableHeader[];
   tableRows: TableRow[];
 }

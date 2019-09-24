@@ -85,8 +85,6 @@ import {ColumnAlignment} from "@/components/multi-morph/muti-morph.types";
         </tr>
       </tbody>
     </table>
-    <div>{{ headerRow }}</div>
-    <div>{{ tableRows }}</div>
     <Notification
       :message="snackbar.message"
       :visible.sync="snackbar.visible"
@@ -102,12 +100,12 @@ import RowMenu from "@/components/multi-morph/RowMenu.vue";
 import ColumnMenu from "@/components/multi-morph/ColumnMenu.vue";
 import Notification from "@/components/Notification.vue";
 import {
+  TableHeader,
   ColumnAlignment,
-  ColumnHeader,
   TableContent
-} from "./muti-morph.types";
+} from "@/components/multi-morph/muti-morph.types";
 
-function makeDefaultHeader(): ColumnHeader {
+function makeDefaultHeader(): TableHeader {
   return {
     alignment: ColumnAlignment.ALIGN_LEFT,
     value: ""
@@ -119,7 +117,7 @@ function makeEmptyRow(columns: number) {
 }
 
 export default Vue.extend({
-  name: "QuickTable",
+  name: "TableEditor",
 
   components: { RowMenu, ColumnMenu, Notification },
 
