@@ -4,7 +4,7 @@
     <v-expansion-panel-content>
       <v-row>
         <v-col>
-          <QuickTable />
+          <QuickTable @update="tableUpdated" />
         </v-col>
         <v-col>
           <Preview mode="raw" :content="asGithubFlavoredMarkdown" />
@@ -22,32 +22,36 @@ import Vue from "vue";
 
 import Preview from "@/components/multi-morph/Preview.vue";
 import QuickTable from "@/components/multi-morph/QuickTable.vue";
-import { ColumnAlignment, ColumnHeader } from "@/store/table-segment.store";
 import times from "lodash/times";
+import {
+  ColumnAlignment,
+  ColumnHeader, TableContent
+} from "@/components/multi-morph/muti-morph.types";
 
-const tabularAlignment = new Map<string, string>([
+const latexTabularAlignment = new Map<string, string>([
   [ColumnAlignment.ALIGN_LEFT, "l"],
   [ColumnAlignment.ALIGN_CENTER, "c"],
   [ColumnAlignment.ALIGN_RIGHT, "r"]
 ]);
 
 export default Vue.extend({
+  name: "TableSegment",
+
   components: {
     QuickTable,
     Preview
   },
 
+  data() {
+    return {
+      tableRows: [] as string[][],
+      headerRow: [] as ColumnHeader[]
+    };
+  },
+
   computed: {
-    tableRows(): string[][] {
-      return this.$store.state.tableSegment.tableRows;
-    },
-
-    headerRow(): ColumnHeader[] {
-      return this.$store.state.tableSegment.headerRow;
-    },
-
     columnCount(): number {
-      return this.$store.getters["tableSegment/columnCount"];
+      return this.headerRow.length;
     },
 
     asGithubFlavoredMarkdown(): string {
@@ -75,7 +79,7 @@ export default Vue.extend({
     asLaTeX(): string {
       const headers = this.headerRow;
       const tableSpec = headers
-        .map(header => tabularAlignment.get(header.alignment))
+        .map(header => latexTabularAlignment.get(header.alignment))
         .join("");
       const lines = [
         `\\begin{tabular}{${tableSpec}}`,
@@ -92,6 +96,11 @@ export default Vue.extend({
   },
 
   methods: {
+    tableUpdated(event: TableContent) {
+      this.tableRows = event.tableRows;
+      this.headerRow = event.headerRow;
+    },
+
     makeSeparator(header: ColumnHeader): string {
       const leftDecorator =
         header.alignment === ColumnAlignment.ALIGN_LEFT ||

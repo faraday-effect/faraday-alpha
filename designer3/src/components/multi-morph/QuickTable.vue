@@ -1,3 +1,4 @@
+import {ColumnAlignment} from "@/components/multi-morph/muti-morph.types";
 <template>
   <div>
     <v-row align="center" justify="space-around">
@@ -15,6 +16,7 @@
         v-model="columnCount"
         class="rowColText"
       />
+      <v-switch label="Header" v-model="showHeader" />
       <v-btn @click="clearTable">Clear</v-btn>
     </v-row>
 
@@ -42,7 +44,7 @@
         </tr>
 
         <!-- Header row -->
-        <tr>
+        <tr v-if="showHeader">
           <th />
           <th v-for="(header, idx) in headerRow" :key="`hdr-${idx}`">
             <div
@@ -83,6 +85,8 @@
         </tr>
       </tbody>
     </table>
+    <div>{{ headerRow }}</div>
+    <div>{{ tableRows }}</div>
     <Notification
       :message="snackbar.message"
       :visible.sync="snackbar.visible"
@@ -92,11 +96,27 @@
 
 <script lang="ts">
 import Vue from "vue";
+import times from "lodash/times";
 
 import RowMenu from "@/components/multi-morph/RowMenu.vue";
 import ColumnMenu from "@/components/multi-morph/ColumnMenu.vue";
 import Notification from "@/components/Notification.vue";
-import { RowsAndColumns } from "@/store/table-segment.store";
+import {
+  ColumnAlignment,
+  ColumnHeader,
+  TableContent
+} from "./muti-morph.types";
+
+function makeDefaultHeader(): ColumnHeader {
+  return {
+    alignment: ColumnAlignment.ALIGN_LEFT,
+    value: ""
+  };
+}
+
+function makeEmptyRow(columns: number) {
+  return Array(columns).fill("");
+}
 
 export default Vue.extend({
   name: "QuickTable",
@@ -105,6 +125,8 @@ export default Vue.extend({
 
   data() {
     return {
+      tableRows: [["", ""], ["", ""]],
+      headerRow: [makeDefaultHeader(), makeDefaultHeader()],
       showHeader: false,
       snackbar: {
         visible: false,
@@ -114,123 +136,135 @@ export default Vue.extend({
   },
 
   computed: {
-    tableRows() {
-      return this.$store.state.tableSegment.tableRows;
-    },
-
-    headerRow() {
-      return this.$store.state.tableSegment.headerRow;
-    },
-
     rowCount: {
-      get() {
-        return this.$store.getters["tableSegment/rowCount"];
+      get(): number {
+        return this.tableRows.length;
       },
       set(newCount: number) {
         if (newCount < 1) {
           this.notify("Can't have fewer than one row");
-        } else {
-          this.$store.commit("tableSegment/setRowCount", newCount);
+          return;
+        }
+        if (newCount < this.rowCount) {
+          this.tableRows.splice(newCount, this.rowCount - newCount);
+        } else if (newCount > this.rowCount) {
+          times(newCount - this.rowCount, () =>
+            this.tableRows.push(makeEmptyRow(this.columnCount))
+          );
         }
       }
     },
 
     columnCount: {
-      get() {
-        return this.$store.getters["tableSegment/columnCount"];
+      get(): number {
+        return this.headerRow.length;
       },
       set(newCount: number) {
+        const initialColumnCount = this.columnCount; // Save old value; will change.
         if (newCount < 1) {
           this.notify("Can't have fewer than one column");
-        } else {
-          this.$store.commit("tableSegment/setColumnCount", newCount);
+          return;
+        }
+        if (newCount < initialColumnCount) {
+          this.tableRows.forEach(row =>
+            row.splice(newCount, initialColumnCount - newCount)
+          );
+          this.headerRow.splice(newCount, initialColumnCount - newCount);
+        } else if (newCount > initialColumnCount) {
+          times(newCount - initialColumnCount, () => {
+            this.tableRows.forEach(row => row.push(""));
+            this.headerRow.push(makeDefaultHeader());
+          });
         }
       }
     }
   },
 
   methods: {
-    // The row and column values send to event handlers are zero-based.
-    addLeft(column: number) {
-      this.$store.commit("tableSegment/addRowColumn", {
-        direction: RowsAndColumns.COLUMN_LEFT,
-        index: column
-      });
-    },
-    addRight(column: number) {
-      this.$store.commit("tableSegment/addRowColumn", {
-        direction: RowsAndColumns.COLUMN_RIGHT,
-        index: column
-      });
-    },
-    removeCol(column: number) {
-      this.$store.commit("tableSegment/removeRowColumn", {
-        direction: RowsAndColumns.REMOVE_COLUMN,
-        index: column
-      });
+    _emitUpdate() {
+      const content: TableContent = {
+        headerRow: this.headerRow,
+        tableRows: this.tableRows
+      };
+      this.$emit("update", content);
     },
 
-    alignLeft(column: number) {
-      this.$store.commit("tableSegment/alignColumn", {
-        direction: RowsAndColumns.ALIGN_LEFT,
-        index: column
-      });
+    // The row and column values send to event handlers are zero-based.
+    addLeft(column: number) {
+      this.tableRows.forEach(row => row.splice(column, 0, ""));
+      this.headerRow.splice(column, 0, makeDefaultHeader());
+      this._emitUpdate();
     },
-    alignCenter(column: number) {
-      this.$store.commit("tableSegment/alignColumn", {
-        direction: RowsAndColumns.ALIGN_CENTER,
-        index: column
-      });
+    addRight(column: number) {
+      this.tableRows.forEach(row => row.splice(column + 1, 0, ""));
+      this.headerRow.splice(column + 1, 0, makeDefaultHeader());
+      this._emitUpdate();
     },
-    alignRight(column: number) {
-      this.$store.commit("tableSegment/alignColumn", {
-        direction: RowsAndColumns.ALIGN_RIGHT,
-        index: column
-      });
+    removeCol(column: number) {
+      this.tableRows.forEach(row => row.splice(column, 1));
+      this.headerRow.splice(column, 1);
+      this._emitUpdate();
     },
 
     addAbove(row: number) {
-      this.$store.commit("tableSegment/addRowColumn", {
-        direction: RowsAndColumns.ROW_ABOVE,
-        index: row
-      });
+      this.tableRows.splice(row, 0, makeEmptyRow(this.columnCount));
+      this._emitUpdate();
     },
     addBelow(row: number) {
-      this.$store.commit("tableSegment/addRowColumn", {
-        direction: RowsAndColumns.ROW_BELOW,
-        index: row
-      });
+      this.tableRows.splice(row + 1, 0, makeEmptyRow(this.columnCount));
+      this._emitUpdate();
     },
     removeRow(row: number) {
-      this.$store.commit("tableSegment/removeRowColumn", {
-        direction: RowsAndColumns.REMOVE_ROW,
-        index: row
-      });
+      this.tableRows.splice(row, 1);
+      this._emitUpdate();
+    },
+
+    _setHeaderAlignment(column: number, value: ColumnAlignment) {
+      this.$set(this.headerRow[column], "alignment", value);
+      this._emitUpdate();
+    },
+
+    alignLeft(column: number) {
+      this._setHeaderAlignment(column, ColumnAlignment.ALIGN_LEFT);
+    },
+    alignCenter(column: number) {
+      this._setHeaderAlignment(column, ColumnAlignment.ALIGN_CENTER);
+    },
+    alignRight(column: number) {
+      this._setHeaderAlignment(column, ColumnAlignment.ALIGN_RIGHT);
+    },
+
+    _setCell(row: number, column: number, value = "") {
+      // console.log(`(${row},${column}) = ${value}`);
+      this.$set(this.tableRows[row], column, value);
+    },
+
+    _setHeaderValue(column: number, value = "") {
+      this.$set(this.headerRow[column], "value", value);
     },
 
     updateCell(event: any) {
       const lostFocus = event.target;
-      const [row, column] = lostFocus.id.split("-");
-      const value = lostFocus.innerText;
-      this.$store.commit("tableSegment/setCell", {
-        row,
-        column,
-        value
-      });
+      const [row, col] = lostFocus.id.split("-");
+      const newValue = lostFocus.innerText;
+      this._setCell(row, col, newValue);
+      this._emitUpdate();
     },
 
     updateHeader(event: any) {
       const lostFocus = event.target;
-      const column = lostFocus.id;
-      const value = lostFocus.innerText;
-      this.$store.commit("tableSegment/setHeaderValue", {
-        column,
-        value
-      });
+      const col = lostFocus.id;
+      const newValue = lostFocus.innerText;
+      this._setHeaderValue(col, newValue);
+      this._emitUpdate();
     },
 
     clearTable() {
-      this.$store.commit("tableSegment/clearTable");
+      times(this.columnCount, idx => this._setHeaderValue(idx, ""));
+      times(this.rowCount, row =>
+        times(this.columnCount, col => this._setCell(row, col))
+      );
+      this._emitUpdate();
     },
 
     notify(message: string) {
