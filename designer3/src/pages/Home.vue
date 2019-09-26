@@ -12,8 +12,8 @@
       </v-card>
     </v-row>
     <v-row>
-      <v-card>
-        <v-card-title class="dropzone">DROP ZONE</v-card-title>
+      <v-card class="dropzone">
+        <v-card-title>DROP ZONE</v-card-title>
         <v-card-text>
           <ul>
             <li v-for="card in droppedCards" :key="card.id">{{ card.id }}</li>
@@ -29,11 +29,15 @@ import Vue from "vue";
 import interact from "interactjs";
 import times from "lodash/times";
 
-// Some code based on https://alligator.io/js/drag-and-drop-interactjs/
+// Some code based on
+// - https://alligator.io/js/drag-and-drop-interactjs/
+// - https://css-tricks.com/swipeable-card-stack-using-vue-js-and-interact-js/
 
 interface Card {
   id: number;
   dropped: boolean;
+  xOffset: number;
+  yOffset: number;
 }
 
 export default Vue.extend({
@@ -63,7 +67,12 @@ export default Vue.extend({
 
   created() {
     times(12, i => {
-      this.allCards.push({ id: i, dropped: false });
+      this.allCards.push({
+        id: i,
+        dropped: false,
+        xOffset: 0.0,
+        yOffset: 0.0
+      });
     });
   },
 
@@ -77,22 +86,19 @@ export default Vue.extend({
 
       onmove: event => {
         const target = event.target;
+        const card = this.allCards.find(card => card.id == parseInt(target.id));
 
-        const dataX = target.getAttribute("data-x");
-        const dataY = target.getAttribute("data-y");
-        const initialX = parseFloat(dataX) || 0;
-        const initialY = parseFloat(dataY) || 0;
+        if (card) {
+          const deltaX = event.dx;
+          const deltaY = event.dy;
 
-        const deltaX = event.dx;
-        const deltaY = event.dy;
+          card.xOffset += deltaX;
+          card.yOffset += deltaY;
 
-        const newX = initialX + deltaX;
-        const newY = initialY + deltaY;
-
-        target.style.transform = `translate(${newX}px, ${newY}px)`;
-
-        target.setAttribute("data-x", newX);
-        target.setAttribute("data-y", newY);
+          target.style.transform = `translate(${card.xOffset}px, ${card.yOffset}px)`;
+        } else {
+          throw new Error(`Can't find card with ID '${target.id}'`);
+        }
       }
     });
 
@@ -101,12 +107,16 @@ export default Vue.extend({
 
       ondropactivate: event => {
         const item = event.relatedTarget;
+        const dropZone = event.target;
         item.classList.add("dragging");
+        dropZone.classList.add("drop-active");
       },
 
       ondropdeactivate: event => {
         const item = event.relatedTarget;
+        const dropZone = event.target;
         item.classList.remove("dragging", "cannot-drop");
+        dropZone.classList.remove("drop-active");
       },
 
       ondragenter: event => {
@@ -131,7 +141,7 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 .item {
   touch-action: none;
   user-select: none;
@@ -144,6 +154,7 @@ export default Vue.extend({
   z-index: 0;
 }
 .dragging {
+  z-index: 2;
   background: red !important;
 }
 .cannot-drop {
@@ -151,5 +162,8 @@ export default Vue.extend({
 }
 .can-drop {
   background: orange !important;
+}
+.drop-active {
+  border: dashed 4px chocolate;
 }
 </style>
