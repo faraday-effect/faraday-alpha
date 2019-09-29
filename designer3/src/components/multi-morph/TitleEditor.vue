@@ -23,6 +23,10 @@
 import Vue from "vue";
 import { TitleFields } from "@/components/multi-morph/muti-morph.types";
 
+function latexHelper(cmd: string, arg: string) {
+  return `\\${cmd}{${arg}}`;
+}
+
 export default Vue.extend({
   name: "TitleEditor",
 
@@ -45,12 +49,36 @@ export default Vue.extend({
   methods: {
     updated(field: string, value: string) {
       this.$data[field] = value;
-      this.$emit("input", {
+      this.$emit("input", this.asData());
+
+      this.$store.commit("title/setMarkdown", this.asMarkdown());
+      this.$store.commit("title/setLaTeX", this.asLaTeX());
+    },
+
+    asData() {
+      return {
         title: this.title,
         subtitle: this.subtitle,
         author: this.author,
         date: this.date
-      } as TitleFields);
+      };
+    },
+
+    asMarkdown(): string {
+      return [
+        `# ${this.title}`,
+        `## ${this.subtitle}`,
+        `** ${this.author} (${this.date}) **`
+      ].join("\n");
+    },
+
+    asLaTeX(): string {
+      return [
+        latexHelper("title", this.title),
+        latexHelper("subtitle", this.subtitle),
+        latexHelper("author", this.author),
+        latexHelper("date", this.date)
+      ].join("\n");
     }
   },
 
