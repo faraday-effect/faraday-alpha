@@ -22,6 +22,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { TitleFields } from "@/components/multi-morph/muti-morph.types";
+import { pick } from "lodash";
 
 function latexHelper(cmd: string, arg: string) {
   return `\\${cmd}{${arg}}`;
@@ -49,19 +50,13 @@ export default Vue.extend({
   methods: {
     updated(field: string, value: string) {
       this.$data[field] = value;
-      this.$emit("input", this.asData());
-
+      this.$store.commit("title/setRawData", this.asRawData());
       this.$store.commit("title/setMarkdown", this.asMarkdown());
       this.$store.commit("title/setLaTeX", this.asLaTeX());
     },
 
-    asData() {
-      return {
-        title: this.title,
-        subtitle: this.subtitle,
-        author: this.author,
-        date: this.date
-      };
+    asRawData() {
+      return pick(this.$data, ["title", "subtitle", "author", "date"]);
     },
 
     asMarkdown(): string {

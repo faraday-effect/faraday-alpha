@@ -3,7 +3,7 @@ import { RootState } from "@/store/index";
 import { Module } from "vuex";
 
 export interface MultiMorphTitleState {
-  data: TitleFields;
+  rawData: TitleFields;
   markdown: string;
   latex: string;
 }
@@ -12,14 +12,14 @@ const MultiMorphTitleModule: Module<MultiMorphTitleState, RootState> = {
   namespaced: true,
 
   state: {
-    data: {} as TitleFields,
+    rawData: {} as TitleFields,
     markdown: "",
     latex: ""
   },
 
   mutations: {
-    setRaw(state, value: TitleFields) {
-      state.data = value;
+    setRawData(state, value: TitleFields) {
+      state.rawData = value;
     },
 
     setMarkdown(state, value: string) {

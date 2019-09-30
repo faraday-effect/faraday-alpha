@@ -1,10 +1,11 @@
 <template>
   <v-row>
     <v-col>
-      <TitleEditor v-model="fields" />
+      <TitleEditor :value="fields" />
     </v-col>
     <v-col>
       <Preview mode="markdown" :content="asMarkdown" />
+      {{ asRawData }}
     </v-col>
     <v-col>
       <Preview mode="text" :content="asLaTeX" />
@@ -35,6 +36,20 @@ export default Vue.extend({
         date: ""
       }
     };
+  },
+
+  computed: {
+    asRawData() {
+      return this.$store.state.title.rawData;
+    },
+
+    asMarkdown(): string {
+      return this.$store.state.title.markdown;
+    },
+
+    asLaTeX(): string {
+      return this.$store.state.title.latex;
+    }
   }
 });
 </script>
