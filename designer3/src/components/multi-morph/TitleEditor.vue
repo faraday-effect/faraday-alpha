@@ -28,12 +28,21 @@ function latexHelper(cmd: string, arg: string) {
   return `\\${cmd}{${arg}}`;
 }
 
+enum MultiMorphFormat {
+  RAW_DATA = "RawData",
+  MARKDOWN = "Markdown",
+  LATEX = "LaTeX"
+}
+
 export default Vue.extend({
   name: "TitleEditor",
 
   props: {
     value: {
-      type: Object,
+      type: Object
+    },
+    formats: {
+      type: Array,
       required: true
     }
   },
@@ -50,12 +59,21 @@ export default Vue.extend({
   methods: {
     updated(field: string, value: string) {
       this.$data[field] = value;
-      this.$store.commit("title/setRawData", this.asRawData());
-      this.$store.commit("title/setMarkdown", this.asMarkdown());
-      this.$store.commit("title/setLaTeX", this.asLaTeX());
-    },
 
-    asRawData() {
+      if (this.$data.format.includes(MultiMorphFormat.RAW_DATA)) {
+        this.$store.commit("title/setRawData", this.asRawData);
+      }
+      if (this.$data.format.includes(MultiMorphFormat.MARKDOWN)) {
+        this.$store.commit("title/setMarkdown", this.asMarkdown);
+      }
+      if (this.$data.format.includes(MultiMorphFormat.LATEX)) {
+        this.$store.commit("title/setLaTeX", this.asLaTeX);
+      }
+    }
+  },
+
+  computed: {
+    asRawData(): TitleFields {
       return pick(this.$data, ["title", "subtitle", "author", "date"]);
     },
 
@@ -79,11 +97,11 @@ export default Vue.extend({
 
   watch: {
     value: {
-      handler(v: TitleFields) {
-        this.title = v.title;
-        this.subtitle = v.subtitle;
-        this.author = v.author;
-        this.date = v.date;
+      handler(value: TitleFields) {
+        this.title = value.title;
+        this.subtitle = value.subtitle;
+        this.author = value.author;
+        this.date = value.date;
       },
       immediate: true
     }
