@@ -62,7 +62,7 @@
     "json-server": "^0.15.0",
     "knex-db-manager": "^0.5.0",
     "knex-migrate": "^1.7.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "node-fetch": "^2.6.0",
     "pg-escape": "^0.2.0",
     "prettier": "^1.18.2",
