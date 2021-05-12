@@ -22,7 +22,7 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.0",
-    "codemirror": "^5.43.0",
+    "codemirror": "^5.58.2",
     "mousetrap": "^1.6.2",
     "quasar": "^1.0.0-beta.0",
     "reflect-metadata": "^0.1.13",
